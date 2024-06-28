@@ -1,20 +1,41 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import StartPage from "./screen/StartPage";
+import MainPage from "./screen/MainPage";
+import TestPage from "./screen/TestPage";
+import MyPage from "./screen/MyPage";
+import RecordPage from "./screen/RecordPage";
+import QuizPage from "./screen/QuizPage";
+import GamePage from "./screen/GamePage";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  //npm install @react-navigation/native
+  //npm install @react-navigation/native-stack
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="StartPage">
+        {/* <Stack.Screen name="StartPage" component={StartPage} /> */}
+        <Stack.Screen name="MainPage" component={MainPage} />
+        <Stack.Screen name="TestPage" component={TestPage} />
+        <Stack.Screen name="MyPage" component={MyPage} />
+        <Stack.Screen name="RecordPage" component={RecordPage} />
+        <Stack.Screen name="QuizPage" component={QuizPage} />
+        <Stack.Screen name="GamePage" component={GamePage} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
