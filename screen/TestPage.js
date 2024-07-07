@@ -67,9 +67,14 @@ const TestPage = ({ navigation }) => {
                     ? styles.selectedAnswer
                     : null,
                 ]}
-                onPress={() =>
-                  setAnswers({ ...answers, [questionNumber]: index })
-                }
+                onPress={() => {
+                  const updatedAnswers = {
+                    ...answers,
+                    [questionNumber]: index,
+                  };
+                  setAnswers(updatedAnswers);
+                  console.log(`Q${questionNumber} 점수: ${index}`);
+                }}
               >
                 <Text style={styles.answerText}>{option}</Text>
               </TouchableOpacity>
@@ -85,8 +90,13 @@ const TestPage = ({ navigation }) => {
       setCurrentPage(currentPage + 1);
       scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
     } else {
+      const totalScore = Object.values(answers).reduce(
+        (sum, value) => sum + value,
+        0
+      );
       console.log("테스트 제출:", answers);
-      navigation.navigate("TestResultPage", { answers });
+      console.log("총점:", totalScore);
+      navigation.navigate("TestResultPage", { answers, totalScore });
     }
   };
 

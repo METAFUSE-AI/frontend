@@ -20,6 +20,9 @@ const TestResultPage = ({ route, navigation }) => {
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
+  const handleMyPage = () => {
+    navigation.navigate("MyPage");
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -40,8 +43,12 @@ const TestResultPage = ({ route, navigation }) => {
       </TouchableOpacity>
       <ScrollView style={styles.scrollView} ref={scrollViewRef}>
         <View style={styles.testResultComponents}>
-          <Text style={styles.resultText}>테스트 결과</Text>
           <Image source={TestResult01} style={styles.testResultImage} />
+        </View>
+        <View>
+          <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
+            <Text style={styles.navButtonText}>마이페이지로 이동</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -76,6 +83,18 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: "70%",
     height: 100,
+  },
+  navButton: {
+    backgroundColor: "#8881EA",
+    padding: 15,
+    borderRadius: 20,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  navButtonText: {
+    color: "#ffffff",
+    fontSize: 18,
   },
 });
 
