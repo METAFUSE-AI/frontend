@@ -22,7 +22,11 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="StartPage">
         {/* <Stack.Screen name="StartPage" component={StartPage} /> */}
-        <Stack.Screen name="MainPage" component={MainPage} />
+        <Stack.Screen
+          name="MainPage"
+          component={MainPage}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="TestPage"
           component={TestPage}

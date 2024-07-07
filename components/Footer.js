@@ -11,42 +11,42 @@ export default function Footer({ navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate("MainPage")}
       >
-        <Icon name="home" size={20} color="#000" />
+        <Icon name="home" size={20} color="#fff" />
         <Text style={styles.buttonText}>메인페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("TestPage")}
       >
-        <Icon name="search" size={20} color="#000" />
+        <Icon name="search" size={20} color="#fff" />
         <Text style={styles.buttonText}>테스트페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("MyPage")}
       >
-        <Icon name="user" size={20} color="#000" />
+        <Icon name="user" size={20} color="#fff" />
         <Text style={styles.buttonText}>마이페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("GamePage")}
       >
-        <Icon name="gamepad" size={20} color="#000" />
+        <Icon name="gamepad" size={20} color="#fff" />
         <Text style={styles.buttonText}>게임페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("QuizPage")}
       >
-        <Icon name="question-circle" size={20} color="#000" />
+        <Icon name="question-circle" size={20} color="#fff" />
         <Text style={styles.buttonText}>퀴즈페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("TestPage")}
       >
-        <Icon name="flask" size={20} color="#000" />
+        <Icon name="flask" size={20} color="#fff" />
         <Text style={styles.buttonText}>테스트페이지</Text>
       </TouchableOpacity>
     </View>
@@ -68,5 +68,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     marginTop: 5,
+    color: "#fff",
   },
 });
