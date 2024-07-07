@@ -5,11 +5,21 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 
-const TestResultPage = ({ navigation }) => {
+import HeaderLogo from "../assets/images/headerLogo.png";
+import TestResult01 from "../assets/images/TestResult01.png";
+import TestResult02 from "../assets/images/TestResult02.png";
+import TestResult03 from "../assets/images/TestResult03.png";
+
+const TestResultPage = ({ route, navigation }) => {
+  const { answers } = route.params;
   const scrollViewRef = useRef();
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -25,9 +35,14 @@ const TestResultPage = ({ navigation }) => {
           tintColor="#ffffff"
         />
       </View>
+      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
+      </TouchableOpacity>
       <ScrollView style={styles.scrollView} ref={scrollViewRef}>
-        {[0, 1, 2, 3, 4, 5].map(renderQuestion)}
-        <View style={styles.buttonContainer}></View>
+        <View style={styles.testResultComponents}>
+          <Text style={styles.resultText}>테스트 결과</Text>
+          <Image source={TestResult01} style={styles.testResultImage} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -36,7 +51,31 @@ const TestResultPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#0D0F35",
+  },
+  customHeader: {
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
+  },
+  scrollView: {
+    flex: 1,
+    padding: 20,
+  },
+  testResultComponents: {
+    alignItems: "center",
+  },
+  resultText: {
+    fontSize: 18,
+    color: "#ffffff",
+  },
+  logoContainer: {
+    alignItems: "center",
+  },
+  headerLogo: {
+    width: "70%",
+    height: 100,
   },
 });
 

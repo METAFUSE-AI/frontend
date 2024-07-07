@@ -5,9 +5,11 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import Footer from "../components/Footer";
+
+import HeaderLogo from "../assets/images/headerLogo.png";
 
 const questions = [
   "스스로에 대한 내 평가는 정확한 편이다.",
@@ -84,7 +86,7 @@ const TestPage = ({ navigation }) => {
       scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
     } else {
       console.log("테스트 제출:", answers);
-      navigation.navigate("ResultPage", { answers });
+      navigation.navigate("TestResultPage", { answers });
     }
   };
 
@@ -95,6 +97,10 @@ const TestPage = ({ navigation }) => {
     }
   };
 
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
@@ -103,6 +109,9 @@ const TestPage = ({ navigation }) => {
           tintColor="#ffffff"
         />
       </View>
+      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
+      </TouchableOpacity>
       <ScrollView style={styles.scrollView} ref={scrollViewRef}>
         {[0, 1, 2, 3, 4, 5].map(renderQuestion)}
         <View style={styles.buttonContainer}>
@@ -128,13 +137,20 @@ const TestPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#0D0F35",
   },
   customHeader: {
     height: 50,
     justifyContent: "center",
     paddingLeft: 10,
-    backgroundColor: "#1a1a2e",
+    backgroundColor: "#0D0F35",
+  },
+  logoContainer: {
+    alignItems: "center",
+  },
+  headerLogo: {
+    width: "70%",
+    height: 100,
   },
   scrollView: {
     flex: 1,
@@ -159,7 +175,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffffff",
   },
   selectedAnswer: {
-    backgroundColor: "#4a4e69",
+    backgroundColor: "#8881EA",
   },
   answerText: {
     color: "#ffffff",
@@ -170,9 +186,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   navButton: {
-    backgroundColor: "#4a4e69",
+    backgroundColor: "#8881EA",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 20,
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,

@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
+import TestResultPage from "./screen/TestResultPage";
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import QuizPage from "./screen/QuizPage";
@@ -25,6 +26,11 @@ export default function App() {
         <Stack.Screen
           name="TestPage"
           component={TestPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TestResultPage"
+          component={TestResultPage}
           options={{ headerShown: false }}
         />
         <Stack.Screen name="MyPage" component={MyPage} />
