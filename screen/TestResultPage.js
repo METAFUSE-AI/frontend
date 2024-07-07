@@ -15,7 +15,7 @@ import TestResult02 from "../assets/images/TestResult02.png";
 import TestResult03 from "../assets/images/TestResult03.png";
 
 const TestResultPage = ({ route, navigation }) => {
-  const { answers } = route.params;
+  const { answers, totalScore } = route.params; // route에서 전달된 매개변수 사용
   const scrollViewRef = useRef();
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -30,6 +30,16 @@ const TestResultPage = ({ route, navigation }) => {
     });
   }, [navigation]);
 
+  let resultImage = TestResult03; // 기본 이미지 (총점이 25 미만일 경우)
+
+  if (totalScore >= 40) {
+    //총점이 40 이상일 경우
+    resultImage = TestResult01;
+  } else if (totalScore >= 25) {
+    //총점이 25 이상일 경우
+    resultImage = TestResult02;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
@@ -43,7 +53,7 @@ const TestResultPage = ({ route, navigation }) => {
       </TouchableOpacity>
       <ScrollView style={styles.scrollView} ref={scrollViewRef}>
         <View style={styles.testResultComponents}>
-          <Image source={TestResult01} style={styles.testResultImage} />
+          <Image source={resultImage} style={styles.testResultImage} />
         </View>
         <View>
           <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
@@ -95,6 +105,11 @@ const styles = StyleSheet.create({
   navButtonText: {
     color: "#ffffff",
     fontSize: 18,
+  },
+  testResultImage: {
+    width: 300,
+    height: 300,
+    resizeMode: "contain",
   },
 });
 
