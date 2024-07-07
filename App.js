@@ -9,6 +9,7 @@ import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
+import { HeaderBackButton } from "@react-navigation/elements"; //navi 뒤로가기 버튼
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,11 @@ export default function App() {
       <Stack.Navigator initialRouteName="StartPage">
         {/* <Stack.Screen name="StartPage" component={StartPage} /> */}
         <Stack.Screen name="MainPage" component={MainPage} />
-        <Stack.Screen name="TestPage" component={TestPage} />
+        <Stack.Screen
+          name="TestPage"
+          component={TestPage}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="RecordPage" component={RecordPage} />
         <Stack.Screen name="QuizPage" component={QuizPage} />
