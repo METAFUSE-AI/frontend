@@ -12,17 +12,18 @@ export default function RecordContainer({ text }) {
 const styles = StyleSheet.create({
   RecordContainer: {
     width: 300,
-    height: 100,
+    height: 150,
     backgroundColor: "#344C64",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: "30px",
     marginTop: 25,
     marginBottom: 25,
+    padding: 20,
   },
   RecordContainerText: {
     color: "#fff",
     textAlign: "center",
-    fontSize: "15px",
+    fontSize: "18px",
   },
 });
