@@ -9,10 +9,10 @@ export default function Footer({ navigation }) {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("MainPage")}
+        onPress={() => navigation.navigate("RecordPage")}
       >
-        <Icon name="home" size={20} color="#fff" />
-        <Text style={styles.buttonText}>메인페이지</Text>
+        <Icon name="book" size={20} color="#fff" />
+        <Text style={styles.buttonText}>기록페이지</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
