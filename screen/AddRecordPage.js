@@ -13,17 +13,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
 
-//기록 페이지
+//기록 추가 페이지
 
-export default function RecordPage({ navigation }) {
+export default function AddRecordPage({ navigation }) {
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
-  };
-
-  const handleAddPress = () => {
-    // 추가 버튼 클릭 시 수행할 작업
-    console.log("기록 추가 버튼 클릭");
-    navigation.navigate("AddRecordPage");
   };
 
   useEffect(() => {
@@ -49,12 +43,7 @@ export default function RecordPage({ navigation }) {
           { alignItems: "center" },
         ]}
         style={styles.container}
-      >
-        <RecordContainer text={"기록이 없습니다\n기록을 작성해 주세요"} />
-        <TouchableOpacity onPress={handleAddPress} style={styles.AddRecordBtn}>
-          <Icon name="plus-circle" size={30} color="#000" />
-        </TouchableOpacity>
-      </ScrollView>
+      ></ScrollView>
     </View>
   );
 }
@@ -79,14 +68,5 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-  },
-  AddRecordBtn: {
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    marginTop: 20,
   },
 });
