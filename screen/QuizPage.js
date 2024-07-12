@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Alert } from "react-native";
-import Footer from "../components/Footer";
-import OptionButton from "../components/OptionButton";
+import { View, StyleSheet, Text, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
+import { HeaderBackButton } from "@react-navigation/elements";
 import SubmitButton from "../components/SubmitButton";
+import OptionButton from "../components/OptionButton";
+
+import HeaderLogo from "../assets/images/headerLogo.png";
 
 // Example Quiz Data
 const quizData = [
@@ -98,27 +100,67 @@ export default function QuizPage({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {!quizCompleted && (
-        <View style={styles.quizContainer}>
-          <Text style={styles.questionText}>{quizData[quizIndex].question}</Text>
-          {quizData[quizIndex].options.map((option, index) => (
-            <OptionButton
-              key={index}
-              text={option}
-              isSelected={index === selectedOption}
-              onPress={() => handleOptionPress(index)}
-            />
-          ))}
-          <SubmitButton text={isLastQuestion ? "정답 확인" : "제출"} onPress={handleSubmit} />
-        </View>
-      )}
-      <Footer navigation={navigation} />
+      <View style={styles.customHeader}>
+        <HeaderBackButton
+          onPress={() => navigation.goBack()}
+          tintColor="#ffffff"
+        />
+      </View>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
+      </TouchableOpacity>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        style={styles.scrollView}
+      >
+        {!quizCompleted && (
+          <View style={styles.quizContainer}>
+            <Text style={styles.questionText}>{quizData[quizIndex].question}</Text>
+            {quizData[quizIndex].options.map((option, index) => (
+              <OptionButton
+                key={index}
+                text={option}
+                isSelected={index === selectedOption}
+                onPress={() => handleOptionPress(index)}
+              />
+            ))}
+            <SubmitButton text={isLastQuestion ? "정답 확인" : "제출"} onPress={handleSubmit} />
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: "#0D0F35",
+  },
+  customHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
+    zIndex: 10,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  headerLogo: {
+    width: "70%",
+    height: 100,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    alignItems: "center",
+  },
+  scrollView: {
     flex: 1,
   },
   quizContainer: {
@@ -130,5 +172,6 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 20,
     marginBottom: 20,
+    color: "#fff",
   },
 });
