@@ -9,6 +9,7 @@ import TestResultPage from "./screen/TestResultPage";
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import AddRecordPage from "./screen/AddRecordPage";
+import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import { HeaderBackButton } from "@react-navigation/elements"; //navi 뒤로가기 버튼
@@ -47,6 +48,11 @@ export default function App() {
         <Stack.Screen
           name="AddRecordPage"
           component={AddRecordPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RecordCreationPage"
+          component={RecordCreationPage}
           options={{ headerShown: false }}
         />
         <Stack.Screen name="QuizPage" component={QuizPage} />

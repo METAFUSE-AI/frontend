@@ -8,11 +8,11 @@ import {
   ScrollView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import Icon from "react-native-vector-icons/FontAwesome";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
 
+// 기록 추가 페이지
 const recordQuestions = [
   //기록 질문 목록
   "최근에 이룬 가장 큰 성취는 무엇인가요? 이를 어떻게 달성했나요?",
@@ -77,6 +77,10 @@ export default function AddRecordPage({ navigation }) {
     setSelectedQuestions(shuffledQuestions.slice(0, 3));
   }, [navigation]);
 
+  const handleQuestionPress = (question) => {
+    navigation.navigate("RecordCreationPage", { question });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
@@ -96,7 +100,12 @@ export default function AddRecordPage({ navigation }) {
         style={styles.container}
       >
         {selectedQuestions.map((question, index) => (
-          <RecordContainer key={index} text={question} />
+          <TouchableOpacity
+            key={index}
+            onPress={() => handleQuestionPress(question)}
+          >
+            <RecordContainer text={question} />
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
