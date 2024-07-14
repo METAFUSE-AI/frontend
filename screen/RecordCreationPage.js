@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
+  TextInput,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 
@@ -16,12 +17,14 @@ import RecordContainer from "../components/RecordContainer";
 
 export default function RecordCreationPage({ route, navigation }) {
   const { question } = route.params;
+  const [userInput, setUserInput] = useState("");
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
   const handleCompletePress = () => {
+    console.log("기록 완료 버튼 클릭");
     navigation.navigate("RecordPage");
   };
 
@@ -50,6 +53,13 @@ export default function RecordCreationPage({ route, navigation }) {
         style={styles.container}
       >
         <RecordContainer text={question} />
+        <TextInput
+          style={styles.recordCreationInputBox}
+          placeholder="내용을 입력하세요"
+          placeholderTextColor="#ccc"
+          value={userInput}
+          onChangeText={setUserInput}
+        />
         <TouchableOpacity
           style={styles.recordSubmitBtn}
           onPress={handleCompletePress}
@@ -82,11 +92,24 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
   },
+  recordCreationInputBox: {
+    width: 300,
+    height: 250,
+    backgroundColor: "#344C64",
+    color: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "30px",
+    marginTop: 25,
+    marginBottom: 25,
+    padding: 20,
+  },
   recordSubmitBtn: {
     backgroundColor: "#8881EA",
-    padding: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 50,
     marginTop: 20,
-    borderRadius: 5,
+    borderRadius: 20,
   },
   buttonText: {
     color: "#fff",
