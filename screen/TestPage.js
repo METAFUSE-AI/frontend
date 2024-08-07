@@ -49,6 +49,16 @@ const TestPage = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const createTest = (testData) => {
+    return fetch('http://localhost:8080/tests', { // 실제 API URL로 변경
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(testData),
+    }).then((response) => response.json());
+  };
+
   const renderQuestion = (questionIndex) => {
     const questionNumber = (currentPage - 1) * 6 + questionIndex + 1;
     return (
@@ -96,7 +106,23 @@ const TestPage = ({ navigation }) => {
       );
       console.log("테스트 제출:", answers);
       console.log("총점:", totalScore);
-      navigation.navigate("TestResultPage", { answers, totalScore });
+
+      // 테스트 데이터 전송
+      const testData = {
+        member: { memberId: 1 }, // 임시 memberId
+        testScore: totalScore,
+        question: JSON.stringify(answers),
+        testDate: new Date().toISOString(),
+      };
+
+      createTest(testData)
+        .then((response) => {
+          console.log("서버 응답:", response);
+          navigation.navigate("TestResultPage", { answers, totalScore });
+        })
+        .catch((error) => {
+          console.error("테스트 전송 중 오류:", error);
+        });
     }
   };
 
@@ -107,39 +133,39 @@ const TestPage = ({ navigation }) => {
     }
   };
 
-  const handleLogoPress = () => {
-    navigation.navigate("MainPage");
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
-      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+      <View style={styles.header}>
+        <HeaderBackButton onPress={() => navigation.goBack()} />
         <Image source={HeaderLogo} style={styles.headerLogo} />
-      </TouchableOpacity>
-      <ScrollView style={styles.scrollView} ref={scrollViewRef}>
-        {[0, 1, 2, 3, 4, 5].map(renderQuestion)}
-        <View style={styles.buttonContainer}>
-          {currentPage > 1 && (
-            <TouchableOpacity
-              style={styles.navButton}
-              onPress={handlePreviousPage}
-            >
-              <Text style={styles.navButtonText}>이전</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.navButton} onPress={handleNextPage}>
-            <Text style={styles.navButtonText}>
-              {currentPage === 4 ? "테스트 제출하기" : "다음"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <View style={{ width: 40 }} /> {/* Placeholder for alignment */}
+      </View>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        {Array.from({ length: 6 }, (_, i) => renderQuestion(i))}
       </ScrollView>
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[
+            styles.navigationButton,
+            currentPage === 1 && styles.disabledButton,
+          ]}
+          onPress={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          <Text style={styles.navigationButtonText}>이전</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navigationButton}
+          onPress={handleNextPage}
+        >
+          <Text style={styles.navigationButtonText}>
+            {currentPage < 4 ? "다음" : "제출"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -147,31 +173,31 @@ const TestPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0D0F35",
+    backgroundColor: "#f8f8f8",
   },
-  customHeader: {
-    height: 50,
-    justifyContent: "center",
-    paddingLeft: 10,
-    backgroundColor: "#0D0F35",
-  },
-  logoContainer: {
+  header: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
   headerLogo: {
-    width: "70%",
-    height: 100,
+    width: 100,
+    height: 30,
+    resizeMode: "contain",
   },
-  scrollView: {
-    flex: 1,
+  scrollViewContent: {
     padding: 20,
   },
   questionContainer: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
   questionText: {
     fontSize: 18,
-    color: "#ffffff",
     marginBottom: 10,
   },
   answerContainer: {
@@ -179,33 +205,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   answerButton: {
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ffffff",
-  },
-  selectedAnswer: {
-    backgroundColor: "#8881EA",
-  },
-  answerText: {
-    color: "#ffffff",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  navButton: {
-    backgroundColor: "#8881EA",
-    padding: 15,
-    borderRadius: 20,
-    alignItems: "center",
     flex: 1,
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    alignItems: "center",
     marginHorizontal: 5,
   },
-  navButtonText: {
-    color: "#ffffff",
-    fontSize: 18,
+  selectedAnswer: {
+    backgroundColor: "#c0e8ff",
+  },
+  answerText: {
+    fontSize: 16,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
+  },
+  navigationButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
+  },
+  navigationButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
