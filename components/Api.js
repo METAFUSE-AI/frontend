@@ -1,9 +1,16 @@
-// api.js
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:8080', // Spring Boot 서버 URL
-  // headers: { 'Content-Type': 'application/json' } // 필요한 경우 추가
-});
+const BASE_URL = 'http://localhost:8080'; // 서버 주소
 
-export default api;
+export const createTest = (testData) => {
+  return axios.post(`${BASE_URL}/tests/create`, testData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error('Error:', error);
+    throw error;
+  });
+};

@@ -1,13 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
+import { createTest } from '../components/Api/'; // api.js에서 createTest 함수 임포트
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
@@ -37,7 +31,6 @@ const questions = [
   "나는 어려운 상황에 처했을 때 여러 가지 해결 방법을 고려한다.",
   "나는 내 결정이 다른 사람에게 미칠 영향을 생각한다.",
 ];
-
 const TestPage = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -48,16 +41,6 @@ const TestPage = ({ navigation }) => {
       headerShown: false,
     });
   }, [navigation]);
-
-  const createTest = (testData) => {
-    return fetch('http://localhost:8080/tests', { // 실제 API URL로 변경
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(testData),
-    }).then((response) => response.json());
-  };
 
   const renderQuestion = (questionIndex) => {
     const questionNumber = (currentPage - 1) * 6 + questionIndex + 1;
@@ -83,7 +66,6 @@ const TestPage = ({ navigation }) => {
                     [questionNumber]: index,
                   };
                   setAnswers(updatedAnswers);
-                  console.log(`Q${questionNumber} 점수: ${index}`);
                 }}
               >
                 <Text style={styles.answerText}>{option}</Text>
@@ -104,15 +86,14 @@ const TestPage = ({ navigation }) => {
         (sum, value) => sum + value,
         0
       );
-      console.log("테스트 제출:", answers);
-      console.log("총점:", totalScore);
-
-      // 테스트 데이터 전송
+      const now = new Date().toISOString();
       const testData = {
-        member: { memberId: 1 }, // 임시 memberId
+        member: { memberId: 1 },
         testScore: totalScore,
         question: JSON.stringify(answers),
-        testDate: new Date().toISOString(),
+        testDate: now,
+        createdAt: now,
+        updatedAt: now,
       };
 
       createTest(testData)
@@ -140,18 +121,12 @@ const TestPage = ({ navigation }) => {
         <Image source={HeaderLogo} style={styles.headerLogo} />
         <View style={{ width: 40 }} /> {/* Placeholder for alignment */}
       </View>
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.scrollViewContent}
-      >
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContent}>
         {Array.from({ length: 6 }, (_, i) => renderQuestion(i))}
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity
-          style={[
-            styles.navigationButton,
-            currentPage === 1 && styles.disabledButton,
-          ]}
+          style={[styles.navigationButton, currentPage === 1 && styles.disabledButton]}
           onPress={handlePreviousPage}
           disabled={currentPage === 1}
         >
@@ -213,21 +188,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedAnswer: {
-    backgroundColor: "#c0e8ff",
+    backgroundColor: "#007bff",
   },
   answerText: {
-    fontSize: 16,
+    color: "#333",
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
+    padding: 10,
+    backgroundColor: "#ffffff",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
   },
   navigationButton: {
+    flex: 1,
+    alignItems: "center",
     paddingVertical: 10,
-    paddingHorizontal: 20,
     backgroundColor: "#007bff",
     borderRadius: 5,
   },
