@@ -23,11 +23,35 @@ export default function RecordCreationPage({ route, navigation }) {
     navigation.navigate("MainPage");
   };
 
-  const handleCompletePress = () => {
+  const handleCompletePress = async () => {
     console.log("기록 완료 버튼 클릭");
-    navigation.navigate("RecordPage");
+  
+    try {
+      const record = {
+        recordQuestion: question,
+        recordContents: userInput,
+        member: { memberId: 1 }, // 실제로는 적절한 memberId로 설정
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+  
+      const response = await fetch("http://localhost:8080/records/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(record),
+      });
+  
+      if (response.ok) {
+        navigation.navigate("RecordPage");
+      } else {
+        console.error("Failed to save record");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
-
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -99,7 +123,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: "30px",
+    borderRadius: 30, // 수정
     marginTop: 25,
     marginBottom: 25,
     padding: 20,

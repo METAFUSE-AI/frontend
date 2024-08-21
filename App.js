@@ -12,6 +12,7 @@ import AddRecordPage from "./screen/AddRecordPage";
 import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
+import RecordDetailPage from "./screen/RecordDetailPage";
 import { HeaderBackButton } from "@react-navigation/elements"; //navi 뒤로가기 버튼
 
 const Stack = createNativeStackNavigator();
@@ -45,6 +46,7 @@ export default function App() {
           component={RecordPage}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="RecordDetailPage" component={RecordDetailPage} />
         <Stack.Screen
           name="AddRecordPage"
           component={AddRecordPage}

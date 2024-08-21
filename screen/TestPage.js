@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { createTest } from '../components/Api/'; // api.js에서 createTest 함수 임포트
+import { createTest } from '../components/ApiUtilsi/'; // api.js에서 createTest 함수 임포트
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 

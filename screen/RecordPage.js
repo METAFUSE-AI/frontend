@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -12,25 +12,40 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
-
-//기록 페이지
+import { fetchRecords } from "../components/ApiUtilsi"; // API 유틸리티 파일에서 가져옴
 
 export default function RecordPage({ navigation }) {
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const memberId = 1; // 고정된 memberId
+
+  useEffect(() => {
+    const loadRecords = async () => {
+      try {
+        const data = await fetchRecords(`/records/member/${memberId}`); // memberId가 1인 기록을 가져옴
+        setRecords(data); // 기록을 상태에 저장
+      } catch (error) {
+        console.error("Error fetching records:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecords();
+  }, []);
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
   const handleAddPress = () => {
-    // 추가 버튼 클릭 시 수행할 작업
-    console.log("기록 추가 버튼 클릭");
     navigation.navigate("AddRecordPage");
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
+  const handleRecordPress = (recordId) => {
+    navigation.navigate("RecordDetailPage", { recordId }); // 클릭된 recordId를 전달
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +65,23 @@ export default function RecordPage({ navigation }) {
         ]}
         style={styles.container}
       >
-        <RecordContainer text={"기록이 없습니다\n기록을 작성해 주세요"} />
+        {loading ? (
+          <Text style={styles.loadingText}>Loading...</Text>
+        ) : error ? (
+          <Text style={styles.errorText}>Error: {error}</Text>
+        ) : records.length > 0 ? (
+          records.map((record) => (
+            <TouchableOpacity
+              key={record.recordId}
+              onPress={() => handleRecordPress(record.recordId)} // recordId를 클릭 시 전달
+              style={styles.recordItem}
+            >
+              <RecordContainer text={record.recordQuestion} />
+            </TouchableOpacity>
+          ))
+        ) : (
+          <RecordContainer text={"기록이 없습니다\n기록을 작성해 주세요"} />
+        )}
         <TouchableOpacity onPress={handleAddPress} style={styles.AddRecordBtn}>
           <Icon name="plus-circle" size={30} color="#000" />
         </TouchableOpacity>
@@ -87,6 +118,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 15,
+    marginTop: 20,
+  },
+  recordItem: {
+    marginVertical: 10,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+    marginTop: 20,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 18,
     marginTop: 20,
   },
 });
