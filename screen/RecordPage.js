@@ -9,22 +9,20 @@ import {
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { fetchRecords } from '../components/ApiUtilsi'; // Axios 함수 import
 
 import HeaderLogo from "../assets/images/headerLogo.png";
-import RecordContainer from "../components/RecordContainer";
-import { fetchRecords } from "../components/ApiUtilsi"; // API 유틸리티 파일에서 가져옴
 
 export default function RecordPage({ navigation }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const memberId = 1; // 고정된 memberId
 
   useEffect(() => {
     const loadRecords = async () => {
       try {
-        const data = await fetchRecords(`/records/member/${memberId}`); // memberId가 1인 기록을 가져옴
-        setRecords(data); // 기록을 상태에 저장
+        const data = await fetchRecords(); // 기록 데이터 가져오기
+        setRecords(data);
       } catch (error) {
         console.error("Error fetching records:", error);
         setError(error.message);
@@ -35,6 +33,7 @@ export default function RecordPage({ navigation }) {
 
     loadRecords();
   }, []);
+
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
@@ -44,7 +43,7 @@ export default function RecordPage({ navigation }) {
   };
 
   const handleRecordPress = (recordId) => {
-    navigation.navigate("RecordDetailPage", { recordId }); // 클릭된 recordId를 전달
+    navigation.navigate("RecordDetailPage", { recordId });
   };
 
   return (
@@ -59,10 +58,7 @@ export default function RecordPage({ navigation }) {
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { alignItems: "center" },
-        ]}
+        contentContainerStyle={styles.scrollViewContent}
         style={styles.container}
       >
         {loading ? (
@@ -73,16 +69,16 @@ export default function RecordPage({ navigation }) {
           records.map((record) => (
             <TouchableOpacity
               key={record.recordId}
-              onPress={() => handleRecordPress(record.recordId)} // recordId를 클릭 시 전달
+              onPress={() => handleRecordPress(record.recordId)}
               style={styles.recordItem}
             >
-              <RecordContainer text={record.recordQuestion} />
+              <Text style={styles.recordText}>{record.recordAnswer}</Text>
             </TouchableOpacity>
           ))
         ) : (
-          <RecordContainer text={"기록이 없습니다\n기록을 작성해 주세요"} />
+          <Text style={styles.noRecordText}>기록이 없습니다\n기록을 작성해 주세요</Text>
         )}
-        <TouchableOpacity onPress={handleAddPress} style={styles.AddRecordBtn}>
+        <TouchableOpacity onPress={handleAddPress} style={styles.addRecordBtn}>
           <Icon name="plus-circle" size={30} color="#000" />
         </TouchableOpacity>
       </ScrollView>
@@ -103,6 +99,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
+    marginVertical: 20,
   },
   headerLogo: {
     width: "70%",
@@ -110,8 +107,9 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
+    alignItems: "center",
   },
-  AddRecordBtn: {
+  addRecordBtn: {
     width: 50,
     height: 50,
     justifyContent: "center",
@@ -122,15 +120,31 @@ const styles = StyleSheet.create({
   },
   recordItem: {
     marginVertical: 10,
+    padding: 10,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 10,
+    width: '90%',
+  },
+  recordText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  noRecordText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 20,
   },
   loadingText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
     marginTop: 20,
+    textAlign: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 18,
     marginTop: 20,
+    textAlign: "center",
   },
 });

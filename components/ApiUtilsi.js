@@ -1,3 +1,5 @@
+// api.js
+
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080'; // 서버 주소
@@ -11,7 +13,7 @@ export const createTest = (testData) => {
   })
   .then(response => response.data)
   .catch(error => {
-    console.error('Error:', error);
+    console.error('Error creating test:', error);
     throw error;
   });
 };
@@ -20,7 +22,7 @@ export const createTest = (testData) => {
 
 // 기록 생성
 export const createRecord = (recordData) => {
-  return axios.post(`${BASE_URL}/records/create`, recordData, {
+  return axios.post(`${BASE_URL}/records`, recordData, {  // /create 제거
     headers: {
       'Content-Type': 'application/json',
     },
@@ -33,8 +35,8 @@ export const createRecord = (recordData) => {
 };
 
 // 기록 목록 조회
-export const fetchRecords = (url) => {
-  return axios.get(`${BASE_URL}${url}`)
+export const fetchRecords = () => {
+  return axios.get(`${BASE_URL}/records`) // /records URL로 GET 요청
     .then(response => response.data)
     .catch(error => {
       console.error('Error fetching records:', error);

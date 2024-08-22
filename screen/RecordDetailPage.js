@@ -3,57 +3,89 @@ import {
   View,
   StyleSheet,
   Text,
+  Image,
+  TouchableOpacity,
   ScrollView,
-  TouchableOpacity
 } from "react-native";
-import { useRoute } from '@react-navigation/native';
-import { getRecordById } from "../components/ApiUtilsi"; // 수정된 부분
+import { HeaderBackButton } from "@react-navigation/elements";
+import { getRecordById } from '../components/ApiUtilsi'; // Axios 함수 import
 
-export default function RecordDetailPage({ navigation }) {
+import HeaderLogo from "../assets/images/headerLogo.png";
+
+export default function RecordDetailPage({ route, navigation }) {
+  const { recordId } = route.params; // RecordPage에서 전달받은 recordId
+
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const route = useRoute();
-  const { recordId } = route.params;
-
   useEffect(() => {
-    const loadRecord = async () => {
+    const fetchRecord = async () => {
       try {
-        const data = await getRecordById(recordId); // apiUtils에서 가져온 함수 사용
+        const data = await getRecordById(recordId); // ID로 기록 조회
         setRecord(data);
       } catch (error) {
-        console.error("Error fetching record:", error);
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
 
-    loadRecord();
+    fetchRecord();
   }, [recordId]);
 
-  const handleGoBack = () => {
-    navigation.goBack();
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  if (!record) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>No record found</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Back</Text>
+      <View style={styles.customHeader}>
+        <HeaderBackButton
+          onPress={() => navigation.goBack()}
+          tintColor="#ffffff"
+        />
+      </View>
+      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      {loading ? (
-        <Text style={styles.loadingText}>Loading...</Text>
-      ) : error ? (
-        <Text style={styles.errorText}>Error: {error}</Text>
-      ) : record ? (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
-          <Text style={styles.recordContent}>{record.recordContents}</Text>
-        </ScrollView>
-      ) : (
-        <Text style={styles.errorText}>Record not found</Text>
-      )}
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
+        style={styles.container}
+      >
+        <Text style={styles.questionText}>{record.recordQuestion}</Text>
+        <Text style={styles.contentText}>{record.recordContents}</Text>
+      </ScrollView>
     </View>
   );
 }
@@ -62,35 +94,47 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0D0F35",
-    padding: 20,
   },
-  backButton: {
-    marginBottom: 20,
+  customHeader: {
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
   },
-  backButtonText: {
-    color: '#fff',
-    fontSize: 18,
+  logoContainer: {
+    alignItems: "center",
+    marginVertical: 20,
   },
-  loadingText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 18,
+  headerLogo: {
+    width: "70%",
+    height: 100,
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: 'center',
+    alignItems: "center",
   },
-  recordTitle: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
+  questionText: {
+    color: "#fff",
+    fontSize: 20,
+    marginTop: 20,
+    textAlign: "center",
   },
-  recordContent: {
-    color: '#fff',
+  contentText: {
+    color: "#ccc",
+    fontSize: 16,
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  loadingText: {
+    color: "#fff",
     fontSize: 18,
-    marginTop: 10,
+    marginTop: 20,
+    textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 18,
+    marginTop: 20,
+    textAlign: "center",
   },
 });
