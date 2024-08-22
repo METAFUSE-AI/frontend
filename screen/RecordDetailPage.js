@@ -6,9 +6,11 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  TextInput,
+  Alert,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { getRecordById } from '../components/ApiUtilsi'; // Axios 함수 import
+import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // Axios 함수 import
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
@@ -18,12 +20,15 @@ export default function RecordDetailPage({ route, navigation }) {
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [recordContents, setRecordContents] = useState("");
 
   useEffect(() => {
     const fetchRecord = async () => {
       try {
         const data = await getRecordById(recordId); // ID로 기록 조회
         setRecord(data);
+        setRecordContents(data.recordContents);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -36,6 +41,47 @@ export default function RecordDetailPage({ route, navigation }) {
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
+  };
+
+  const handleEditPress = () => {
+    setIsEditing(true);
+  };
+
+  const handleUpdatePress = async () => {
+    try {
+      const updatedRecord = await updateRecord(recordId, { recordContents }); // 대답만 업데이트
+      setRecord(prevRecord => ({ ...prevRecord, recordContents: updatedRecord.recordContents }));
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating record:", error.response ? error.response.data : error.message);
+      setError("Error updating record");
+    }
+  };
+
+  const handleDeletePress = () => {
+    Alert.alert(
+      "Delete Record",
+      "Are you sure you want to delete this record?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              await deleteRecord(recordId); // 기록 삭제
+              navigation.goBack(); // 삭제 후 이전 화면으로 돌아가기
+            } catch (error) {
+              console.error("Error deleting record:", error.response ? error.response.data : error.message);
+              setError("Error deleting record");
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   useEffect(() => {
@@ -84,7 +130,33 @@ export default function RecordDetailPage({ route, navigation }) {
         style={styles.container}
       >
         <Text style={styles.questionText}>{record.recordQuestion}</Text>
-        <Text style={styles.contentText}>{record.recordContents}</Text>
+        {isEditing ? (
+          <>
+            <TextInput
+              value={recordContents}
+              onChangeText={setRecordContents}
+              style={[styles.input, styles.textArea]}
+              multiline
+              placeholder="Enter your answer"
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity onPress={handleUpdatePress} style={styles.saveButton}>
+              <Text style={styles.buttonText}>Save Changes</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.contentText}>{recordContents}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+                <Text style={styles.buttonText}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -124,6 +196,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
     paddingHorizontal: 20,
+  },
+  input: {
+    height: 100,
+    width: '90%',
+    borderColor: '#888',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    color: '#fff',
+  },
+  textArea: {
+    textAlignVertical: 'top',
+  },
+  saveButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    width: '90%',
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginTop: 30,
+    justifyContent: "space-between",
+    width: '90%',
+  },
+  editButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+    marginRight: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#F44336",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
   },
   loadingText: {
     color: "#fff",

@@ -13,18 +13,14 @@ import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
-import { HeaderBackButton } from "@react-navigation/elements"; //navi 뒤로가기 버튼
+import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  //npm install @react-navigation/native
-  //npm install @react-navigation/native-stack
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="StartPage">
-        {/* <Stack.Screen name="StartPage" component={StartPage} /> */}
         <Stack.Screen
           name="MainPage"
           component={MainPage}
@@ -46,7 +42,26 @@ export default function App() {
           component={RecordPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="RecordDetailPage" component={RecordDetailPage} />
+        <Stack.Screen
+          name="RecordDetailPage"
+          component={RecordDetailPage}
+          options={{
+            title: 'Record Detail',
+            headerLeft: () => (
+              <HeaderBackButton
+                onPress={() => navigation.goBack()}
+                tintColor="#ffffff"
+              />
+            ),
+            headerStyle: {
+              backgroundColor: '#0D0F35',
+            },
+            headerTintColor: '#ffffff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
         <Stack.Screen
           name="AddRecordPage"
           component={AddRecordPage}

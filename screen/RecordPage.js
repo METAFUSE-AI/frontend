@@ -72,7 +72,8 @@ export default function RecordPage({ navigation }) {
               onPress={() => handleRecordPress(record.recordId)}
               style={styles.recordItem}
             >
-              <Text style={styles.recordText}>{record.recordAnswer}</Text>
+              <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
+              <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
             </TouchableOpacity>
           ))
         ) : (
@@ -121,13 +122,19 @@ const styles = StyleSheet.create({
   recordItem: {
     marginVertical: 10,
     padding: 10,
-    backgroundColor: "#1E1E1E",
+    backgroundColor: "#344C64",
     borderRadius: 10,
     width: '90%',
   },
-  recordText: {
+  recordTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  recordAnswer: {
     color: "#fff",
     fontSize: 16,
+    marginTop: 5,
   },
   noRecordText: {
     color: "#fff",
