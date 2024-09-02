@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   Text,
   TouchableOpacity,
-  ScrollView,
   Image,
+  ScrollView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 
@@ -16,29 +16,29 @@ import TestResult03 from "../assets/images/TestResult03.png";
 
 const TestResultPage = ({ route, navigation }) => {
   const { answers, totalScore } = route.params; // route에서 전달된 매개변수 사용
-  const scrollViewRef = useRef();
-  const handleLogoPress = () => {
-    navigation.navigate("MainPage");
-  };
-  const handleMyPage = () => {
-    navigation.navigate("MyPage");
-  };
+  const [resultImage, setResultImage] = useState(TestResult03);
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-  }, [navigation]);
 
-  let resultImage = TestResult03; // 기본 이미지 (총점이 25 미만일 경우)
+    if (totalScore >= 40) {
+      setResultImage(TestResult01);
+    } else if (totalScore >= 25) {
+      setResultImage(TestResult02);
+    } else {
+      setResultImage(TestResult03);
+    }
+  }, [totalScore, navigation]);
 
-  if (totalScore >= 40) {
-    //총점이 40 이상일 경우
-    resultImage = TestResult01;
-  } else if (totalScore >= 25) {
-    //총점이 25 이상일 경우
-    resultImage = TestResult02;
-  }
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
+  };
+
+  const handleMyPage = () => {
+    navigation.navigate("MyPage");
+  };
 
   return (
     <View style={styles.container}>
@@ -51,7 +51,7 @@ const TestResultPage = ({ route, navigation }) => {
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      <ScrollView style={styles.scrollView} ref={scrollViewRef}>
+      <ScrollView style={styles.scrollView}>
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
         </View>
