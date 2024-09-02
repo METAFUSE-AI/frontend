@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  Alert,
+  Modal,
+  Button,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // Axios 함수 import
@@ -22,6 +23,7 @@ export default function RecordDetailPage({ route, navigation }) {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [recordContents, setRecordContents] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
 
   useEffect(() => {
     const fetchRecord = async () => {
@@ -59,36 +61,30 @@ export default function RecordDetailPage({ route, navigation }) {
   };
 
   const handleDeletePress = () => {
-    Alert.alert(
-      "Delete Record",
-      "Are you sure you want to delete this record?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: async () => {
-            console.log('Delete confirmed'); // 디버깅 로그
-            try {
-              const success = await deleteRecord(recordId);
-              if (success) {
-                console.log('Record deleted successfully'); // 디버깅 로그
-                navigation.goBack(); // 삭제 후 이전 화면으로 돌아가기
-              } else {
-                console.log('Failed to delete record'); // 디버깅 로그
-                setError("Failed to delete record");
-              }
-            } catch (error) {
-              console.error("Error deleting record:", error.response ? error.response.data : error.message);
-              setError("Error deleting record");
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    setIsModalVisible(true); // Show the modal
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const success = await deleteRecord(recordId);
+      if (success) {
+        console.log('Record deleted successfully'); // 디버깅 로그
+        // 삭제 후 RecordPage를 새로 고침하며 돌아가기
+        navigation.navigate("RecordPage", { refresh: true });
+      } else {
+        console.log('Failed to delete record'); // 디버깅 로그
+        setError("Failed to delete record");
+      }
+    } catch (error) {
+      console.error("Error deleting record:", error.response ? error.response.data : error.message);
+      setError("Error deleting record");
+    } finally {
+      setIsModalVisible(false); // Hide the modal
+    }
+  };
+
+  const cancelDelete = () => {
+    setIsModalVisible(false); // Hide the modal
   };
 
   useEffect(() => {
@@ -165,6 +161,24 @@ export default function RecordDetailPage({ route, navigation }) {
           </>
         )}
       </ScrollView>
+
+      {/* Custom Modal for Delete Confirmation */}
+      <Modal
+        transparent={true}
+        visible={isModalVisible}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>기록을 삭제하시겠습니까??</Text>
+            <View style={styles.modalButtons}>
+              <Button title="취소" onPress={cancelDelete} />
+              <Button title="확인" onPress={confirmDelete} color="red" />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -261,5 +275,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 20,
     textAlign: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: '100%',
   },
 });
