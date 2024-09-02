@@ -17,7 +17,7 @@ export default function MainPage({ navigation }) {
   };
 
   const handleMyPagePress = () => {
-    navigation.navigate("MyPage");
+    navigation.navigate("KakaoLogin");
   };
 
   const handleRecordPress = () => {
@@ -48,8 +48,14 @@ export default function MainPage({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.scrollView}>
-        <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        style={styles.scrollView}
+      >
+        <TouchableOpacity
+          onPress={handleLogoPress}
+          style={styles.logoContainer}
+        >
           <Image source={HeaderLogo} style={styles.headerLogo} />
         </TouchableOpacity>
         <View style={styles.testContainer}>
@@ -62,11 +68,17 @@ export default function MainPage({ navigation }) {
           </TouchableOpacity>
         </View>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={handleMyPagePress} style={styles.iconButton}>
+          <TouchableOpacity
+            onPress={handleMyPagePress}
+            style={styles.iconButton}
+          >
             <Icon name="user" size={80} color="#fff" />
             <Text style={styles.iconText}>마이페이지</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleRecordPress} style={styles.iconButton}>
+          <TouchableOpacity
+            onPress={handleRecordPress}
+            style={styles.iconButton}
+          >
             <Icon name="book" size={80} color="#fff" />
             <Text style={styles.iconText}>기록</Text>
           </TouchableOpacity>
@@ -80,7 +92,10 @@ export default function MainPage({ navigation }) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <TouchableOpacity onPress={handleChatbotPress} style={styles.chatbotButton}>
+      <TouchableOpacity
+        onPress={handleChatbotPress}
+        style={styles.chatbotButton}
+      >
         <Icon name="comment" size={30} color="#000" />
       </TouchableOpacity>
     </View>
@@ -106,8 +121,8 @@ const styles = StyleSheet.create({
   testContainer: {
     backgroundColor: "#8881EA",
     padding: 20,
-    width: '80%', // 가로 크기를 80%로 설정
-    alignSelf: 'center', // 중앙 정렬
+    width: "80%", // 가로 크기를 80%로 설정
+    alignSelf: "center", // 중앙 정렬
     borderRadius: 10,
     alignItems: "center",
     marginBottom: 60, // 4개의 버튼과 30px 이격

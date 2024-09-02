@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
-import SubmitButton from "../components/SubmitButton";
-import OptionButton from "../components/OptionButton";
+import { HeaderBackButton } from "@react-navigation/elements"; // HeaderBackButton 임포트
+import SubmitButton from "../components/SubmitButton"; // SubmitButton 컴포넌트 임포트
+import OptionButton from "../components/OptionButton"; // OptionButton 컴포넌트 임포트
 
-import HeaderLogo from "../assets/images/headerLogo.png";
+import HeaderLogo from "../assets/images/headerLogo.png"; // HeaderLogo 이미지 임포트
 
-// Example Quiz Data
 const quizData = [
   {
     question: "다음 중 React Native의 주요 특징이 아닌 것은?",
@@ -87,6 +86,12 @@ export default function QuizPage({ navigation }) {
   };
 
   useEffect(() => {
+    navigation.setOptions({
+      headerShown: false, // 기본 상단 바 숨기기
+    });
+  }, [navigation]);
+
+  useEffect(() => {
     if (quizCompleted) {
       Alert.alert(
         "퀴즈 완료",
@@ -138,10 +143,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D0F35",
   },
   customHeader: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
     height: 50,
     justifyContent: "center",
     paddingLeft: 10,

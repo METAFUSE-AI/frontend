@@ -6,6 +6,7 @@ import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
 import TestResultPage from "./screen/TestResultPage";
+import KakaoLogin from "./screen/KakaoLogin";
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import AddRecordPage from "./screen/AddRecordPage";
@@ -39,6 +40,7 @@ export default function App() {
           component={TestResultPage}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen
           name="RecordPage"

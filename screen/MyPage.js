@@ -8,6 +8,7 @@ import {
   Modal,
   Button,
 } from "react-native";
+import axios from "axios";
 import Footer from "../components/Footer";
 
 export default function MyPage({ navigation }) {

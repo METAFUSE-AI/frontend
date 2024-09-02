@@ -1,13 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
+import { createTest } from '../components/Api/'; // api.js에서 createTest 함수 임포트
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
@@ -37,7 +31,6 @@ const questions = [
   "나는 어려운 상황에 처했을 때 여러 가지 해결 방법을 고려한다.",
   "나는 내 결정이 다른 사람에게 미칠 영향을 생각한다.",
 ];
-
 const TestPage = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -73,7 +66,6 @@ const TestPage = ({ navigation }) => {
                     [questionNumber]: index,
                   };
                   setAnswers(updatedAnswers);
-                  console.log(`Q${questionNumber} 점수: ${index}`);
                 }}
               >
                 <Text style={styles.answerText}>{option}</Text>
@@ -94,9 +86,24 @@ const TestPage = ({ navigation }) => {
         (sum, value) => sum + value,
         0
       );
-      console.log("테스트 제출:", answers);
-      console.log("총점:", totalScore);
-      navigation.navigate("TestResultPage", { answers, totalScore });
+      const now = new Date().toISOString();
+      const testData = {
+        member: { memberId: 1 },
+        testScore: totalScore,
+        question: JSON.stringify(answers),
+        testDate: now,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      createTest(testData)
+        .then((response) => {
+          console.log("서버 응답:", response);
+          navigation.navigate("TestResultPage", { answers, totalScore });
+        })
+        .catch((error) => {
+          console.error("테스트 전송 중 오류:", error);
+        });
     }
   };
 
@@ -107,39 +114,33 @@ const TestPage = ({ navigation }) => {
     }
   };
 
-  const handleLogoPress = () => {
-    navigation.navigate("MainPage");
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
-      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+      <View style={styles.header}>
+        <HeaderBackButton onPress={() => navigation.goBack()} />
         <Image source={HeaderLogo} style={styles.headerLogo} />
-      </TouchableOpacity>
-      <ScrollView style={styles.scrollView} ref={scrollViewRef}>
-        {[0, 1, 2, 3, 4, 5].map(renderQuestion)}
-        <View style={styles.buttonContainer}>
-          {currentPage > 1 && (
-            <TouchableOpacity
-              style={styles.navButton}
-              onPress={handlePreviousPage}
-            >
-              <Text style={styles.navButtonText}>이전</Text>
-            </TouchableOpacity>
-          )}
-          <TouchableOpacity style={styles.navButton} onPress={handleNextPage}>
-            <Text style={styles.navButtonText}>
-              {currentPage === 4 ? "테스트 제출하기" : "다음"}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <View style={{ width: 40 }} /> {/* Placeholder for alignment */}
+      </View>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContent}>
+        {Array.from({ length: 6 }, (_, i) => renderQuestion(i))}
       </ScrollView>
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.navigationButton, currentPage === 1 && styles.disabledButton]}
+          onPress={handlePreviousPage}
+          disabled={currentPage === 1}
+        >
+          <Text style={styles.navigationButtonText}>이전</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navigationButton}
+          onPress={handleNextPage}
+        >
+          <Text style={styles.navigationButtonText}>
+            {currentPage < 4 ? "다음" : "제출"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -147,31 +148,31 @@ const TestPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0D0F35",
+    backgroundColor: "#f8f8f8",
   },
-  customHeader: {
-    height: 50,
-    justifyContent: "center",
-    paddingLeft: 10,
-    backgroundColor: "#0D0F35",
-  },
-  logoContainer: {
+  header: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
   },
   headerLogo: {
-    width: "70%",
-    height: 100,
+    width: 100,
+    height: 30,
+    resizeMode: "contain",
   },
-  scrollView: {
-    flex: 1,
+  scrollViewContent: {
     padding: 20,
   },
   questionContainer: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
   questionText: {
     fontSize: 18,
-    color: "#ffffff",
     marginBottom: 10,
   },
   answerContainer: {
@@ -179,33 +180,40 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   answerButton: {
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#ffffff",
-  },
-  selectedAnswer: {
-    backgroundColor: "#8881EA",
-  },
-  answerText: {
-    color: "#ffffff",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  navButton: {
-    backgroundColor: "#8881EA",
-    padding: 15,
-    borderRadius: 20,
-    alignItems: "center",
     flex: 1,
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    alignItems: "center",
     marginHorizontal: 5,
   },
-  navButtonText: {
-    color: "#ffffff",
-    fontSize: 18,
+  selectedAnswer: {
+    backgroundColor: "#007bff",
+  },
+  answerText: {
+    color: "#333",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
+  },
+  navigationButton: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
+  },
+  navigationButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
