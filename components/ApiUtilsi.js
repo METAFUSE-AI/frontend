@@ -69,11 +69,21 @@ export const updateRecord = (id, recordData) => {
 };
 
 // 기록 삭제
-export const deleteRecord = (id) => {
-  return axios.delete(`${BASE_URL}/records/${id}`)
-  .then(response => response.status === 204) // HTTP 204 No Content
-  .catch(error => {
-    console.error('Error deleting record:', error);
-    throw error;
-  });
+export const deleteRecord = async (id) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/records/${id}`);
+    
+    // 상태 코드가 204인 경우 삭제 성공으로 처리
+    if (response.status === 204) {
+      return true;
+    } else {
+      // 상태 코드가 204가 아닌 경우 에러 발생
+      console.error('Unexpected response status:', response.status);
+      throw new Error('Failed to delete record');
+    }
+  } catch (error) {
+    // 에러 발생 시 상세 에러 메시지 로그
+    console.error('Error deleting record:', error.response ? error.response.data : error.message);
+    throw error; // 에러를 호출한 쪽으로 다시 던짐
+  }
 };

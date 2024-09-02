@@ -77,12 +77,14 @@ export default function RecordPage({ navigation }) {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.noRecordText}>기록이 없습니다\n기록을 작성해 주세요</Text>
+          <Text style={styles.noRecordText}>기록이 없습니다{"\n"}기록을 작성해 주세요</Text>
         )}
+      </ScrollView>
+      <View style={styles.footer}>
         <TouchableOpacity onPress={handleAddPress} style={styles.addRecordBtn}>
           <Icon name="plus-circle" size={30} color="#000" />
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     alignItems: "center",
+    paddingBottom: 150, // 푸터와의 간격을 늘리기 위해 더 큰 여백을 추가합니다.
   },
   addRecordBtn: {
     width: 50,
@@ -117,7 +120,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 15,
-    marginTop: 20,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    alignItems: 'center',
   },
   recordItem: {
     marginVertical: 10,

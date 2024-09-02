@@ -49,7 +49,7 @@ export default function RecordDetailPage({ route, navigation }) {
 
   const handleUpdatePress = async () => {
     try {
-      const updatedRecord = await updateRecord(recordId, { recordContents }); // 대답만 업데이트
+      const updatedRecord = await updateRecord(recordId, { ...record, recordContents }); // 대답만 업데이트
       setRecord(prevRecord => ({ ...prevRecord, recordContents: updatedRecord.recordContents }));
       setIsEditing(false);
     } catch (error) {
@@ -70,9 +70,16 @@ export default function RecordDetailPage({ route, navigation }) {
         {
           text: "OK",
           onPress: async () => {
+            console.log('Delete confirmed'); // 디버깅 로그
             try {
-              await deleteRecord(recordId); // 기록 삭제
-              navigation.goBack(); // 삭제 후 이전 화면으로 돌아가기
+              const success = await deleteRecord(recordId);
+              if (success) {
+                console.log('Record deleted successfully'); // 디버깅 로그
+                navigation.goBack(); // 삭제 후 이전 화면으로 돌아가기
+              } else {
+                console.log('Failed to delete record'); // 디버깅 로그
+                setError("Failed to delete record");
+              }
             } catch (error) {
               console.error("Error deleting record:", error.response ? error.response.data : error.message);
               setError("Error deleting record");
