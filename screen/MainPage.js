@@ -17,7 +17,7 @@ export default function MainPage({ navigation }) {
   };
 
   const handleMyPagePress = () => {
-    navigation.navigate("KakaoLogin");
+    navigation.navigate("MyPage");
   };
 
   const handleRecordPress = () => {
