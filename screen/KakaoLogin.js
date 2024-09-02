@@ -7,7 +7,7 @@ const REST_API_KEY = "39a096f2c5fa71cb1ffde623e22d201b"; // Kakao REST API 키
 const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
 const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
-export default function MyPage() {
+export default function KakaoLogin() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleLogin = () => {
