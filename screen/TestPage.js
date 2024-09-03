@@ -1,12 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { createTest } from '../components/ApiUtilsi/'; // api.js에서 createTest 함수 임포트
+import { createTest } from "../components/ApiUtilsi/"; // api.js에서 createTest 함수 임포트
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 const questions = [
-  "스스로에 대한 내 평가는 정확한 편이다.",
+  "스스로에 대한 내 평가는 정확한 편이다.", //메타인식
   "나는 내가 알고 있는 것이 무엇인지 안다.",
   "나는 내가 무슨 생각을 하고 있는지 알고 있다.",
   "나는 내가 잘하는 것을 알고 있다.",
@@ -14,11 +21,15 @@ const questions = [
   "나는 어떤 일을 처리할 때 나에게 잘 맞는 방법을 알고 있다.",
   "나는 내 행동이 잘못되었을 때 이를 빨리 알아차린다.",
   "나는 어떤 일이 잘못되고 있다는 것을 다른 사람보다 빨리 알아차린다.",
-  "나는 내 행동이 상황에 적절한지 스스로 생각해본다.",
+  "나는 내 행동이 상황에 적절한지 스스로 생각해본다.", //모니터링
   "나는 내 행동이 상황에 적절하지 않다고 판단되면, 앞으로 어떤 행동을 취해야 할지 생각해본다.",
   "나는 새로운 것을 배울 때 내가 얼마나 이해할 수 있을지 예상해본다.",
   "나는 내가 처한 상황에 대해 스스로 평가해본다.",
-  "나는 결정하기 전 다양한 선택에 대해 생각한다.",
+  "나는 내 행동의 결과를 예측하려고 노력한다.",
+  "나는 내가 세운 계획이 잘 진행되고 있는지 주기적으로 점검한다.",
+  "나는 어려운 상황에 처했을 때 여러 가지 해결 방법을 고려한다.",
+  "나는 내 결정이 다른 사람에게 미칠 영향을 생각한다.",
+  "나는 결정하기 전 다양한 선택에 대해 생각한다.", //메타통제
   "나는 내가 할 수 없는 일보다는 할 수 있는 일에 더 집중한다.",
   "나는 내가 잘못했다고 생각되면, 잘못을 바로 잡으려고 시도한다.",
   "나는 과거 경험에 비추어 현재 어떻게 행동 할 지를 결정한다.",
@@ -26,10 +37,6 @@ const questions = [
   "나는 내가 모르는 부분에 대해서는 섣부르게 결정하지 않는다.",
   "나는 나의 현재 상태에 대해 생각한 뒤 어떤 행동을 해야 할지 결정한다.",
   "나는 결정하기 전 다른 사람들도 나의 결정이 적절하다고 할지 생각해본다.",
-  "나는 내 행동의 결과를 예측하려고 노력한다.",
-  "나는 내가 세운 계획이 잘 진행되고 있는지 주기적으로 점검한다.",
-  "나는 어려운 상황에 처했을 때 여러 가지 해결 방법을 고려한다.",
-  "나는 내 결정이 다른 사람에게 미칠 영향을 생각한다.",
 ];
 const TestPage = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,6 +95,7 @@ const TestPage = ({ navigation }) => {
       );
       const now = new Date().toISOString();
       const testData = {
+        //데이터 불러오기
         member: { memberId: 1 },
         testScore: totalScore,
         question: JSON.stringify(answers),
@@ -121,12 +129,18 @@ const TestPage = ({ navigation }) => {
         <Image source={HeaderLogo} style={styles.headerLogo} />
         <View style={{ width: 40 }} /> {/* Placeholder for alignment */}
       </View>
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         {Array.from({ length: 6 }, (_, i) => renderQuestion(i))}
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity
-          style={[styles.navigationButton, currentPage === 1 && styles.disabledButton]}
+          style={[
+            styles.navigationButton,
+            currentPage === 1 && styles.disabledButton,
+          ]}
           onPress={handlePreviousPage}
           disabled={currentPage === 1}
         >

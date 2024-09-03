@@ -14,6 +14,8 @@ import TestResult01 from "../assets/images/TestResult01.png";
 import TestResult02 from "../assets/images/TestResult02.png";
 import TestResult03 from "../assets/images/TestResult03.png";
 
+// 테스트 결과 페이지 => 테스트 점수별 그래프, 허구문항을 통한 사용자의 테스트 결과 신뢰도, 결과 이미지, sns 공유 기능
+
 const TestResultPage = ({ route, navigation }) => {
   const { answers, totalScore } = route.params; // route에서 전달된 매개변수 사용
   const [resultImage, setResultImage] = useState(TestResult03);
@@ -23,6 +25,7 @@ const TestResultPage = ({ route, navigation }) => {
       headerShown: false,
     });
 
+    //점수 총합별 결과 이미지 출력
     if (totalScore >= 40) {
       setResultImage(TestResult01);
     } else if (totalScore >= 25) {
