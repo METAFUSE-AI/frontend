@@ -129,37 +129,47 @@ export default function RecordDetailPage({ route, navigation }) {
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
+        contentContainerStyle={[
+          styles.scrollViewContent,
+          { alignItems: "center" },
+        ]}
         style={styles.container}
       >
-        <Text style={styles.questionText}>{record.recordQuestion}</Text>
+        <View style={styles.recordBox}>
+          <Text style={styles.questionText}>{record.recordQuestion}</Text>
+        </View>
+
         {isEditing ? (
-          <>
-            <TextInput
-              value={recordContents}
-              onChangeText={setRecordContents}
-              style={[styles.input, styles.textArea]}
-              multiline
-              placeholder="Enter your answer"
-              placeholderTextColor="#888"
-            />
-            <TouchableOpacity onPress={handleUpdatePress} style={styles.saveButton}>
-              <Text style={styles.buttonText}>Save Changes</Text>
-            </TouchableOpacity>
-          </>
+          <TextInput
+            value={recordContents}
+            onChangeText={setRecordContents}
+            style={[styles.input, styles.textArea]}
+            multiline
+            placeholder="Enter your answer"
+            placeholderTextColor="#888"
+          />
         ) : (
-          <>
+          <View style={styles.recordBox}>
             <Text style={styles.contentText}>{recordContents}</Text>
-            <View style={styles.buttonContainer}>
+          </View>
+        )}
+
+        <View style={styles.buttonContainer}>
+          {isEditing ? (
+            <TouchableOpacity onPress={handleUpdatePress} style={styles.saveButton}>
+              <Text style={styles.buttonText}>수정 저장</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
               <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
-                <Text style={styles.buttonText}>Edit</Text>
+                <Text style={styles.buttonText}>수정</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
-                <Text style={styles.buttonText}>Delete</Text>
+                <Text style={styles.buttonText}>삭제</Text>
               </TouchableOpacity>
-            </View>
-          </>
-        )}
+            </>
+          )}
+        </View>
       </ScrollView>
 
       {/* Custom Modal for Delete Confirmation */}
@@ -205,38 +215,45 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  recordBox: {
+    backgroundColor: "#344C64",
+    borderRadius: 10,
+    padding: 20,
+    marginVertical: 10,
+    width: '100%',
   },
   questionText: {
     color: "#fff",
-    fontSize: 20,
-    marginTop: 20,
+    fontSize: 18,
     textAlign: "center",
   },
   contentText: {
-    color: "#ccc",
+    color: "#fff",
     fontSize: 16,
-    marginTop: 20,
-    paddingHorizontal: 20,
   },
   input: {
-    height: 100,
-    width: '90%',
+    height: 150,
+    width: '100%',
     borderColor: '#888',
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 10,
     color: '#fff',
+    backgroundColor: '#344C64',
   },
   textArea: {
     textAlignVertical: 'top',
   },
   saveButton: {
     backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     alignItems: "center",
-    width: '90%',
+    width: '100%',
+    marginTop: 10,
   },
   buttonText: {
     color: "#fff",
@@ -245,22 +262,22 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    marginTop: 30,
+    marginTop: 20,
     justifyContent: "space-between",
-    width: '90%',
+    width: '100%',
   },
   editButton: {
     backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     alignItems: "center",
     flex: 1,
     marginRight: 10,
   },
   deleteButton: {
     backgroundColor: "#F44336",
-    padding: 10,
-    borderRadius: 5,
+    padding: 15,
+    borderRadius: 10,
     alignItems: "center",
     flex: 1,
   },

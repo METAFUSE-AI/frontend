@@ -8,9 +8,9 @@ import {
   ScrollView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { useFocusEffect } from '@react-navigation/native'; // useFocusEffect import
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { fetchRecords } from '../components/ApiUtilsi'; // Axios 함수 import
+import { fetchRecords } from '../components/ApiUtilsi';
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
@@ -63,7 +63,7 @@ export default function RecordPage({ navigation }) {
       </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        style={styles.container}
+        style={styles.scrollView}   // scrollView 스타일을 추가
       >
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
@@ -85,7 +85,7 @@ export default function RecordPage({ navigation }) {
         )}
       </ScrollView>
       <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-        <Icon name="plus" size={30} color="#fff" />
+        <Icon name="plus" size={30} color="#000" />
       </TouchableOpacity>
     </View>
   );
@@ -109,13 +109,21 @@ const styles = StyleSheet.create({
     width: "70%",
     height: 100,
   },
+  scrollView: {
+    flex: 1,                    // ScrollView가 화면의 나머지 부분을 차지하게 함
+    marginBottom: 100,           // 버튼과 겹치지 않도록 여백 추가
+  },
   scrollViewContent: {
-    flexGrow: 1,
+    paddingBottom: 20,          // 하단 여백 추가
   },
   recordItem: {
     padding: 15,
     borderBottomColor: "#888",
     borderBottomWidth: 1,
+    backgroundColor: "#344C64",
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginVertical: 5,
   },
   recordTitle: {
     fontSize: 18,
@@ -123,7 +131,7 @@ const styles = StyleSheet.create({
   },
   recordAnswer: {
     fontSize: 14,
-    color: "#aaa",
+    color: "#333",
   },
   noRecordsText: {
     color: "#fff",
@@ -131,12 +139,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   addButton: {
+    backgroundColor: "#F3F3F3",
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
     position: "absolute",
     bottom: 30,
-    right: 30,
-    backgroundColor: "#007BFF",
-    borderRadius: 30,
-    padding: 10,
+    left: "50%",
+    transform: [{ translateX: -40 }],
   },
   loadingText: {
     color: "#fff",
