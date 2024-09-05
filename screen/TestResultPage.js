@@ -60,15 +60,11 @@ const TestResultPage = ({ route, navigation }) => {
   const monitoringScore = sumCategoryScores(8, 16);
   const metaControlScore = sumCategoryScores(16, 24);
 
-  const radarChartData = {
-    labels: ["Meta Cognition", "Monitoring", "Meta Control"],
-    datasets: [
-      {
-        data: [metaCognitionScore, monitoringScore, metaControlScore],
-        color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
-      },
-    ],
-  };
+  const radarChartData = [
+    { label: "Meta Cognition", value: metaCognitionScore },
+    { label: "Monitoring", value: monitoringScore },
+    { label: "Meta Control", value: metaControlScore },
+  ];
 
   const chartConfig = {
     backgroundColor: "#0D0F35",
@@ -99,11 +95,27 @@ const TestResultPage = ({ route, navigation }) => {
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>Test Results</Text>
           <RadarChart
-            data={radarChartData}
-            width={screenWidth - 40} // 화면 너비에 맞춰 조정
-            height={220}
-            chartConfig={chartConfig}
-            style={styles.radarChart}
+            data={
+              radarChartData &&
+              radarChartData.map((item) => ({
+                label: item.label,
+                value: item.value,
+              }))
+            }
+            gradientColor={{
+              startColor: "#FF9432",
+              endColor: "#FFF8F1",
+              count: 5,
+            }}
+            stroke={["#FFE8D3", "#FFE8D3", "#FFE8D3", "#FFE8D3", "#ff9532"]}
+            strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
+            strokeOpacity={[1, 1, 1, 1, 0.13]}
+            labelColor="#433D3A"
+            dataFillColor="#FF9432"
+            dataFillOpacity={0.8}
+            dataStroke="salmon"
+            dataStrokeWidth={2}
+            isCircle
           />
         </View>
         <View>
