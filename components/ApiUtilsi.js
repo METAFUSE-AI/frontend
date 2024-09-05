@@ -87,3 +87,32 @@ export const deleteRecord = async (id) => {
     throw error; // 에러를 호출한 쪽으로 다시 던짐
   }
 };
+// 퀴즈 목록 조회 (랜덤으로 3개)
+export const fetchRandomQuizzes = () => {
+  return axios.get(`${BASE_URL}/quiz/random?count=3`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error fetching quizzes:', error);
+      throw error;
+    });
+};
+
+// 퀴즈에 포함된 질문 조회
+export const getQuestionsByQuizId = (quizId) => {
+  return axios.get(`${BASE_URL}/quiz/${quizId}/questions`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error fetching questions:', error);
+      throw error;
+    });
+};
+
+// 퀴즈에 제출된 답변 조회
+export const getAnswersByQuizId = (quizId) => {
+  return axios.get(`${BASE_URL}/quiz/${quizId}/answers`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error fetching answers:', error);
+      throw error;
+    });
+};
