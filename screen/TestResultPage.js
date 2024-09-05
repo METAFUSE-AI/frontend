@@ -61,9 +61,9 @@ const TestResultPage = ({ route, navigation }) => {
   const metaControlScore = sumCategoryScores(16, 24);
 
   const radarChartData = [
-    { label: "Meta Cognition", value: metaCognitionScore },
-    { label: "Monitoring", value: monitoringScore },
-    { label: "Meta Control", value: metaControlScore },
+    { label: "메타인식", value: metaCognitionScore },
+    { label: "모니터링", value: monitoringScore },
+    { label: "메타통제", value: metaControlScore },
   ];
 
   const chartConfig = {
@@ -88,20 +88,18 @@ const TestResultPage = ({ route, navigation }) => {
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
         </View>
+        {/* 메타인지 결과 */}
         <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Test Results</Text>
+          <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
           <RadarChart
-            data={
-              radarChartData &&
-              radarChartData.map((item) => ({
-                label: item.label,
-                value: item.value,
-              }))
-            }
+            data={radarChartData.map((item) => ({
+              label: item.label,
+              value: item.value,
+            }))}
             gradientColor={{
               startColor: "#FF9432",
               endColor: "#FFF8F1",
@@ -142,6 +140,8 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   testResultComponents: {
     alignItems: "center",
@@ -176,10 +176,21 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginTop: 20,
+    padding: 10,
     alignItems: "center",
+    justifyContent: "center",
+    width: "90%",
+    aspectRatio: 1, // 정사각형 비율을 유지
+    backgroundColor: "#fff",
+    borderRadius: 40,
+    elevation: 5, // 그림자 추가 (Android용)
+    shadowColor: "#000", // 그림자 추가 (iOS용)
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   chartTitle: {
-    color: "#ffffff",
+    color: "#433D3A",
     fontSize: 18,
     marginBottom: 10,
   },
