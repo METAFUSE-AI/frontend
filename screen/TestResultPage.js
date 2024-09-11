@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  StyleSheet,
   Text,
   TouchableOpacity,
   Image,
   ScrollView,
   Dimensions,
+  StyleSheet, // 추가된 부분
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
@@ -20,7 +20,7 @@ import TestResult03 from "../assets/images/TestResult03.png";
 // npm install @salmonco/react-native-radar-chart react-native-svg => 삼각 그래프를 그리기 위한 라이브러리
 
 const TestResultPage = ({ route, navigation }) => {
-  const { answers, totalScore } = route.params; // route에서 전달된 매개변수 사용
+  const { answers = {}, totalScore } = route.params || {}; // answers가 없을 때 기본 값 {} 설정
   const [resultImage, setResultImage] = useState(TestResult03);
 
   const handleLogoPress = () => {
@@ -32,11 +32,12 @@ const TestResultPage = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    // Set navigation header to hide
     navigation.setOptions({
       headerShown: false,
     });
 
-    //점수 총합별 결과 이미지 출력
+    // 점수 총합별 결과 이미지 출력
     if (totalScore >= 40) {
       setResultImage(TestResult01);
     } else if (totalScore >= 25) {
@@ -77,6 +78,35 @@ const TestResultPage = ({ route, navigation }) => {
 
   const screenWidth = Dimensions.get("window").width;
 
+  // Function to share the test result via Kakao
+  const shareResultOnKakao = async () => {
+    try {
+      const response = await KakaoShareLink.sendFeed({
+        content: {
+          title: "My Test Result",
+          link: {
+            webUrl: "http://localhost:8081/",
+            mobileWebUrl: "http://localhost:8081/",
+          },
+          description: `I scored ${totalScore} on this test!`,
+        },
+        buttons: [
+          {
+            title: "View My Test Results",
+            link: {
+              androidExecutionParams: [{ key: "score", value: totalScore }],
+              iosExecutionParams: [{ key: "score", value: totalScore }],
+            },
+          },
+        ],
+      });
+      console.log(response);
+    } catch (e) {
+      console.error(e);
+      console.error(e.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
@@ -115,6 +145,14 @@ const TestResultPage = ({ route, navigation }) => {
             dataStrokeWidth={2}
             isCircle
           />
+        </View>
+        <View>
+          <TouchableOpacity
+            onPress={shareResultOnKakao}
+            style={styles.kakaoShareBtn}
+          >
+            카카오톡 공유하기
+          </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
@@ -157,6 +195,17 @@ const styles = StyleSheet.create({
     width: "70%",
     height: 100,
   },
+  kakaoShareBtn: {
+    backgroundColor: "#FAE300",
+    color: "#371D1E",
+    padding: 15,
+    borderRadius: 20,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 5,
+    margin: 10,
+    fontSize: 18,
+  },
   navButton: {
     backgroundColor: "#8881EA",
     padding: 15,
@@ -164,6 +213,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     marginHorizontal: 5,
+    margin: 10,
   },
   navButtonText: {
     color: "#ffffff",
@@ -175,16 +225,16 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   chartContainer: {
-    marginTop: 20,
+    marginTop: 30,
     padding: 10,
     alignItems: "center",
     justifyContent: "center",
     width: "90%",
-    aspectRatio: 1, // 정사각형 비율을 유지
+    aspectRatio: 1,
     backgroundColor: "#fff",
     borderRadius: 40,
-    elevation: 5, // 그림자 추가 (Android용)
-    shadowColor: "#000", // 그림자 추가 (iOS용)
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,

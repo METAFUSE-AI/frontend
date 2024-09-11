@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { createTest } from "../components/ApiUtilsi/"; // api.js에서 createTest 함수 임포트
-
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 const questions = [
@@ -42,6 +41,10 @@ const TestPage = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
   const scrollViewRef = useRef();
+
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -124,11 +127,15 @@ const TestPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <HeaderBackButton onPress={() => navigation.goBack()} />
-        <Image source={HeaderLogo} style={styles.headerLogo} />
-        <View style={{ width: 40 }} /> {/* Placeholder for alignment */}
+      <View style={styles.customHeader}>
+        <HeaderBackButton
+          onPress={() => navigation.goBack()}
+          tintColor="#ffffff"
+        />
       </View>
+      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
+      </TouchableOpacity>
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
@@ -162,7 +169,7 @@ const TestPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#0D0F35",
   },
   header: {
     flexDirection: "row",
@@ -170,14 +177,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 20,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#0D0F35",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
+  customHeader: {
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
+    zIndex: 10,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
   headerLogo: {
-    width: 100,
-    height: 30,
-    resizeMode: "contain",
+    width: "70%",
+    height: 100,
   },
   scrollViewContent: {
     padding: 20,
@@ -188,6 +205,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 18,
     marginBottom: 10,
+    color: "white",
   },
   answerContainer: {
     flexDirection: "row",
@@ -202,7 +220,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedAnswer: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#8881EA",
   },
   answerText: {
     color: "#333",
@@ -211,15 +229,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
-    backgroundColor: "#ffffff",
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
+    backgroundColor: "#0D0F35",
   },
   navigationButton: {
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-    backgroundColor: "#007bff",
+    backgroundColor: "#8881EA",
     borderRadius: 5,
   },
   disabledButton: {
