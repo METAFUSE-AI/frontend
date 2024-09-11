@@ -16,7 +16,7 @@ const KakaoLogin = () => {
 
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: 'a3c20261d3a5c783c4a3271eef22b599',
+      clientId: '39a096f2c5fa71cb1ffde623e22d201b',
       redirectUri: redirectUri,
       responseType: ResponseType.Code,
     },
@@ -31,7 +31,12 @@ const KakaoLogin = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.redirected) {
+            window.location.href = res.url;
+          }
+          return res.json();
+        })
         .then((data) => {
           Alert.alert('로그인 성공', JSON.stringify(data));
         })

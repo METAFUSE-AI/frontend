@@ -1,6 +1,5 @@
-// App.js
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import StartPage from "./screen/StartPage";
@@ -22,7 +21,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="KakaoLogin">
+      <Stack.Navigator initialRouteName="StartPage">
         <Stack.Screen
           name="MainPage"
           component={MainPage}
