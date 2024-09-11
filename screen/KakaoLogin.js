@@ -1,80 +1,71 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
-import { WebView } from "react-native-webview";
-import * as AuthSession from "expo-auth-session";
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, Platform, Alert } from 'react-native';
+import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
+import KakaoLogins from '@react-native-seoul/kakao-login';
 
-const REST_API_KEY = "39a096f2c5fa71cb1ffde623e22d201b"; // Kakao REST API 키
-const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+const KakaoLogin = () => {
+  const redirectUri = Platform.select({
+    web: 'http://localhost:8080/oauth2/kakao/callback',
+    default: makeRedirectUri({ useProxy: true }),
+  });
 
-export default function KakaoLogin() {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const handleLogin = () => {
-    setModalVisible(true);
+  const discovery = {
+    authorizationEndpoint: 'https://kauth.kakao.com/oauth/authorize',
+    tokenEndpoint: 'https://kauth.kakao.com/oauth/token',
   };
 
-  const handleWebViewNavigationStateChange = (newNavState) => {
-    const { url } = newNavState;
-    if (url.includes("?code=")) {
-      const code = url.split("code=")[1];
-      console.log("Authorization Code:", code);
-      setModalVisible(false);
-      // Use the authorization code to get the access token from your server
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'a3c20261d3a5c783c4a3271eef22b599',
+      redirectUri: redirectUri,
+      responseType: ResponseType.Code,
+    },
+    discovery
+  );
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params;
+      fetch('http://localhost:8080/oauth2/kakao/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          Alert.alert('로그인 성공', JSON.stringify(data));
+        })
+        .catch((err) => {
+          Alert.alert('로그인 실패', err.message);
+        });
+    }
+  }, [response]);
+
+  const handleLogin = () => {
+    if (Platform.OS === 'web') {
+      promptAsync();
+    } else {
+      handleMobileLogin();
+    }
+  };
+
+  const handleMobileLogin = async () => {
+    try {
+      const result = await KakaoLogins.login();
+      Alert.alert('로그인 성공', JSON.stringify(result));
+    } catch (err) {
+      Alert.alert('로그인 실패', err.message);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text>카카오 로그인 페이지</Text>
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>카카오로 로그인하기</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>카카오 로그인</Text>
+      <TouchableOpacity onPress={handleLogin} style={{ padding: 10, backgroundColor: '#FEE500', borderRadius: 5 }}>
+        <Text style={{ color: '#3C1E1E', fontWeight: 'bold' }}>카카오 로그인하기</Text>
       </TouchableOpacity>
-
-      <Modal visible={modalVisible} animationType="slide">
-        <WebView
-          source={{ uri: KAKAO_AUTH_URL }}
-          onNavigationStateChange={handleWebViewNavigationStateChange}
-          startInLoadingState
-          style={{ marginTop: 20 }}
-        />
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => setModalVisible(false)}
-        >
-          <Text style={styles.closeButtonText}>닫기</Text>
-        </TouchableOpacity>
-      </Modal>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#FEE500",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#3C1E1E",
-    fontWeight: "bold",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    backgroundColor: "#000",
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: "#fff",
-  },
-});
+export default KakaoLogin;
