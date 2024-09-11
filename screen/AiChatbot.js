@@ -14,7 +14,7 @@ const AiChatbot = () => {
     setMessages([...messages, userMessage]);
 
     try {
-      const response = await axios.post('http://<YOUR_SERVER_IP>:5000/chat', {
+      const response = await axios.post('http://localhost:5000/chat', {
         message: input,
       });
 
