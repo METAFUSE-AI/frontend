@@ -14,6 +14,7 @@ import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
+import AiChatbot from "./screen/AiChatbot";
 import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
 
 const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ export default function App() {
         />
         <Stack.Screen name="QuizPage" component={QuizPage} />
         <Stack.Screen name="GamePage" component={GamePage} />
+        <Stack.Screen name="AiChatbot" component={AiChatbot} />
       </Stack.Navigator>
     </NavigationContainer>
   );

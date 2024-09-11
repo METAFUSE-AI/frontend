@@ -33,7 +33,7 @@ export default function MainPage({ navigation }) {
   };
 
   const handleChatbotPress = () => {
-    navigation.navigate("ChatbotPage");
+    navigation.navigate("AiChatbot");
   };
 
   const handleTestPress = () => {
