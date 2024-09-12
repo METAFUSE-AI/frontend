@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements"; // HeaderBackButton 임포트
-import SubmitButton from "../components/SubmitButton"; // SubmitButton 컴포넌트 임포트
-import OptionButton from "../components/OptionButton"; // OptionButton 컴포넌트 임포트
+import { HeaderBackButton } from "@react-navigation/elements";
+import SubmitButton from "../components/SubmitButton";
+import OptionButton from "../components/OptionButton";
+import { createRecord } from "../components/ApiUtilsi";  // 기록 저장 API 임포트
 
-import HeaderLogo from "../assets/images/headerLogo.png"; // HeaderLogo 이미지 임포트
+import HeaderLogo from "../assets/images/headerLogo.png";
 
 const quizData = [
   {
@@ -61,45 +62,58 @@ const quizData = [
 
 export default function QuizPage({ navigation }) {
   const [quizIndex, setQuizIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState([]);  // 각 문제의 선택지를 저장
   const [correctCount, setCorrectCount] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
 
   const handleOptionPress = (index) => {
-    setSelectedOption(index);
+    const newSelectedOptions = [...selectedOptions];
+    newSelectedOptions[quizIndex] = index;  // 선택한 옵션 저장
+    setSelectedOptions(newSelectedOptions);
   };
 
   const handleSubmit = () => {
-    if (selectedOption !== null) {
-      const isCorrect = selectedOption === quizData[quizIndex].answer;
+    if (selectedOptions[quizIndex] !== undefined) {
+      const isCorrect = selectedOptions[quizIndex] === quizData[quizIndex].answer;
       setCorrectCount(prevCount => prevCount + (isCorrect ? 1 : 0));
-      
+
       if (quizIndex < quizData.length - 1) {
         setQuizIndex(quizIndex + 1);
-        setSelectedOption(null);
       } else {
-        setQuizCompleted(true);
+        setQuizCompleted(true);  // 마지막 문제 완료 시
+        submitAllAnswers();      // 서버에 전체 퀴즈 결과 제출
       }
     } else {
       Alert.alert("알림", "옵션을 선택하세요.");
     }
   };
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false, // 기본 상단 바 숨기기
-    });
-  }, [navigation]);
+  const submitAllAnswers = async () => {
+    const quizResults = quizData.map((quiz, index) => ({
+      quizId: index + 1,
+      userId: 1,  // 임시 사용자 ID
+      selectedOption: selectedOptions[index],
+      isCorrect: selectedOptions[index] === quiz.answer,
+    }));
 
-  useEffect(() => {
-    if (quizCompleted) {
+    try {
+      await createRecord(quizResults);  // 전체 퀴즈 결과 서버에 저장
       Alert.alert(
         "퀴즈 완료",
         `총 ${correctCount}개 맞았습니다!`,
         [{ text: "확인", onPress: () => navigation.goBack() }]
       );
+    } catch (error) {
+      console.error('퀴즈 결과 저장 중 오류 발생:', error);
+      Alert.alert("오류", "퀴즈 결과를 저장하는 데 문제가 발생했습니다.");
     }
-  }, [quizCompleted]);
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   const isLastQuestion = quizIndex === quizData.length - 1;
 
@@ -125,7 +139,7 @@ export default function QuizPage({ navigation }) {
               <OptionButton
                 key={index}
                 text={option}
-                isSelected={index === selectedOption}
+                isSelected={selectedOptions[quizIndex] === index}
                 onPress={() => handleOptionPress(index)}
               />
             ))}

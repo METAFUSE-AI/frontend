@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
 import { WebView } from "react-native-webview";
 import * as AuthSession from "expo-auth-session";
-
+import { getKakaoAccessToken } from '../components/ApiUtilsi'; // api.js에서 함수 임포트
 const REST_API_KEY = "39a096f2c5fa71cb1ffde623e22d201b"; // Kakao REST API 키
 const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
 const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
@@ -14,15 +14,25 @@ export default function KakaoLogin() {
     setModalVisible(true);
   };
 
-  const handleWebViewNavigationStateChange = (newNavState) => {
-    const { url } = newNavState;
-    if (url.includes("?code=")) {
-      const code = url.split("code=")[1];
-      console.log("Authorization Code:", code);
-      setModalVisible(false);
-      // Use the authorization code to get the access token from your server
-    }
-  };
+ 
+const handleWebViewNavigationStateChange = (newNavState) => {
+  const { url } = newNavState;
+  if (url.includes("?code=")) {
+    const code = url.split("code=")[1];
+    console.log("Authorization Code:", code);
+    setModalVisible(false);
+
+    // 인증 코드를 서버로 보내서 액세스 토큰 받기
+    getKakaoAccessToken(code)
+      .then(tokenData => {
+        console.log('Access Token:', tokenData.access_token);
+        // 토큰을 저장하거나 추가 작업 수행
+      })
+      .catch(error => {
+        console.error('Error fetching access token:', error);
+      });
+  }
+};
 
   return (
     <View style={styles.container}>

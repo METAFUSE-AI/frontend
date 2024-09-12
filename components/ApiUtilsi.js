@@ -87,3 +87,17 @@ export const deleteRecord = async (id) => {
     throw error; // 에러를 호출한 쪽으로 다시 던짐
   }
 };
+
+// 카카오 로그인 - 인증 코드로 액세스 토큰 교환
+export const getKakaoAccessToken = (authorizationCode) => {
+  return axios.post(`${BASE_URL}/auth/kakao/token`, { code: authorizationCode }, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error('Error getting Kakao access token:', error);
+    throw error;
+  });
+};

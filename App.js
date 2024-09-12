@@ -1,7 +1,9 @@
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
@@ -19,12 +21,47 @@ import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 �
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      try {
+        // AsyncStorage에서 유저 정보 확인
+        const user = await AsyncStorage.getItem("user");
+        if (user) {
+          setIsLoggedIn(true); // 유저가 있으면 로그인 상태로 설정
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false); // 로딩 상태 해제
+      }
+    };
+
+    checkUserStatus();
+  }, []);
+
+  if (loading) {
+    // 유저 상태 확인 중 로딩 스피너 표시
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="StartPage">
+      <Stack.Navigator initialRouteName={isLoggedIn ? "MainPage" : "KakaoLogin"}>
         <Stack.Screen
           name="MainPage"
           component={MainPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="KakaoLogin"
+          component={KakaoLogin}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -37,7 +74,6 @@ export default function App() {
           component={TestResultPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen
           name="RecordPage"
@@ -82,10 +118,9 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
 });
