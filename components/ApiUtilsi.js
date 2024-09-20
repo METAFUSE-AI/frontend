@@ -1,4 +1,4 @@
-// api.js
+// ApiUtilsi.js
 
 import axios from 'axios';
 
@@ -87,3 +87,21 @@ export const deleteRecord = async (id) => {
     throw error; // 에러를 호출한 쪽으로 다시 던짐
   }
 };
+// 카카오톡 인증 코드로 액세스 토큰을 받아오는 함수
+export const getKakaoAccessToken = async (code) => {
+  const response = await axios.post(`${BASE_URL}/kakao/callback`, null, {
+    params: { code },
+  });
+  return response.data;
+};
+
+// 사용자 정보를 서버에 저장하는 함수
+export const saveUserInfo = async (userData) => {
+  const response = await axios.post(`${BASE_URL}/api/member/save`, {
+    email: userData.kakao_account.email,
+    name: userData.properties.nickname,
+  });
+  return response.data;
+};
+
+

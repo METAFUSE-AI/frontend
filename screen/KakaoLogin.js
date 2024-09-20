@@ -2,11 +2,12 @@ import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, Platform, Alert } from 'react-native';
 import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
 import KakaoLogins from '@react-native-seoul/kakao-login';
+import { saveUserInfo, getKakaoAccessToken } from '../components/ApiUtilsi';
 
-const KakaoLogin = () => {
+const KakaoLogin = ({ navigation }) => {
   const redirectUri = Platform.select({
-    web: 'http://localhost:8080/oauth2/kakao/callback',
-    default: makeRedirectUri({ useProxy: true }),
+    web: 'http://localhost:8080/kakao/callback', // 웹 리디렉션 URI
+    default: makeRedirectUri({ useProxy: true }), // 모바일 리디렉션 URI
   });
 
   const discovery = {
@@ -16,7 +17,7 @@ const KakaoLogin = () => {
 
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: '39a096f2c5fa71cb1ffde623e22d201b',
+      clientId: '39a096f2c5fa71cb1ffde623e22d201b', // 카카오 클라이언트 ID
       redirectUri: redirectUri,
       responseType: ResponseType.Code,
     },
@@ -26,21 +27,29 @@ const KakaoLogin = () => {
   useEffect(() => {
     if (response?.type === 'success') {
       const { code } = response.params;
-      fetch('http://localhost:8080/oauth2/kakao/callback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-        .then((res) => {
-          if (res.redirected) {
-            window.location.href = res.url;
-          }
-          return res.json();
+      console.log('Authorization Code:', code);
+
+      // 인증 코드를 서버에 보내고 액세스 토큰 받아오기
+      getKakaoAccessToken(code)
+        .then(data => {
+          const { access_token } = data;
+          console.log('Access Token:', access_token);
+
+          // 사용자 정보를 서버에서 가져오기
+          return fetch('https://kapi.kakao.com/v2/user/me', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+          });
         })
-        .then((data) => {
-          Alert.alert('로그인 성공', JSON.stringify(data));
+        .then(response => response.json())
+        .then(userData => saveUserInfo(userData)) // 사용자 정보 저장
+        .then(() => {
+          Alert.alert('로그인 성공', '사용자 정보를 성공적으로 저장했습니다.');
+          navigation.navigate('MainPage');
         })
-        .catch((err) => {
+        .catch(err => {
           Alert.alert('로그인 실패', err.message);
         });
     }
@@ -58,6 +67,22 @@ const KakaoLogin = () => {
     try {
       const result = await KakaoLogins.login();
       Alert.alert('로그인 성공', JSON.stringify(result));
+
+      const accessToken = result.accessToken;
+      console.log('Mobile Access Token:', accessToken);
+
+      const userResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const userData = await userResponse.json();
+      await saveUserInfo(userData);
+
+      Alert.alert('로그인 성공', '사용자 정보를 성공적으로 저장했습니다.');
+      navigation.navigate('MainPage');
     } catch (err) {
       Alert.alert('로그인 실패', err.message);
     }
