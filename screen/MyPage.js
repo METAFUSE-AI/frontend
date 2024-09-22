@@ -11,22 +11,41 @@ import { HeaderBackButton } from "@react-navigation/elements";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function MyPage({ navigation }) {
-  const [testListNum, setTestListNum] = useState(1);
+  const [testResults, setTestResults] = useState([]);
 
+  // 백엔드 API를 호출하여 테스트 결과를 가져옴
+  const fetchTestResults = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/test-results/member/1" // localhost 대신 실제 IP 사용
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch test results");
+      }
+
+      const data = await response.json();
+
+      // 데이터가 배열인지 확인하고 배열이 아닐 경우 빈 배열로 처리
+      setTestResults(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching test results:", error);
+      setTestResults("저장된 테스트 결과가 없습니다."); // 에러가 발생하면 빈 배열로 처리
+    }
+  };
+
+  useEffect(() => {
+    fetchTestResults();
+  }, []);
+
+  // 로고 클릭 시 메인 페이지로 이동
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
-  const handleTestResultPress = () => {
-    // Here, you should retrieve the test results from your data source.
-    const testResults = {
-      answers: [
-        /* Array of answers */
-      ],
-      totalScore: 30, // Example total score
-    };
-
-    navigation.navigate("TestResultPage", testResults);
+  // 테스트 결과를 눌렀을 때 상세 결과 페이지로 이동
+  const handleTestResultPress = (testResult) => {
+    navigation.navigate("TestResultPage", { testResult });
   };
 
   useEffect(() => {
@@ -56,13 +75,21 @@ export default function MyPage({ navigation }) {
         <View style={styles.testListContainer}>
           <Text style={styles.testListTitle}>이전 테스트 기록 열람</Text>
           <View style={styles.testListBox}>
-            {/* 추후 result_id 별로 결과를 마이페이지로 불러올 수 있도록 수정 예정 */}
-            <TouchableOpacity
-              style={styles.testListBtn}
-              onPress={handleTestResultPress} // Navigate to TestResultPage on press
-            >
-              <Text style={styles.testListBtnText}>{testListNum}회</Text>
-            </TouchableOpacity>
+            {Array.isArray(testResults) && testResults.length > 0 ? (
+              testResults.map((result, index) => (
+                <TouchableOpacity
+                  key={result.testResultId}
+                  style={styles.testListBtn}
+                  onPress={() => handleTestResultPress(result)}
+                >
+                  <Text style={styles.testListBtnText}>
+                    {index + 1}회: 점수 {result.score}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text style={styles.noResultsText}>테스트 기록이 없습니다.</Text>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -73,13 +100,13 @@ export default function MyPage({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0D0F35", // Keep the dark background
+    backgroundColor: "#0D0F35",
   },
   customHeader: {
     height: 50,
     justifyContent: "center",
     paddingLeft: 10,
-    backgroundColor: "#0D0F35", // Same background color for consistency
+    backgroundColor: "#0D0F35",
     zIndex: 10,
   },
   logoContainer: {
@@ -107,40 +134,36 @@ const styles = StyleSheet.create({
     width: "85%",
   },
   testListTitle: {
-    color: "#FF9432", // Highlighted color for title text
+    color: "#FF9432",
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 15,
   },
   testListBox: {
     width: "100%",
-    height: 100,
     backgroundColor: "#ffffff",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    paddingVertical: 10,
   },
   testListBtn: {
-    width: 150,
+    width: "90%",
     height: 50,
     backgroundColor: "#8881EA",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
+    marginBottom: 10,
   },
   testListBtnText: {
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  noResultsText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontStyle: "italic",
   },
 });
