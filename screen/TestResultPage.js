@@ -6,7 +6,8 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  StyleSheet, // 추가된 부분
+  StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
@@ -20,7 +21,7 @@ import TestResult03 from "../assets/images/TestResult03.png";
 // npm install @salmonco/react-native-radar-chart react-native-svg => 삼각 그래프를 그리기 위한 라이브러리
 
 const TestResultPage = ({ route, navigation }) => {
-  const { answers = {}, totalScore } = route.params || {}; // answers가 없을 때 기본 값 {} 설정
+  const { answers = {}, totalScore } = route.params || {};
   const [resultImage, setResultImage] = useState(TestResult03);
 
   const handleLogoPress = () => {
@@ -32,12 +33,10 @@ const TestResultPage = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    // Set navigation header to hide
     navigation.setOptions({
       headerShown: false,
     });
 
-    // 점수 총합별 결과 이미지 출력
     if (totalScore >= 40) {
       setResultImage(TestResult01);
     } else if (totalScore >= 25) {
@@ -78,7 +77,6 @@ const TestResultPage = ({ route, navigation }) => {
 
   const screenWidth = Dimensions.get("window").width;
 
-  // Function to share the test result via Kakao
   const shareResultOnKakao = async () => {
     try {
       const response = await KakaoShareLink.sendFeed({
@@ -108,7 +106,7 @@ const TestResultPage = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.customHeader}>
         <HeaderBackButton
           onPress={() => navigation.goBack()}
@@ -118,11 +116,13 @@ const TestResultPage = ({ route, navigation }) => {
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
         </View>
-        {/* 메타인지 결과 */}
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
           <RadarChart
@@ -160,7 +160,7 @@ const TestResultPage = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -176,7 +176,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D0F35",
   },
   scrollView: {
-    flex: 1,
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -201,7 +200,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     alignItems: "center",
-    flex: 1,
     marginHorizontal: 5,
     margin: 10,
     fontSize: 18,
@@ -211,7 +209,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     alignItems: "center",
-    flex: 1,
     marginHorizontal: 5,
     margin: 10,
   },
@@ -238,6 +235,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    height: 300,
   },
   chartTitle: {
     color: "#433D3A",

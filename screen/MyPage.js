@@ -130,11 +130,11 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     borderRadius: 20,
-    backgroundColor: "#1C1E3D",
+    backgroundColor: "#fff",
     width: "85%",
   },
   testListTitle: {
-    color: "#FF9432",
+    color: "#e2",
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 15,
