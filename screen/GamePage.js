@@ -1,11 +1,30 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, Image, TouchableOpacity, ScrollView } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements"; // HeaderBackButton 임포트
-import SubmitButton from "../components/SubmitButton"; // SubmitButton 컴포넌트 임포트
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Text,
+} from "react-native";
+import { HeaderBackButton } from "@react-navigation/elements";
+import SubmitButton from "../components/SubmitButton";
 
-import HeaderLogo from "../assets/images/headerLogo.png"; // HeaderLogo 이미지 임포트
+import HeaderLogo from "../assets/images/headerLogo.png";
+import gameStates01 from "../assets/images/gameStates01.png";
+import gameStates02 from "../assets/images/gameStates02.png";
+import gameStates03 from "../assets/images/gameStates03.png";
+import gameStates04 from "../assets/images/gameStates04.png";
 
 export default function GamePage({ navigation }) {
+  const [age, setAge] = useState(8); // 사용자 나이
+  const [stats, setStats] = useState({
+    health: 50, // ❤️
+    stress: 50, // 😰
+    relationships: 50, // 👥
+    money: 50, // 💰
+  });
+
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
@@ -34,12 +53,37 @@ export default function GamePage({ navigation }) {
         ]}
         style={styles.scrollView}
       >
+        <View style={styles.gameAge}>
+          <Text style={styles.ageText}>나이: {age}세</Text>
+        </View>
+
+        <View style={styles.gameStates}>
+          <View>
+            {/* 게임 상태 - 건강 */}
+            <Image style={styles.stateImg} source={gameStates01} />
+            <Text style={styles.stateText}>{stats.health}</Text>
+          </View>
+          <View>
+            {/* 게임 상태 - 스트레스 */}
+            <Image style={styles.stateImg} source={gameStates02} />
+            <Text style={styles.stateText}>{stats.stress}</Text>
+          </View>
+          <View>
+            {/* 게임 상태 - 대인 관계 */}
+            <Image style={styles.stateImg} source={gameStates03} />
+            <Text style={styles.stateText}>{stats.relationships}</Text>
+          </View>
+          <View>
+            {/* 게임 상태 - 돈 */}
+            <Image style={styles.stateImg} source={gameStates04} />
+            <Text style={styles.stateText}>{stats.money}</Text>
+          </View>
+        </View>
+        <View style={styles.gameScreen}>
+          <Text style={styles.questionText}></Text>
+        </View>
         <View style={styles.buttonContainer}>
-          <SubmitButton onPress={() => {}} text="기억력 게임" />
-          <View style={{ marginVertical: 30 }} /> {/* 버튼들 사이의 간격 */}
-          <SubmitButton onPress={() => {}} text="TRPG 게임" />
-          <View style={{ marginVertical: 30 }} /> {/* 버튼들 사이의 간격 */}
-          <SubmitButton onPress={() => {}} text="기타 게임" />
+          <SubmitButton onPress={() => {}} text="게임 시작하기" />
         </View>
       </ScrollView>
     </View>
@@ -69,11 +113,55 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
   },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: "center", // 버튼들을 수평 정렬하기 위해 추가
-  },
   scrollView: {
     flex: 1,
+  },
+  gameAge: {
+    marginTop: "5%",
+    backgroundColor: "#ffffff",
+    width: "30%",
+    height: 50,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  ageText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  gameStates: {
+    marginTop: "5%",
+    backgroundColor: "#ffffff",
+    width: "80%",
+    padding: 10,
+    borderRadius: 30,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  stateImg: {
+    width: 40,
+    height: 40,
+  },
+  stateText: {
+    marginTop: 5,
+    fontSize: 16,
+    textAlign: "center",
+  },
+  gameScreen: {
+    marginTop: "5%",
+    backgroundColor: "#ffffff",
+    width: "80%",
+    padding: 20,
+    borderRadius: 30,
+    alignItems: "center",
+  },
+  questionText: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    width: "100%",
+    justifyContent: "space-around",
   },
 });
