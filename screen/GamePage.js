@@ -11,27 +11,14 @@ import { HeaderBackButton } from "@react-navigation/elements";
 import SubmitButton from "../components/SubmitButton";
 import axios from "axios";
 
+// 게임 요소 가져오기
+import { questionList, choiceList } from "../components/GameElements";
+
 import HeaderLogo from "../assets/images/headerLogo.png";
 import gameStates01 from "../assets/images/gameStates01.png";
 import gameStates02 from "../assets/images/gameStates02.png";
 import gameStates03 from "../assets/images/gameStates03.png";
 import gameStates04 from "../assets/images/gameStates04.png";
-
-// 질문 리스트
-const questionList = [
-  "당신은 8세입니다. 학교에서 친구와 다툼이 있었습니다.",
-  "당신은 14세입니다. 중학교 2학년 때 어떤 동아리에 들고 싶습니까?",
-  "당신은 20세입니다. 대학 생활을 어떻게 보내고 싶습니까?",
-  "당신은 30세입니다. 직장에서 승진 기회가 생겼습니다.",
-];
-
-// 선택지 리스트
-const choiceList = [
-  ["대화로 해결한다", "무시하고 지나간다"],
-  ["운동 동아리에 든다", "음악 동아리에 든다"],
-  ["공부에 전념한다", "다양한 활동에 참여한다"],
-  ["직장 상사에게 조언을 구한다", "자신의 방식대로 한다"],
-];
 
 export default function GamePage({ navigation }) {
   const [age, setAge] = useState(8); // 사용자 나이
@@ -45,8 +32,6 @@ export default function GamePage({ navigation }) {
   const [gameStarted, setGameStarted] = useState(false); // 게임 시작 여부
   const [gameOver, setGameOver] = useState(false); // 게임 종료 여부
   const [feedback, setFeedback] = useState(""); // AI 피드백
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -103,22 +88,15 @@ export default function GamePage({ navigation }) {
   };
 
   const handleChoice = (choice) => {
-    let newStats;
+    // 선택한 옵션에 따라 스탯을 변화시킴
+    const statChange = choiceList[questionIndex].statChanges[choice - 1];
 
-    // 선택지에 따른 스탯 변화 로직
-    if (choice === 1) {
-      newStats = {
-        ...stats,
-        health: stats.health - 5,
-        stress: stats.stress + 5,
-      };
-    } else {
-      newStats = {
-        ...stats,
-        health: stats.health + 5,
-        stress: stats.stress - 5,
-      };
-    }
+    const newStats = {
+      health: stats.health + statChange.health,
+      stress: stats.stress + statChange.stress,
+      relationships: stats.relationships + statChange.relationships,
+      money: stats.money + statChange.money,
+    };
 
     const newAge = age + 1;
 
@@ -185,7 +163,47 @@ export default function GamePage({ navigation }) {
         <View style={styles.gameScreen}>
           {!gameStarted ? (
             <Text style={styles.questionText}>
-              인생이라는 산을 오르는 등반가가 되어 정상에 도달하세요.
+              인간은 태초부터 선택의 연속 속에 존재해왔습니다.
+              <br />
+              매일 아침 눈을 뜨고 나서부터 밤이 찾아오는 순간까지, 우리는 수많은
+              길을 마주하며
+              <br />
+              그 중 하나를 선택합니다. 이 선택들은 단순히 나의 현재를 결정짓는
+              것이 아니라,
+              <br />
+              무한한 가능성이 얽힌 새로운 세계의 문을 열어줍니다.
+              <br /> <br />
+              이 게임은 당신의 선택이 어떤 사람을 만들어내고,
+              <br />
+              그 선택이 당신의 삶에 어떤 결과를 가져오는지를 탐험하는
+              여정입니다.
+              <br />
+              각 선택은 마치 나비의 날갯짓처럼, 당신의 삶을 향한 새로운 경로를
+              만들어냅니다.
+              <br />
+              이 길들은 때로는 험난한 산맥처럼 다가오고,
+              <br />
+              때로는 잔잔한 평원처럼 느껴질 것입니다.
+              <br /> <br />
+              당신은 지금 이 순간, 자신이 누구인지 다시 묻게 될 것입니다.
+              <br />
+              이 선택의 등반가가 되어, 다양한 결과로 가득한 생의 여정을
+              탐험하십시오.
+              <br />
+              선택은 당신의 정체성을 형성하는 원초적인 힘이며,
+              <br />
+              그 결과는 당신이 어떤 존재로 남게 될지를 결정짓습니다.
+              <br />
+              우리는 모두 각기 다른 세상에 살고 있으며,
+              <br />
+              당신의 선택은 그 세상을 더욱 다채롭게 만들 것입니다.
+              <br />
+              그러므로 깊이 생각하고 신중하게 선택하십시오.
+              <br />
+              그 선택이 어떤 삶의 경로를 열어줄지, 그것이 바로 당신의
+              이야기입니다.
+              <br /> <br />
+              이제, 당신의 여정을 시작할 시간입니다. 어떤 선택을 하시겠습니까?
             </Text>
           ) : gameOver ? (
             // 게임 종료 시 AI 피드백 출력
@@ -207,21 +225,18 @@ export default function GamePage({ navigation }) {
               onPress={() => navigation.navigate("MainPage")}
               text="확인"
             />
-          ) : // 선택지 렌더링 전에 선택지 배열이 존재하는지 확인
-          choiceList[questionIndex] ? (
+          ) : (
+            // 선택지 렌더링
             <View>
               <SubmitButton
                 onPress={() => handleChoice(1)}
-                text={`선택 1: ${choiceList[questionIndex][0]}`}
+                text={`선택 1: ${choiceList[questionIndex].choices[0]}`}
               />
               <SubmitButton
                 onPress={() => handleChoice(2)}
-                text={`선택 2: ${choiceList[questionIndex][1]}`}
+                text={`선택 2: ${choiceList[questionIndex].choices[1]}`}
               />
             </View>
-          ) : (
-            // 선택지가 없을 경우 예외 처리
-            <Text style={styles.questionText}>선택지가 없습니다.</Text>
           )}
         </View>
       </ScrollView>
@@ -297,7 +312,7 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 18,
-    textAlign: "center",
+    textAlign: "left",
     marginBottom: 20,
   },
   buttonContainer: {
