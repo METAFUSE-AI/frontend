@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, TextInput, Button, Text, ScrollView, StyleSheet, View } from 'react-native'; // Button 사용
 import Icon from 'react-native-vector-icons/Ionicons'; // react-native-vector-icons 설치 필요
 import axios from 'axios';
@@ -7,6 +7,28 @@ const AiChatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
+  //초기 인사말 메시지
+  useEffect(() => {
+    const initialMessage = { sender: 'bot', text: '안녕하세요 메타인지에 관해 무엇이든 물어보세요' };
+    setMessages([initialMessage]);
+  }, []);
+
+  // "내 테스트 결과 보기" 버튼을 눌렀을 때 실행될 함수
+  const fetchTestResults = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/test-result', {
+        params: { userId: '1' }  // 실제로는 로그인 또는 다른 방식으로 사용자 ID를 받아야 합니다
+      });
+
+      const resultMessage = { sender: 'bot', text: `당신의 테스트 점수는 ${response.data.score}점 입니다.` };
+      setMessages([...messages, resultMessage]);
+
+    } catch (error) {
+      console.error("Error fetching test results: ", error);
+    }
+  };
+
+  // 메시지 전송 함수
   const sendMessage = async () => {
     if (input.trim() === '') return;
 
@@ -40,6 +62,11 @@ const AiChatbot = () => {
           </View>
         ))}
       </ScrollView>
+
+       {/* 내 테스트 결과 보기 버튼 추가 */}
+       <View style={styles.buttonContainer}>
+        <Button title="내 테스트 결과 보기" onPress={fetchTestResults} />
+      </View>
 
       <View style={styles.inputContainer}>
         <TextInput
