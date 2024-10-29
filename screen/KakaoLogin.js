@@ -1,80 +1,62 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Modal } from "react-native";
-import { WebView } from "react-native-webview";
-import * as AuthSession from "expo-auth-session";
+import React, { useState, useEffect } from 'react';
+import { View, Button, Alert, Linking } from 'react-native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
-const REST_API_KEY = "39a096f2c5fa71cb1ffde623e22d201b"; // Kakao REST API 키
-const REDIRECT_URI = AuthSession.makeRedirectUri({ useProxy: true });
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+const KakaoLogin = () => {
+  const navigation = useNavigation();
+  const clientId = 'YOUR_CLIENT_ID'; // 클라이언트 ID 설정
+  const redirectUri = 'YOUR_REDIRECT_URI'; // 리디렉션 URI 설정
 
-export default function KakaoLogin() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const handleKakaoLogin = async () => {
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
 
-  const handleLogin = () => {
-    setModalVisible(true);
-  };
-
-  const handleWebViewNavigationStateChange = (newNavState) => {
-    const { url } = newNavState;
-    if (url.includes("?code=")) {
-      const code = url.split("code=")[1];
-      console.log("Authorization Code:", code);
-      setModalVisible(false);
-      // Use the authorization code to get the access token from your server
+    try {
+      await Linking.openURL(kakaoAuthUrl);
+      console.log('Redirected to Kakao login');
+    } catch (error) {
+      console.error('Error opening Kakao login:', error);
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text>카카오 로그인 페이지</Text>
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>카카오로 로그인하기</Text>
-      </TouchableOpacity>
+  const handleKakaoCallback = async (url) => {
+    const code = extractCodeFromUrl(url);
 
-      <Modal visible={modalVisible} animationType="slide">
-        <WebView
-          source={{ uri: KAKAO_AUTH_URL }}
-          onNavigationStateChange={handleWebViewNavigationStateChange}
-          startInLoadingState
-          style={{ marginTop: 20 }}
-        />
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => setModalVisible(false)}
-        >
-          <Text style={styles.closeButtonText}>닫기</Text>
-        </TouchableOpacity>
-      </Modal>
+    if (code) {
+      try {
+        const tokenResponse = await axios.get(`http://localhost:8080/kakao/callback?code=${code}`);
+        navigation.navigate('MainPage', { accessToken: tokenResponse.data.access_token });
+      } catch (error) {
+        console.error('Error getting access token:', error);
+      }
+    } else {
+      Alert.alert('Authorization code not found.');
+    }
+  };
+
+  const extractCodeFromUrl = (url) => {
+    const match = url.match(/code=([^&]+)/);
+    return match ? match[1] : null;
+  };
+
+  useEffect(() => {
+    const handleUrl = ({ url }) => {
+      handleKakaoCallback(url);
+    };
+
+    const subscription = Linking.addEventListener('url', handleUrl);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  return (
+    <View>
+      <Button title="Kakao Login" onPress={handleKakaoLogin} />
+      <StatusBar style="auto" />
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#FEE500",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#3C1E1E",
-    fontWeight: "bold",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    backgroundColor: "#000",
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: "#fff",
-  },
-});
+export default KakaoLogin;

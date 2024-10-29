@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { createTest } from "../components/ApiUtilsi/"; // api.js에서 createTest 함수 임포트
+import { createTest } from "../components/ApiUtilsi"; // api.js에서 createTest 함수 임포트
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
@@ -48,6 +48,7 @@ const TestPage = ({ navigation }) => {
       headerShown: false,
     });
   }, [navigation]);
+  
 
   const renderQuestion = (questionIndex) => {
     const questionNumber = (currentPage - 1) * 6 + questionIndex + 1;

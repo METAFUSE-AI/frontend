@@ -1,5 +1,6 @@
+import 'react-native-url-polyfill/auto';
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import StartPage from "./screen/StartPage";
@@ -15,13 +16,14 @@ import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
 import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
+import { useNavigation } from '@react-navigation/native'; // useNavigation 추가
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="StartPage">
+      <Stack.Navigator initialRouteName="MainPage">
         <Stack.Screen
           name="MainPage"
           component={MainPage}
@@ -47,11 +49,11 @@ export default function App() {
         <Stack.Screen
           name="RecordDetailPage"
           component={RecordDetailPage}
-          options={{
+          options={({ navigation }) => ({
             title: 'Record Detail',
             headerLeft: () => (
               <HeaderBackButton
-                onPress={() => navigation.goBack()}
+                onPress={() => navigation.goBack()} // navigation 사용
                 tintColor="#ffffff"
               />
             ),
@@ -62,7 +64,7 @@ export default function App() {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
-          }}
+          })}
         />
         <Stack.Screen
           name="AddRecordPage"
@@ -74,7 +76,7 @@ export default function App() {
           component={RecordCreationPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="QuizPage" component={QuizPage} />
+        <Stack.Screen name="QuizPage" component={QuizPage} options={{ headerShown: false }}/>
         <Stack.Screen name="GamePage" component={GamePage} />
       </Stack.Navigator>
     </NavigationContainer>

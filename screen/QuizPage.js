@@ -1,79 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Alert, ScrollView, Image, TouchableOpacity } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements"; // HeaderBackButton 임포트
-import SubmitButton from "../components/SubmitButton"; // SubmitButton 컴포넌트 임포트
-import OptionButton from "../components/OptionButton"; // OptionButton 컴포넌트 임포트
-
-import HeaderLogo from "../assets/images/headerLogo.png"; // HeaderLogo 이미지 임포트
-
-const quizData = [
-  {
-    question: "다음 중 React Native의 주요 특징이 아닌 것은?",
-    options: [
-      "A. Cross-platform",
-      "B. Uses native components",
-      "C. Primarily for backend development",
-      "D. Hot Reloading",
-    ],
-    answer: 2,
-  },
-  {
-    question: "다음 중 JavaScript의 자료형이 아닌 것은?",
-    options: [
-      "A. Undefined",
-      "B. Boolean",
-      "C. Float",
-      "D. String",
-    ],
-    answer: 2,
-  },
-  {
-    question: "다음 중 CSS의 속성이 아닌 것은?",
-    options: [
-      "A. color",
-      "B. font-size",
-      "C. padding",
-      "D. background-image",
-    ],
-    answer: 3,
-  },
-  {
-    question: "다음 중 HTML 태그가 아닌 것은?",
-    options: [
-      "A. <div>",
-      "B. <span>",
-      "C. <header>",
-      "D. <sectioner>",
-    ],
-    answer: 3,
-  },
-  {
-    question: "다음 중 HTTP 메서드가 아닌 것은?",
-    options: [
-      "A. GET",
-      "B. POST",
-      "C. FETCH",
-      "D. DELETE",
-    ],
-    answer: 2,
-  },
-];
+import { HeaderBackButton } from "@react-navigation/elements";
+import SubmitButton from "../components/SubmitButton";
+import OptionButton from "../components/OptionButton";
+import HeaderLogo from "../assets/images/headerLogo.png";
+import { fetchRandomQuizzes, createRecord } from "../components/ApiUtilsi"; // api 호출 임포트
 
 export default function QuizPage({ navigation }) {
+  const [quizData, setQuizData] = useState([]); // 퀴즈 데이터를 위한 상태
   const [quizIndex, setQuizIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
 
+  useEffect(() => {
+    // 랜덤 퀴즈를 가져오는 API 호출
+    const loadQuizzes = async () => {
+      try {
+        const quizzes = await fetchRandomQuizzes(10); // 10개 퀴즈 가져오기
+        setQuizData(quizzes);
+      } catch (error) {
+        Alert.alert("오류", "퀴즈 데이터를 가져오는 데 실패했습니다.");
+      }
+    };
+
+    loadQuizzes();
+  }, []);
+
   const handleOptionPress = (index) => {
     setSelectedOption(index);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedOption !== null) {
       const isCorrect = selectedOption === quizData[quizIndex].answer;
-      setCorrectCount(prevCount => prevCount + (isCorrect ? 1 : 0));
+      setCorrectCount((prevCount) => prevCount + (isCorrect ? 1 : 0));
       
+      // 기록 생성
+      await createRecord({
+        quizId: quizData[quizIndex].id, // 퀴즈 ID를 사용하여 기록 생성
+        selectedOption,
+        isCorrect,
+      });
+
       if (quizIndex < quizData.length - 1) {
         setQuizIndex(quizIndex + 1);
         setSelectedOption(null);
@@ -87,17 +56,17 @@ export default function QuizPage({ navigation }) {
 
   useEffect(() => {
     navigation.setOptions({
-      headerShown: false, // 기본 상단 바 숨기기
+      headerShown: false,
     });
   }, [navigation]);
 
   useEffect(() => {
     if (quizCompleted) {
-      Alert.alert(
-        "퀴즈 완료",
-        `총 ${correctCount}개 맞았습니다!`,
-        [{ text: "확인", onPress: () => navigation.goBack() }]
-      );
+      // 결과 페이지로 내비게이션
+      navigation.navigate("QuizResultPage", {
+        correctCount,
+        totalQuestions: quizData.length,
+      });
     }
   }, [quizCompleted]);
 
@@ -118,7 +87,7 @@ export default function QuizPage({ navigation }) {
         contentContainerStyle={styles.scrollViewContent}
         style={styles.scrollView}
       >
-        {!quizCompleted && (
+        {!quizCompleted && quizData.length > 0 && (
           <View style={styles.quizContainer}>
             <Text style={styles.questionText}>{quizData[quizIndex].question}</Text>
             {quizData[quizIndex].options.map((option, index) => (

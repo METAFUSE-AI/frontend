@@ -18,10 +18,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.chanyun.frontend"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "owner": "chanyun",
+    "extra": {
+      "eas": {
+        "projectId": "061ad226-1d11-4c57-b461-f0222a7607fb"
+      }
     }
   }
 }

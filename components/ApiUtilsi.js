@@ -1,5 +1,3 @@
-// api.js
-
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080'; // 서버 주소
@@ -86,4 +84,28 @@ export const deleteRecord = async (id) => {
     console.error('Error deleting record:', error.response ? error.response.data : error.message);
     throw error; // 에러를 호출한 쪽으로 다시 던짐
   }
+};
+
+// 랜덤 퀴즈 가져오기
+export const fetchRandomQuizzes = (limit = 10) => {
+  return axios.get(`${BASE_URL}/quizzes/random?limit=${limit}`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error fetching random quizzes:', error);
+      throw error;
+    });
+};
+
+// 퀴즈 답변 저장
+export const createQuizAnswer = (answerData) => {
+  return axios.post(`${BASE_URL}/quiz-answers`, answerData, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => response.data)
+  .catch(error => {
+    console.error('Error saving quiz answer:', error);
+    throw error;
+  });
 };
