@@ -85,15 +85,15 @@ export const choiceList = [
       "친구와 직접 이야기해 보고 해결한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 }, // 선택 1의 스탯 변화
-      { health: 0, stress: 0, relationships: 0, money: 0 }, // 선택 2의 스탯 변화
+      { health: 5, stress: 5, relationships: 0, money: 0 }, // 선택 1의 스탯 변화
+      { health: 0, stress: 0, relationships: 5, money: 0 }, // 선택 2의 스탯 변화
     ],
   },
   {
     choices: ["숙제를 먼저 하고 놀기 시작한다.", "놀다가 나중에 숙제를 한다."],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 5, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -102,8 +102,8 @@ export const choiceList = [
       "친구들과 함께 규칙을 어기고 즐긴다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: -5, money: 0 },
+      { health: -5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -112,8 +112,8 @@ export const choiceList = [
       "기다리면서 그 친구가 먼저 다가오기를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 0, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: -5, money: 0 },
     ],
   },
   {
@@ -122,8 +122,8 @@ export const choiceList = [
       "부모님이 반대하신다면 그 취미를 포기한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -5, relationships: -5, money: 0 },
+      { health: 0, stress: 10, relationships: 5, money: 0 },
     ],
   },
   {
@@ -132,15 +132,15 @@ export const choiceList = [
       "나도 소외당할까 두려워 가만히 있는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 10, money: 0 },
+      { health: -10, stress: -5, relationships: -10, money: 0 },
     ],
   },
   {
     choices: ["정직하게 시험을 보고 거절한다.", "친구를 따라 부정행위를 한다."],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -10, relationships: -5, money: 0 },
+      { health: -5, stress: 15, relationships: 5, money: 0 },
     ],
   },
   {
@@ -149,8 +149,8 @@ export const choiceList = [
       "부모님의 기대에 따라 그들이 원하는 길을 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -10, relationships: 0, money: 0 },
+      { health: -5, stress: 10, relationships: 5, money: 0 },
     ],
   },
   {
@@ -159,8 +159,8 @@ export const choiceList = [
       "상대방의 의견을 존중하며 내 신념을 유보한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 10, money: 0 },
     ],
   },
   {
@@ -169,8 +169,8 @@ export const choiceList = [
       "사회적으로 안정적이고 인정받는 직업을 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 0, money: 10 },
     ],
   },
   {
@@ -179,8 +179,8 @@ export const choiceList = [
       "부모님의 경제적 지원을 받아 독립을 준비한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -10, stress: 0, relationships: 0, money: -10 },
+      { health: 0, stress: 10, relationships: 0, money: 10 },
     ],
   },
   {
@@ -189,8 +189,8 @@ export const choiceList = [
       "조용히 상황을 지켜보며 친해질 기회를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 10, money: 0 },
+      { health: 0, stress: 0, relationships: -5, money: 0 },
     ],
   },
   {
@@ -199,8 +199,8 @@ export const choiceList = [
       "나의 능력을 인정하고 다른 방식으로 학업에 접근한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 10, relationships: 0, money: 0 },
+      { health: 10, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -209,8 +209,8 @@ export const choiceList = [
       "내가 진정 원하는 일을 찾아 모험을 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 10 },
+      { health: -5, stress: 0, relationships: 0, money: -5 },
     ],
   },
   {
@@ -219,8 +219,8 @@ export const choiceList = [
       "잠시 거리를 두고 감정이 가라앉기를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 5, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -229,8 +229,8 @@ export const choiceList = [
       "내가 배우고 성장할 수 있는 환경을 우선한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 5 },
+      { health: 0, stress: -5, relationships: 0, money: -5 },
     ],
   },
   {
@@ -239,8 +239,8 @@ export const choiceList = [
       "일에 집중하며 연애는 잠시 미룬다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 10, money: -5 },
+      { health: -5, stress: 0, relationships: -5, money: 10 },
     ],
   },
   {
@@ -249,8 +249,8 @@ export const choiceList = [
       "서로의 신뢰와 사랑을 바탕으로 결혼을 결정한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: -10, money: 10 },
+      { health: 0, stress: 0, relationships: 10, money: -10 },
     ],
   },
   {
@@ -259,8 +259,8 @@ export const choiceList = [
       "조용히 넘어가며 다른 기회를 모색한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -5, relationships: -5, money: 0 },
+      { health: 5, stress: 10, relationships: 0, money: 0 },
     ],
   },
   {
@@ -269,8 +269,8 @@ export const choiceList = [
       "부모님의 기대에 따라 그들이 원하는 길을 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: -5, stress: 5, relationships: 10, money: 0 },
     ],
   },
   {
@@ -279,8 +279,8 @@ export const choiceList = [
       "잠시 거리를 두고 감정이 가라앉기를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -5, relationships: 5, money: 0 },
+      { health: 0, stress: -5, relationships: -5, money: 0 },
     ],
   },
   {
@@ -289,8 +289,8 @@ export const choiceList = [
       "내가 배우고 성장할 수 있는 환경을 우선한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 10 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -299,8 +299,8 @@ export const choiceList = [
       "사랑이 더 중요하므로 연애에 더 집중한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: -5, money: 5 },
+      { health: 5, stress: -5, relationships: 10, money: 0 },
     ],
   },
   {
@@ -309,8 +309,8 @@ export const choiceList = [
       "경제적 안정과 무관하게 결혼을 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 10 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
     ],
   },
   {
@@ -319,8 +319,8 @@ export const choiceList = [
       "그냥 참고 일하며 상황이 좋아지기를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: -5, money: 0 },
+      { health: -5, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -329,8 +329,8 @@ export const choiceList = [
       "현재 직장에서 더 버티며 이직할 최적의 타이밍을 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -10, relationships: -5, money: -10 },
+      { health: -5, stress: 10, relationships: 0, money: 5 },
     ],
   },
   {
@@ -339,8 +339,8 @@ export const choiceList = [
       "가족과 함께 나의 꿈을 계속 실현해 나간다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 10, relationships: 10, money: -10 },
+      { health: 0, stress: -10, relationships: -10, money: 10 },
     ],
   },
   {
@@ -349,8 +349,8 @@ export const choiceList = [
       "아이를 갖기보다는 현재의 삶에 만족하며 더 성장하는 데 집중한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 10, money: -10 },
+      { health: 0, stress: -5, relationships: -5, money: 10 },
     ],
   },
   {
@@ -359,8 +359,8 @@ export const choiceList = [
       "직장을 우선시하고 가정의 일에 덜 관여한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 10, money: -10 },
+      { health: 0, stress: 5, relationships: -15, money: 15 },
     ],
   },
   {
@@ -369,8 +369,8 @@ export const choiceList = [
       "현재 안정된 상황을 유지하며 도전을 포기한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: -5, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 5 },
     ],
   },
   {
@@ -379,8 +379,8 @@ export const choiceList = [
       "부모로서 내가 옳다고 생각하는 가치를 아이에게 주입한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 0, relationships: 10, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 5 },
     ],
   },
   {
@@ -389,8 +389,8 @@ export const choiceList = [
       "자연스럽게 멀어지는 것을 받아들이고 거리 두기를 선택한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 10, money: 0 },
+      { health: 5, stress: -5, relationships: -10, money: 0 },
     ],
   },
   {
@@ -399,8 +399,8 @@ export const choiceList = [
       "가족과 개인적인 삶을 위해 승진보다는 균형을 중시한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: -5, money: 5 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -409,8 +409,8 @@ export const choiceList = [
       "지금은 바쁜 시기이므로 나중에 배우기로 한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -419,8 +419,8 @@ export const choiceList = [
       "직장을 유지하면서 건강 문제를 천천히 해결한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: -5, relationships: 0, money: -5 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -429,8 +429,8 @@ export const choiceList = [
       "아이 스스로 해결할 수 있도록 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -439,8 +439,8 @@ export const choiceList = [
       "시간이 지나면 감정이 가라앉기를 기다린다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: -5 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -449,8 +449,8 @@ export const choiceList = [
       "현재의 안정된 직장에 남아 만족할 수 있는 방법을 찾는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 5 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -459,8 +459,8 @@ export const choiceList = [
       "후회는 어쩔 수 없는 일이라 여기고 지나간 일을 잊는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -469,8 +469,8 @@ export const choiceList = [
       "부모님께 시간을 할애하지만, 개인적인 삶의 균형도 유지한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -479,8 +479,8 @@ export const choiceList = [
       "부모로서 내가 옳다고 생각하는 방식으로 교육을 강하게 밀어붙인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: -5, stress: 5, relationships: -5, money: 0 },
     ],
   },
   {
@@ -489,8 +489,8 @@ export const choiceList = [
       "관계가 자연스럽게 변하는 것이라 여기며 받아들인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -499,8 +499,8 @@ export const choiceList = [
       "현재의 역할에 만족하며 추가적인 책임을 피한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 5 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -509,8 +509,8 @@ export const choiceList = [
       "아이들의 선택을 지도하고 필요한 조언을 강하게 제시한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
+      { health: -5, stress: 5, relationships: -5, money: 0 },
     ],
   },
   {
@@ -519,8 +519,8 @@ export const choiceList = [
       "나의 개인적인 일에 집중하며 참여를 미룬다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -529,8 +529,8 @@ export const choiceList = [
       "지금까지의 삶을 수용하고 큰 변화를 시도하지 않는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 5 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -539,8 +539,8 @@ export const choiceList = [
       "부모로서 강력한 조언을 제공하고 방향을 제시한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
+      { health: -5, stress: 5, relationships: -5, money: 0 },
     ],
   },
   {
@@ -549,8 +549,8 @@ export const choiceList = [
       "신체적 변화는 자연스러운 것이라 받아들이고 천천히 적응한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: 0, relationships: 0, money: 0 },
+      { health: -10, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -559,8 +559,8 @@ export const choiceList = [
       "퇴직 후에는 여유롭게 지내며 그동안 이루지 못한 일을 즐긴다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -10, stress: -10, relationships: 0, money: 0 },
+      { health: 10, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -569,8 +569,8 @@ export const choiceList = [
       "안정적인 가정생활을 유지하며 익숙한 일상을 즐긴다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: 5, money: -10 },
+      { health: 0, stress: -5, relationships: 5, money: 0 },
     ],
   },
   {
@@ -579,8 +579,8 @@ export const choiceList = [
       "현재 상황을 받아들이고 작은 변화를 통해 만족을 찾는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 0, money: -5 },
+      { health: 0, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -589,8 +589,8 @@ export const choiceList = [
       "자녀의 삶에 여전히 관여하며 그들의 삶을 계속 지원한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -5, relationships: 5, money: -5 },
+      { health: -10, stress: 5, relationships: -5, money: -10 },
     ],
   },
   {
@@ -599,8 +599,8 @@ export const choiceList = [
       "나이와 상관없이 계속해서 새로운 도전을 찾아본다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
+      { health: 10, stress: 5, relationships: 0, money: 5 },
     ],
   },
   {
@@ -609,8 +609,8 @@ export const choiceList = [
       "경제적 안정을 위해 더 오랫동안 일한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 0, stress: -5, relationships: -5, money: -5 },
+      { health: 5, stress: 5, relationships: 0, money: 10 },
     ],
   },
   {
@@ -619,8 +619,8 @@ export const choiceList = [
       "조용하고 여유로운 삶을 추구하며 혼자만의 시간을 보낸다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 10, money: 0 },
+      { health: 10, stress: -10, relationships: 0, money: 0 },
     ],
   },
   {
@@ -629,8 +629,8 @@ export const choiceList = [
       "독립적인 생활을 유지하며 개인의 삶에 더 집중한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 10, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -639,8 +639,8 @@ export const choiceList = [
       "집에서 조용한 생활을 즐기며 평온한 일상을 유지한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: -10, relationships: 0, money: 0 },
     ],
   },
   {
@@ -649,8 +649,8 @@ export const choiceList = [
       "은퇴를 지키고 여유로운 삶을 계속한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: 0, money: 10 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -659,8 +659,8 @@ export const choiceList = [
       "경제적 불안을 인정하고 현재 상황을 받아들인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 5 },
+      { health: -5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -669,8 +669,8 @@ export const choiceList = [
       "그들이 스스로 경험을 통해 배울 수 있도록 지켜본다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -679,8 +679,8 @@ export const choiceList = [
       "혼자만의 시간을 즐기며 외로움을 자연스럽게 받아들인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -689,8 +689,8 @@ export const choiceList = [
       "나이 듦의 자연스러운 과정으로 받아들인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: 5, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -699,8 +699,8 @@ export const choiceList = [
       "가능한 한 독립적으로 생활하며 도움을 최소화하려 한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: -10, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -709,8 +709,8 @@ export const choiceList = [
       "일부 사회적 활동을 계속하며 사회와의 연결을 유지한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -10, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -719,8 +719,8 @@ export const choiceList = [
       "자녀의 삶을 존중하며 혼자서 할 수 있는 만큼 해본다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: -5, money: 0 },
+      { health: -5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -729,8 +729,8 @@ export const choiceList = [
       "현재의 지식을 충분하다고 여기고 여유로운 삶을 산다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: 5, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -739,8 +739,8 @@ export const choiceList = [
       "과거는 이미 지나간 것이라 여기고 그대로 두기로 한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -749,8 +749,8 @@ export const choiceList = [
       "가능한 한 활기차게 지내며 속도를 유지하려 노력한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
+      { health: 10, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -759,8 +759,8 @@ export const choiceList = [
       "죽음에 대한 두려움을 줄이기 위해 다른 일에 집중한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 0, money: 0 },
+      { health: 5, stress: 0, relationships: -5, money: 0 },
     ],
   },
   {
@@ -769,8 +769,8 @@ export const choiceList = [
       "그들의 삶에 거의 관여하지 않고 그들이 스스로 결정하도록 둔다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 0, money: 0 },
     ],
   },
   {
@@ -779,8 +779,8 @@ export const choiceList = [
       "여전히 앞으로의 삶에 새로운 목표를 세우고 추구한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: -5, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -789,8 +789,8 @@ export const choiceList = [
       "떠난 이들을 그리워하며 추억을 되새긴다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
+      { health: 5, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -799,8 +799,8 @@ export const choiceList = [
       "자연스럽게 생을 받아들이고 더 이상 무리하지 않는다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 10, stress: 5, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -809,8 +809,8 @@ export const choiceList = [
       "말하지 못한 것들을 남기지 않기 위해 솔직하게 마음을 전한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: 0, relationships: 5, money: 0 },
     ],
   },
   {
@@ -819,8 +819,8 @@ export const choiceList = [
       "여전히 의미 있는 일을 찾으며 시간을 보낸다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -829,8 +829,8 @@ export const choiceList = [
       "자신의 내면을 돌아보며 고요한 시간을 보낸다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: -5, relationships: 5, money: 0 },
+      { health: 5, stress: -10, relationships: 0, money: 0 },
     ],
   },
   {
@@ -839,8 +839,8 @@ export const choiceList = [
       "더 이상의 치료는 받지 않고 자연스러운 과정을 받아들인다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: 5, stress: 5, relationships: 0, money: -5 },
+      { health: -5, stress: -5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -849,8 +849,8 @@ export const choiceList = [
       "이루지 못한 목표나 꿈을 후회한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: 5, relationships: -5, money: 0 },
+      { health: -5, stress: 5, relationships: 0, money: 0 },
     ],
   },
   {
@@ -859,7 +859,7 @@ export const choiceList = [
       "조용히 나 자신의 내면을 준비하며 홀로 생을 마무리한다.",
     ],
     statChanges: [
-      { health: 0, stress: 0, relationships: 0, money: 0 },
+      { health: -5, stress: -5, relationships: 10, money: 0 },
       { health: 0, stress: 0, relationships: 0, money: 0 },
     ],
   },
