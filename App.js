@@ -49,7 +49,7 @@ export default function App() {
           name="RecordDetailPage"
           component={RecordDetailPage}
           options={{
-            title: 'Record Detail',
+            title: "Record Detail",
             headerLeft: () => (
               <HeaderBackButton
                 onPress={() => navigation.goBack()}
@@ -57,11 +57,11 @@ export default function App() {
               />
             ),
             headerStyle: {
-              backgroundColor: '#0D0F35',
+              backgroundColor: "#0D0F35",
             },
-            headerTintColor: '#ffffff',
+            headerTintColor: "#ffffff",
             headerTitleStyle: {
-              fontWeight: 'bold',
+              fontWeight: "bold",
             },
           }}
         />
@@ -77,7 +77,11 @@ export default function App() {
         />
         <Stack.Screen name="QuizPage" component={QuizPage} />
         <Stack.Screen name="GamePage" component={GamePage} />
-        <Stack.Screen name="AiChatbot" component={AiChatbot} />
+        <Stack.Screen
+          name="AiChatbot"
+          component={AiChatbot}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

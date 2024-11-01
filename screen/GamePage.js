@@ -55,20 +55,20 @@ export default function GamePage({ navigation }) {
       newAge >= 80
     ) {
       setGameOver(true);
-      sendGameResult();
+      sendGameResult(newStats, newAge); // 게임 종료 시점의 스탯과 나이를 전달
     }
   };
 
-  const sendGameResult = async () => {
+  const sendGameResult = async (finalStats, finalAge) => {
     setLoading(true); // API 요청 전에 로딩 시작
     try {
       const gameResult = {
         message: {
-          age,
-          health: stats.health,
-          stress: stats.stress,
-          relationships: stats.relationships,
-          money: stats.money,
+          age: finalAge, // 최종 나이
+          health: finalStats.health, // 최종 health
+          stress: finalStats.stress, // 최종 stress
+          relationships: finalStats.relationships, // 최종 relationships
+          money: finalStats.money, // 최종 money
         },
       };
 
