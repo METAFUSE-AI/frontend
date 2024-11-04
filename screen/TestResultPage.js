@@ -57,8 +57,8 @@ const TestResultPage = ({ route, navigation }) => {
 
   // 세 가지 카테고리의 점수
   const metaCognitionScore = sumCategoryScores(0, 8);
-  const monitoringScore = sumCategoryScores(8, 16);
-  const metaControlScore = sumCategoryScores(16, 24);
+  const monitoringScore = sumCategoryScores(8, 12);
+  const metaControlScore = sumCategoryScores(12, 20);
 
   const radarChartData = [
     { label: "메타인식", value: metaCognitionScore },

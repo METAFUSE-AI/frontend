@@ -6,16 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import SubmitButton from "../components/SubmitButton";
 import axios from "axios";
-
-// 게임 요소 가져오기
 import { questionList, choiceList } from "../components/GameElements";
-
 import HeaderLogo from "../assets/images/headerLogo.png";
 import gameStates01 from "../assets/images/gameStates01.png";
 import gameStates02 from "../assets/images/gameStates02.png";
@@ -25,50 +21,64 @@ import gameStates04 from "../assets/images/gameStates04.png";
 const FLASK_API_URL = "http://localhost:5000/game-result";
 
 export default function GamePage({ navigation }) {
-  const [age, setAge] = useState(8); // 사용자 나이
+  const [age, setAge] = useState(8);
   const [stats, setStats] = useState({
-    health: 50, // ❤️
-    stress: 50, // 😰
-    relationships: 50, // 👥
-    money: 50, // 💰
+    health: 50,
+    stress: 50,
+    relationships: 50,
+    money: 50,
   });
-  const [questionIndex, setQuestionIndex] = useState(0); // 질문 리스트에서 현재 질문 인덱스 관리
-  const [gameStarted, setGameStarted] = useState(false); // 게임 시작 여부
-  const [gameOver, setGameOver] = useState(false); // 게임 종료 여부
-  const [feedback, setFeedback] = useState("응답이 없습니다."); // AI 피드백
-  const [loading, setLoading] = useState(true);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [feedback, setFeedback] = useState("응답이 없습니다.");
+  const [loading, setLoading] = useState(false);
+  const [introStep, setIntroStep] = useState(1); // 상태 추가
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
+  const handleNextIntroStep = () => {
+    setIntroStep(introStep + 1);
+  };
+
   const handleGameStart = () => {
-    setGameStarted(true); // 게임 시작 상태로 변경
+    setGameStarted(true);
   };
 
   const checkGameOver = (newStats, newAge) => {
     if (
       newStats.health <= 0 ||
+      newStats.health >= 100 ||
+      newStats.stress <= 0 ||
       newStats.stress >= 100 ||
       newStats.relationships <= 0 ||
+      newStats.relationships >= 100 ||
       newStats.money <= 0 ||
+      newStats.money >= 100 ||
       newAge >= 80
     ) {
       setGameOver(true);
-      sendGameResult(newStats, newAge); // 게임 종료 시점의 스탯과 나이를 전달
     }
   };
+
+  useEffect(() => {
+    if (gameOver) {
+      sendGameResult(stats, age);
+    }
+  }, [gameOver]);
 
   const sendGameResult = async (finalStats, finalAge) => {
     setLoading(true); // API 요청 전에 로딩 시작
     try {
       const gameResult = {
         message: {
-          age: finalAge, // 최종 나이
-          health: finalStats.health, // 최종 health
-          stress: finalStats.stress, // 최종 stress
-          relationships: finalStats.relationships, // 최종 relationships
-          money: finalStats.money, // 최종 money
+          age: finalAge,
+          health: finalStats.health,
+          stress: finalStats.stress,
+          relationships: finalStats.relationships,
+          money: finalStats.money,
         },
       };
 
@@ -80,10 +90,7 @@ export default function GamePage({ navigation }) {
         body: JSON.stringify(gameResult),
       });
 
-      // Parse the response
       const data = await res.json();
-
-      // Set feedback to the response text for display
       setFeedback(data.reply);
     } catch (error) {
       console.error("Error:", error);
@@ -143,40 +150,8 @@ export default function GamePage({ navigation }) {
         ]}
         style={styles.scrollView}
       >
-        {/* 게임이 시작된 후에만 나이 및 상태를 표시 */}
-        {gameStarted && (
-          <>
-            <View style={styles.gameAge}>
-              <Text style={styles.ageText}>나이: {age}세</Text>
-            </View>
-
-            <View style={styles.gameStates}>
-              <View>
-                {/* 게임 상태 - 건강 */}
-                <Image style={styles.stateImg} source={gameStates01} />
-                <Text style={styles.stateText}>{stats.health}</Text>
-              </View>
-              <View>
-                {/* 게임 상태 - 스트레스 */}
-                <Image style={styles.stateImg} source={gameStates02} />
-                <Text style={styles.stateText}>{stats.stress}</Text>
-              </View>
-              <View>
-                {/* 게임 상태 - 대인 관계 */}
-                <Image style={styles.stateImg} source={gameStates03} />
-                <Text style={styles.stateText}>{stats.relationships}</Text>
-              </View>
-              <View>
-                {/* 게임 상태 - 돈 */}
-                <Image style={styles.stateImg} source={gameStates04} />
-                <Text style={styles.stateText}>{stats.money}</Text>
-              </View>
-            </View>
-          </>
-        )}
-
-        <View style={styles.gameScreen}>
-          {!gameStarted ? (
+        {!gameStarted && introStep === 1 && (
+          <View style={styles.gameScreen}>
             <Text style={styles.questionText}>
               <Text style={styles.boldText}>
                 인간은 태초부터 선택의 연속 속에 존재해왔습니다.
@@ -218,49 +193,156 @@ export default function GamePage({ navigation }) {
                 어떤 선택을 하시겠습니까?
               </Text>
             </Text>
-          ) : gameOver ? (
-            <>
-              <Text style={styles.responseTitle}>AI 피드백:</Text>
-              {loading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="small" color="#0000ff" />
-                  <Text style={styles.response}>응답 생성 중입니다...</Text>
-                </View>
-              ) : (
-                <Text style={styles.response}>{feedback}</Text>
-              )}
-            </>
-          ) : (
-            <>
-              <Text style={styles.response}>{questionList[questionIndex]}</Text>
-            </>
-          )}
-        </View>
+            <SubmitButton onPress={handleNextIntroStep} text="다음으로" />
+          </View>
+        )}
 
-        <View style={styles.buttonContainer}>
-          {!gameStarted ? (
-            // 게임 시작 버튼
+        {!gameStarted && introStep === 2 && (
+          <View style={styles.gameScreen}>
+            <Text style={styles.questionText}>
+              <Text style={styles.boldText}>게임 설명</Text>
+              {"\n"}
+              {"\n"}이 게임은 선택을 통해 나의 삶의 경로와 결과를 경험하는
+              시뮬레이션입니다. 각 선택은 나의 건강, 스트레스, 대인 관계, 자본
+              등 인생의 핵심 요소에 영향을 미치며, 신중한 결정이 요구됩니다.
+              아래는 각 스탯의 역할과 게임 종료 기준에 대한 설명입니다.
+              {"\n"}
+              {"\n"}
+              <Text style={styles.boldText}>1. 건강 (Health)</Text>
+              {"\n"}
+              건강은 삶의 지속 가능성을 상징하는 지표입니다. 0에 가까워질수록
+              신체적 한계에 도달하게 되고, 반대로 100에 다다를 경우 과도한
+              부담으로 신체가 손상될 위험이 커집니다.{"\n"}
+              <Text style={styles.boldText}>
+                건강이 0 이하 또는 100 이상일 경우, 신체는 더 이상 생존할 수
+                없으며 게임이 종료됩니다.
+              </Text>
+              {"\n"}
+              {"\n"}
+              <Text style={styles.boldText}>2. 스트레스 (Stress)</Text>
+              {"\n"}
+              스트레스는 삶의 압박과 정신적 부담을 나타내는 지표입니다.
+              스트레스가 100에 가까워질수록 정신적 안정과 행복을 유지하기
+              어려워지며, 건강에 심각한 영향을 미칩니다.{"\n"}
+              <Text style={styles.boldText}>
+                스트레스가 0 이하 또는 100 이상일 경우, 정신적 한계에 도달하여
+                게임이 종료됩니다.
+              </Text>
+              {"\n"}
+              {"\n"}
+              <Text style={styles.boldText}>3. 대인 관계 (Relationships)</Text>
+              {"\n"}
+              대인 관계는 사회적 지지와 정서적 안정의 척도입니다. 관계가 0에
+              가깝다면 고립 상태에 빠지며, 100에 가까우면 인간관계의 불균형이
+              발생하여 갈등이나 부담을 초래할 수 있습니다.{"\n"}
+              <Text style={styles.boldText}>
+                대인 관계가 0 이하 또는 100 이상이 될 경우, 고립이나 과도한
+                갈등으로 인해 게임이 종료됩니다.
+              </Text>
+              {"\n"}
+              <Text style={styles.boldText}>4. 자본 (Money)</Text>
+              {"\n"}
+              자본은 삶의 경제적 안정을 나타내는 지표입니다. 자본이 0에 가까우면
+              생존을 위한 필수 자원이 부족하게 되고, 반대로 100에 도달할 경우
+              과도한 재정 관리에 따른 스트레스와 혼란이 발생할 수 있습니다.
+              {"\n"}
+              <Text style={styles.boldText}>
+                자본이 0 이하 또는 100 이상일 경우, 생존 불가능 상태에 도달하여
+                게임이 종료됩니다.
+              </Text>
+              {"\n"}
+              {"\n"}
+              <Text style={styles.boldText}>5. 연령 (Age)</Text>
+              {"\n"}
+              연령은 플레이어의 인생 단계와 삶의 진행을 상징합니다. 연령이
+              80세에 도달하면, 자연스러운 인생의 마무리로서 게임이 종료됩니다.
+              {"\n"}
+              <Text style={styles.boldText}>
+                연령이 80세에 도달할 경우, 인생의 여정이 끝나며 게임이
+                종료됩니다.
+              </Text>
+              {"\n"}
+              {"\n"}
+              <Text style={styles.boldText}>
+                이와 같은 기준을 통해, 당신의 선택이 어떤 방향으로 나아가고
+                있는지 주기적으로 확인하고, 각 요소의 균형을 유지하며 여정을
+                계속하십시오. 선택의 결과에 따라 삶의 질이 변화하고, 이를 통해
+                당신의 이야기를 만들어 나가게 될 것입니다.
+              </Text>
+            </Text>
             <SubmitButton onPress={handleGameStart} text="게임 시작하기" />
-          ) : gameOver ? (
-            // 게임 종료 시 확인 버튼 (MainPage로 이동)
-            <SubmitButton
-              onPress={() => navigation.navigate("MainPage")}
-              text="확인"
-            />
-          ) : (
-            // 선택지 렌더링
+          </View>
+        )}
+
+        {gameStarted && (
+          <>
+            <View style={styles.gameAge}>
+              <Text style={styles.ageText}>나이: {age}세</Text>
+            </View>
+
+            <View style={styles.gameStates}>
+              <View>
+                {/* 게임 상태 - 건강 */}
+                <Image style={styles.stateImg} source={gameStates01} />
+                <Text style={styles.stateText}>{stats.health}</Text>
+              </View>
+              <View>
+                {/* 게임 상태 - 스트레스 */}
+                <Image style={styles.stateImg} source={gameStates02} />
+                <Text style={styles.stateText}>{stats.stress}</Text>
+              </View>
+              <View>
+                {/* 게임 상태 - 대인 관계 */}
+                <Image style={styles.stateImg} source={gameStates03} />
+                <Text style={styles.stateText}>{stats.relationships}</Text>
+              </View>
+              <View>
+                {/* 게임 상태 - 돈 */}
+                <Image style={styles.stateImg} source={gameStates04} />
+                <Text style={styles.stateText}>{stats.money}</Text>
+              </View>
+            </View>
+          </>
+        )}
+
+        {gameStarted && !gameOver && (
+          <View style={styles.gameScreen}>
+            <Text style={styles.response}>{questionList[questionIndex]}</Text>
+          </View>
+        )}
+
+        {gameOver ? (
+          <View style={styles.gameScreen}>
+            <Text style={styles.responseTitle}>AI 피드백:</Text>
+            {loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#0000ff" />
+                <Text style={styles.response}>응답 생성 중입니다...</Text>
+              </View>
+            ) : (
+              <>
+                <Text style={styles.response}>{feedback}</Text>
+                <SubmitButton
+                  onPress={() => navigation.navigate("MainPage")}
+                  text="확인"
+                />
+              </>
+            )}
+          </View>
+        ) : (
+          gameStarted && (
             <View>
               <SubmitButton
                 onPress={() => handleChoice(1)}
-                text={`선택 1: ${choiceList[questionIndex].choices[0]}`} // 수정된 부분
+                text={`선택 1: ${choiceList[questionIndex].choices[0]}`}
               />
               <SubmitButton
                 onPress={() => handleChoice(2)}
-                text={`선택 2: ${choiceList[questionIndex].choices[1]}`} // 수정된 부분
+                text={`선택 2: ${choiceList[questionIndex].choices[1]}`}
               />
             </View>
-          )}
-        </View>
+          )
+        )}
       </ScrollView>
     </View>
   );
