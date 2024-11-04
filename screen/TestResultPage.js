@@ -9,7 +9,6 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
@@ -23,6 +22,8 @@ import TestResult03 from "../assets/images/TestResult03.png";
 const TestResultPage = ({ route, navigation }) => {
   const { answers = {}, totalScore } = route.params || {};
   const [resultImage, setResultImage] = useState(TestResult03);
+  const [improvementRecommendation, setImprovementRecommendation] =
+    useState("추천된 향상법을 확인하세요.");
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -32,11 +33,13 @@ const TestResultPage = ({ route, navigation }) => {
     navigation.navigate("MyPage");
   };
 
+  // 점수 분류표를 참고하여 향상법을 추천하는 코드
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
 
+    // 총점에 따라 결과 이미지 업데이트
     if (totalScore >= 40) {
       setResultImage(TestResult01);
     } else if (totalScore >= 25) {
@@ -44,38 +47,75 @@ const TestResultPage = ({ route, navigation }) => {
     } else {
       setResultImage(TestResult03);
     }
+
+    // 최저 점수 카테고리에 따른 향상법 추천
+    const lowestCategory = getLowestCategory();
+    let recommendation = "";
+
+    if (
+      lowestCategory === "메타인식" ||
+      lowestCategory === "자기능력과 자기조절" ||
+      lowestCategory === "행동 평가"
+    ) {
+      recommendation = "게임 추천";
+    } else if (
+      lowestCategory === "타인 비교" ||
+      lowestCategory === "반성" ||
+      lowestCategory === "결정"
+    ) {
+      recommendation = "일기 쓰기 추천";
+    } else if (
+      lowestCategory === "상황 평가" ||
+      lowestCategory === "다양성" ||
+      lowestCategory === "최적"
+    ) {
+      recommendation = "퀴즈 추천";
+    }
+
+    console.log("최저 카테고리: ", lowestCategory);
+    console.log("추천: ", recommendation);
+
+    setImprovementRecommendation(recommendation);
   }, [totalScore, navigation]);
 
-  // 세 가지 카테고리별로 점수를 합산하는 함수
-  const sumCategoryScores = (start, end) => {
-    return Object.values(answers)
-      .slice(start, end)
-      .reduce((sum, value) => sum + value, 0);
-  };
+  const sumCategoryScores = (indices) =>
+    indices.reduce((sum, idx) => sum + (answers[idx] || 0), 0);
 
-  const categories = ["Meta Cognition", "Monitoring", "Meta Control"];
+  const metaCognitionScore = sumCategoryScores([0, 1, 2, 3]) / 2; // 자기인식 및 자기판단
+  const selfRegulationScore = sumCategoryScores([4, 5]); // 자기능력과 자기조절
+  const otherComparisonScore = sumCategoryScores([6, 7]); // 타인 비교
+  const behaviorEvalScore = sumCategoryScores([8, 9]); // 행동 평가
+  const situationEvalScore = sumCategoryScores([10, 11]); // 상황 평가
+  const diversityScore = sumCategoryScores([12, 13]); // 다양성
+  const reflectionScore = sumCategoryScores([14, 15]); // 반성
+  const optimalityScore = sumCategoryScores([16, 17]); // 최적
+  const decisionScore = sumCategoryScores([18, 19]); // 결정
 
-  // 세 가지 카테고리의 점수
-  const metaCognitionScore = sumCategoryScores(0, 8);
-  const monitoringScore = sumCategoryScores(8, 12);
-  const metaControlScore = sumCategoryScores(12, 20);
+  // Summing the overall scores based on the defined subcategories
+  const totalMetaCognition =
+    metaCognitionScore + selfRegulationScore + otherComparisonScore;
+  const totalMonitoring = behaviorEvalScore + situationEvalScore;
+  const totalMetaControl =
+    diversityScore + reflectionScore + optimalityScore + decisionScore;
+  const overallTotalScore =
+    totalMetaCognition + totalMonitoring + totalMetaControl;
 
+  // Radar chart data array
   const radarChartData = [
-    { label: "메타인식", value: metaCognitionScore },
-    { label: "모니터링", value: monitoringScore },
-    { label: "메타통제", value: metaControlScore },
+    { label: "메타인식", value: totalMetaCognition },
+    { label: "모니터링", value: totalMonitoring },
+    { label: "메타통제", value: totalMetaControl },
   ];
 
-  const chartConfig = {
-    backgroundColor: "#0D0F35",
-    backgroundGradientFrom: "#0D0F35",
-    backgroundGradientTo: "#0D0F35",
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
+  const getLowestCategory = () => {
+    const scores = [
+      { category: "메타인식", score: totalMetaCognition },
+      { category: "모니터링", score: totalMonitoring },
+      { category: "메타통제", score: totalMetaControl },
+    ];
+    scores.sort((a, b) => a.score - b.score);
+    return scores[0].category;
   };
-
-  const screenWidth = Dimensions.get("window").width;
 
   const shareResultOnKakao = async () => {
     try {
@@ -86,14 +126,16 @@ const TestResultPage = ({ route, navigation }) => {
             webUrl: "http://localhost:8081/",
             mobileWebUrl: "http://localhost:8081/",
           },
-          description: `I scored ${totalScore} on this test!`,
+          description: `I scored ${overallTotalScore} on this test!`,
         },
         buttons: [
           {
             title: "View My Test Results",
             link: {
-              androidExecutionParams: [{ key: "score", value: totalScore }],
-              iosExecutionParams: [{ key: "score", value: totalScore }],
+              androidExecutionParams: [
+                { key: "score", value: overallTotalScore },
+              ],
+              iosExecutionParams: [{ key: "score", value: overallTotalScore }],
             },
           },
         ],
@@ -101,35 +143,28 @@ const TestResultPage = ({ route, navigation }) => {
       console.log(response);
     } catch (e) {
       console.error(e);
-      console.error(e.message);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
+      <View style={styles.customHeader}></View>
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scrollView}
         keyboardShouldPersistTaps="handled"
+        style={{ paddingBottom: 20 }}
       >
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
+          <Text style={styles.resultText}>총점: {overallTotalScore}점</Text>
         </View>
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
           <RadarChart
-            data={radarChartData.map((item) => ({
-              label: item.label,
-              value: item.value,
-            }))}
+            data={radarChartData}
             gradientColor={{
               startColor: "#FF9432",
               endColor: "#FFF8F1",
@@ -147,18 +182,19 @@ const TestResultPage = ({ route, navigation }) => {
           />
         </View>
         <View>
-          <TouchableOpacity
-            onPress={shareResultOnKakao}
-            style={styles.kakaoShareBtn}
-          >
-            카카오톡 공유하기
-          </TouchableOpacity>
+          <Text style={styles.recommendationText}>
+            향상 추천: {improvementRecommendation}
+          </Text>
         </View>
-        <View>
-          <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
-            <Text style={styles.navButtonText}>마이페이지로 이동</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={shareResultOnKakao}
+          style={styles.kakaoShareBtn}
+        >
+          카카오톡 공유하기
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
+          <Text style={styles.navButtonText}>마이페이지로 이동</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -245,6 +281,11 @@ const styles = StyleSheet.create({
   radarChart: {
     marginVertical: 8,
     borderRadius: 16,
+  },
+  recommendationText: {
+    color: "#ffffff",
+    fontSize: 18,
+    marginTop: 10,
   },
 });
 

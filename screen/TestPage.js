@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Modal,
+  Pressable,
 } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
 import { createTest } from "../components/ApiUtilsi/"; // api.js에서 createTest 함수 임포트
 import HeaderLogo from "../assets/images/headerLogo.png";
 
@@ -33,9 +34,11 @@ const questions = [
   "나는 나의 현재 상태에 대해 생각한 뒤 어떤 행동을 해야 할지 결정한다.",
   "나는 결정하기 전 다른 사람들도 나의 결정이 적절하다고 할지 생각해본다.",
 ];
+
 const TestPage = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
+  const [modalVisible, setModalVisible] = useState(false); // 모달 가시성 상태
   const scrollViewRef = useRef();
 
   const handleLogoPress = () => {
@@ -49,7 +52,7 @@ const TestPage = ({ navigation }) => {
   }, [navigation]);
 
   const renderQuestion = (questionIndex) => {
-    const questionNumber = (currentPage - 1) * 6 + questionIndex + 1;
+    const questionNumber = (currentPage - 1) * 5 + questionIndex + 1; // 각 페이지당 5개 질문
     return (
       <View key={questionIndex} style={styles.questionContainer}>
         <Text style={styles.questionText}>
@@ -85,32 +88,38 @@ const TestPage = ({ navigation }) => {
 
   const handleNextPage = () => {
     if (currentPage < 4) {
+      // 총 4페이지
       setCurrentPage(currentPage + 1);
       scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
     } else {
-      const totalScore = Object.values(answers).reduce(
-        (sum, value) => sum + value,
-        0
-      );
-      const now = new Date().toISOString();
-      const testData = {
-        //데이터 불러오기
-        member: { memberId: 1 },
-        testScore: totalScore,
-        question: JSON.stringify(answers),
-        testDate: now,
-        createdAt: now,
-        updatedAt: now,
-      };
+      // 모든 질문에 답변했는지 확인
+      if (Object.keys(answers).length < questions.length) {
+        setModalVisible(true); // 모달 표시
+      } else {
+        const totalScore = Object.values(answers).reduce(
+          (sum, value) => sum + value,
+          0
+        );
+        const now = new Date().toISOString();
+        const testData = {
+          //데이터 불러오기
+          member: { memberId: 1 },
+          testScore: totalScore,
+          question: JSON.stringify(answers),
+          testDate: now,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-      createTest(testData)
-        .then((response) => {
-          console.log("서버 응답:", response);
-          navigation.navigate("TestResultPage", { answers, totalScore });
-        })
-        .catch((error) => {
-          console.error("테스트 전송 중 오류:", error);
-        });
+        createTest(testData)
+          .then((response) => {
+            console.log("서버 응답:", response);
+            navigation.navigate("TestResultPage", { answers, totalScore });
+          })
+          .catch((error) => {
+            console.error("테스트 전송 중 오류:", error);
+          });
+      }
     }
   };
 
@@ -121,14 +130,14 @@ const TestPage = ({ navigation }) => {
     }
   };
 
+  // 모달 닫기
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
+      <View style={styles.customHeader}></View>
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
@@ -136,7 +145,8 @@ const TestPage = ({ navigation }) => {
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {Array.from({ length: 6 }, (_, i) => renderQuestion(i))}
+        {Array.from({ length: 5 }, (_, i) => renderQuestion(i))}
+        {/* 각 페이지당 5개 질문 */}
       </ScrollView>
       <View style={styles.footer}>
         <TouchableOpacity
@@ -158,6 +168,25 @@ const TestPage = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* 모달 구현 */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>
+            질문이 모두 체크되었는지 확인해주세요.{"\n"}
+            모든 항목에 대한 응답이 완료되어야만{"\n"}
+            테스트 결과를 확인할 수 있습니다.
+          </Text>
+          <Pressable style={styles.button} onPress={closeModal}>
+            <Text style={styles.buttonText}>확인</Text>
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -166,16 +195,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0D0F35",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-    backgroundColor: "#0D0F35",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
   customHeader: {
     height: 50,
@@ -240,6 +259,26 @@ const styles = StyleSheet.create({
   navigationButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalText: {
+    color: "white",
+    marginBottom: 20,
+    fontSize: 18,
+    textAlign: "center",
+  },
+  button: {
+    backgroundColor: "#8881EA",
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
   },
 });
 

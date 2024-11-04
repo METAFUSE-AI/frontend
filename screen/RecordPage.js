@@ -6,11 +6,13 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  Pressable,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { fetchRecords } from '../components/ApiUtilsi';
+import { fetchRecords } from "../components/ApiUtilsi";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
@@ -19,10 +21,11 @@ export default function RecordPage({ navigation }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pressedId, setPressedId] = useState(null);
 
   const loadRecords = async () => {
     try {
-      const data = await fetchRecords(); // 기록 데이터 가져오기
+      const data = await fetchRecords();
       setRecords(data);
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -47,7 +50,11 @@ export default function RecordPage({ navigation }) {
   };
 
   const handleRecordPress = (recordId) => {
-    navigation.navigate("RecordDetailPage", { recordId });
+    setPressedId(recordId);
+    setTimeout(() => {
+      setPressedId(null);
+      navigation.navigate("RecordDetailPage", { recordId });
+    }, 100);
   };
 
   return (
@@ -63,7 +70,8 @@ export default function RecordPage({ navigation }) {
       </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        style={styles.scrollView}   // scrollView 스타일을 추가
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
       >
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
@@ -71,22 +79,35 @@ export default function RecordPage({ navigation }) {
           <Text style={styles.errorText}>Error: {error}</Text>
         ) : records.length > 0 ? (
           records.map((record) => (
-            <TouchableOpacity
+            <Pressable
               key={record.recordId}
               onPress={() => handleRecordPress(record.recordId)}
-              style={styles.recordItem}
+              style={({ pressed }) => [
+                styles.recordItem,
+                pressed && styles.recordItemPressed,
+                pressedId === record.recordId && styles.recordItemPressed,
+              ]}
             >
-              <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
-              <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
-            </TouchableOpacity>
+              <View style={styles.recordContent}>
+                <View style={styles.recordGlow} />
+                <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
+                <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
+              </View>
+            </Pressable>
           ))
         ) : (
           <Text style={styles.noRecordsText}>No records found</Text>
         )}
       </ScrollView>
-      <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
-        <Icon name="plus" size={30} color="#000" />
-      </TouchableOpacity>
+      <Pressable
+        style={({ pressed }) => [
+          styles.addButton,
+          pressed && styles.addButtonPressed,
+        ]}
+        onPress={handleAddPress}
+      >
+        <Icon name="plus" size={24} color="#0D0F35" />
+      </Pressable>
     </View>
   );
 }
@@ -101,64 +122,118 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingLeft: 10,
     backgroundColor: "#0D0F35",
+    borderBottomWidth: 0.5,
+    borderBottomColor: "rgba(255,255,255,0.1)",
   },
   logoContainer: {
     alignItems: "center",
+    marginVertical: 20,
   },
   headerLogo: {
-    width: "70%",
+    width: "80%",
     height: 100,
+    resizeMode: "contain",
   },
   scrollView: {
-    flex: 1,                    // ScrollView가 화면의 나머지 부분을 차지하게 함
-    marginBottom: 100,           // 버튼과 겹치지 않도록 여백 추가
+    flex: 1,
+    marginBottom: 100,
   },
   scrollViewContent: {
-    paddingBottom: 20,          // 하단 여백 추가
+    paddingHorizontal: 16,
+    paddingBottom: 20,
   },
   recordItem: {
-    padding: 15,
-    borderBottomColor: "#888",
-    borderBottomWidth: 1,
-    backgroundColor: "#344C64",
-    borderRadius: 10,
-    marginHorizontal: 10,
-    marginVertical: 5,
+    marginVertical: 8,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#fff",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  recordContent: {
+    padding: 16,
+    position: "relative",
+  },
+  recordGlow: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  recordItemPressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.9,
+    backgroundColor: "rgba(255, 255, 255, 0.12)",
   },
   recordTitle: {
-    fontSize: 18,
+    fontSize: 17,
+    fontWeight: "600",
     color: "#fff",
+    marginBottom: 4,
+    letterSpacing: 0.5,
   },
   recordAnswer: {
-    fontSize: 14,
-    color: "#333",
+    fontSize: 15,
+    color: "rgba(255,255,255,0.8)",
+    lineHeight: 20,
   },
   noRecordsText: {
-    color: "#fff",
+    color: "rgba(255,255,255,0.6)",
     textAlign: "center",
     marginTop: 20,
+    fontSize: 17,
   },
   addButton: {
-    backgroundColor: "#F3F3F3",
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    backgroundColor: "#ffffff",
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "column",
     position: "absolute",
-    bottom: 30,
-    left: "50%",
-    transform: [{ translateX: -40 }],
+    bottom: 32,
+    right: 24,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+  addButtonPressed: {
+    transform: [{ scale: 0.96 }],
+    backgroundColor: "rgba(255,255,255,0.9)",
   },
   loadingText: {
-    color: "#fff",
+    color: "rgba(255,255,255,0.6)",
     textAlign: "center",
     marginTop: 20,
+    fontSize: 17,
   },
   errorText: {
-    color: "red",
+    color: "#FF453A",
     textAlign: "center",
     marginTop: 20,
+    fontSize: 17,
   },
 });

@@ -8,7 +8,6 @@ import {
   Text,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function MainPage({ navigation }) {
@@ -49,45 +48,52 @@ export default function MainPage({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        style={styles.scrollView}
+        contentContainerStyle={styles.scrollView}
+        showsVerticalScrollIndicator={false} // 스크롤바 숨기기
       >
+        <View style={styles.customHeader}></View>
         <TouchableOpacity
           onPress={handleLogoPress}
           style={styles.logoContainer}
         >
           <Image source={HeaderLogo} style={styles.headerLogo} />
         </TouchableOpacity>
+
+        {/* 항상 중앙에 위치하는 메타인지 테스트 섹션 */}
         <View style={styles.testContainer}>
-          <Text style={styles.testTitle}>메타인지란?</Text>
+          <Text style={styles.testTitle}>메타인지 테스트</Text>
           <Text style={styles.testDescription}>
-            자신의 인지과정에 대한 이해와 통제를 의미합니다
+            스스로에 대해 더 잘 알고 싶으신가요?{"\n"}
+            그렇다면, 잠시 멈춰서 나 자신에게 {"\n"}몇 가지 질문을 던져보는 건
+            어떨까요?
           </Text>
           <TouchableOpacity onPress={handleTestPress} style={styles.testButton}>
-            <Text style={styles.testButtonText}>테스트하러가기</Text>
+            <Text style={styles.testButtonText}>테스트 시작하기</Text>
           </TouchableOpacity>
         </View>
+
+        {/* 아이콘 컨테이너 */}
         <View style={styles.iconContainer}>
           <TouchableOpacity
             onPress={handleMyPagePress}
             style={styles.iconButton}
           >
-            <Icon name="user" size={80} color="#fff" />
+            <Icon name="user" size={60} color="#8881EA" />
             <Text style={styles.iconText}>마이페이지</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleRecordPress}
             style={styles.iconButton}
           >
-            <Icon name="book" size={80} color="#fff" />
+            <Icon name="book" size={60} color="#8881EA" />
             <Text style={styles.iconText}>기록</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleQuizPress} style={styles.iconButton}>
-            <Icon name="question-circle" size={80} color="#fff" />
+            <Icon name="question-circle" size={60} color="#8881EA" />
             <Text style={styles.iconText}>퀴즈</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleGamePress} style={styles.iconButton}>
-            <Icon name="gamepad" size={80} color="#fff" />
+            <Icon name="gamepad" size={60} color="#8881EA" />
             <Text style={styles.iconText}>게임</Text>
           </TouchableOpacity>
         </View>
@@ -108,72 +114,112 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D0F35",
   },
   scrollView: {
-    flex: 1,
+    flexGrow: 1,
+    padding: 20,
+  },
+  customHeader: {
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
+    zIndex: 10,
   },
   logoContainer: {
     alignItems: "center",
     marginVertical: 20,
   },
   headerLogo: {
-    width: "70%",
+    width: "80%",
     height: 100,
   },
   testContainer: {
-    backgroundColor: "#8881EA",
-    padding: 20,
-    width: "80%", // 가로 크기를 80%로 설정
-    alignSelf: "center", // 중앙 정렬
-    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    padding: 30,
+    borderRadius: 20, // 더 부드러운 둥근 모서리
+    width: "85%",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.2, // 그림자 강도 증가
+    shadowRadius: 10,
+    elevation: 5,
     alignItems: "center",
-    marginBottom: 60, // 4개의 버튼과 30px 이격
+    marginBottom: 40,
+    alignSelf: "center", // 중앙 정렬
+    marginTop: 20, // 상단 마진 추가
   },
   testTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 22, // 제목 크기 증가
+    fontWeight: "700", // 볼드체
+    color: "#333",
     marginBottom: 10,
-    color: "#000",
+    textAlign: "center", // 텍스트 중앙 정렬
   },
   testDescription: {
     fontSize: 16,
-    color: "#000",
+    color: "#666",
     textAlign: "center",
     marginBottom: 20,
+    lineHeight: 24, // 줄 높이 조정
   },
   testButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    backgroundColor: "#8881EA", // 버튼 배경 색상
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 25, // 둥근 버튼
+    alignItems: "center",
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   testButtonText: {
-    color: "#000",
+    color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "600",
   },
   iconContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
+    justifyContent: "space-around", // 공간 균형 조정
     alignItems: "center",
-    marginVertical: 20,
+    marginTop: 20,
   },
   iconButton: {
-    width: "40%",
+    width: "40%", // 아이콘 버튼 크기 조정
     alignItems: "center",
-    margin: 10,
+    marginVertical: 15,
   },
   iconText: {
     color: "#FFFFFF",
-    marginTop: 10,
+    marginTop: 5,
+    fontWeight: "500",
   },
   chatbotButton: {
     position: "absolute",
-    bottom: 20,
-    right: 20,
+    bottom: 30,
+    right: 30,
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
 });
