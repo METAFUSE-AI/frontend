@@ -1,22 +1,40 @@
 // QuizResultPage.js
-import React from "react";
-import { View, StyleSheet, Text, Image, TouchableOpacity } from "react-native";
+
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { HeaderBackButton } from "@react-navigation/elements";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 const QuizResultPage = ({ route, navigation }) => {
-  const { correctCount, totalQuestions } = route.params; // 퀴즈 결과에서 전달된 파라미터
+  const { correctCount, totalCount } = route.params; // 전달받은 매개변수
+
+  const handleRetakeQuiz = () => {
+    navigation.navigate('QuizPage'); // 퀴즈 페이지로 다시 이동
+  };
+
+  const handleGoToMain = () => {
+    navigation.navigate('MainPage'); // 메인 페이지로 이동
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.logoContainer}>
+      <View style={styles.customHeader}>
+        <HeaderBackButton
+          onPress={handleGoToMain} // 메인으로 돌아가기
+          tintColor="#ffffff"
+        />
+      </View>
+      <TouchableOpacity onPress={handleGoToMain} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <View style={styles.resultContainer}>
-        <Text style={styles.resultText}>
-          총 {totalQuestions}문제 중 {correctCount}개 맞았습니다!
-        </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("QuizPage")} style={styles.retryButton}>
-          <Text style={styles.retryButtonText}>다시 시작하기</Text>
+        <Text style={styles.resultText}>퀴즈 완료!</Text>
+        <Text style={styles.resultText}>맞춘 개수: {correctCount} / {totalCount}</Text>
+        <TouchableOpacity style={styles.nextButton} onPress={handleRetakeQuiz}>
+          <Text style={styles.buttonText}>다시 풀기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.nextButton} onPress={handleGoToMain}>
+          <Text style={styles.buttonText}>메인으로</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -27,31 +45,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0D0F35",
+    paddingHorizontal: 20,
+  },
+  customHeader: {
+    height: 50,
     justifyContent: "center",
-    alignItems: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 20,
   },
   headerLogo: {
     width: "70%",
     height: 100,
   },
   resultContainer: {
-    alignItems: "center",
+    alignItems: 'center',
+    marginTop: 50,
   },
   resultText: {
     fontSize: 24,
-    color: "#fff",
+    color: '#fff',
     marginBottom: 20,
   },
-  retryButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
+  nextButton: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
   },
-  retryButtonText: {
+  buttonText: {
     color: "#fff",
     fontSize: 18,
   },

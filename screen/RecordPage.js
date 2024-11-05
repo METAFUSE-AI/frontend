@@ -10,10 +10,10 @@ import {
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchRecords } from '../components/ApiUtilsi';
 
 import HeaderLogo from "../assets/images/headerLogo.png";
-import RecordContainer from "../components/RecordContainer";
 
 export default function RecordPage({ navigation }) {
   const [records, setRecords] = useState([]);
@@ -22,8 +22,9 @@ export default function RecordPage({ navigation }) {
 
   const loadRecords = async () => {
     try {
-      const data = await fetchRecords(); // 기록 데이터 가져오기
-      setRecords(data);
+      const username = await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
+      const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
+      setRecords(data); // records에 데이터를 직접 할당
     } catch (error) {
       console.error("Error fetching records:", error);
       setError("Error fetching records");
@@ -63,7 +64,7 @@ export default function RecordPage({ navigation }) {
       </TouchableOpacity>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        style={styles.scrollView}   // scrollView 스타일을 추가
+        style={styles.scrollView}
       >
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
@@ -110,11 +111,11 @@ const styles = StyleSheet.create({
     height: 100,
   },
   scrollView: {
-    flex: 1,                    // ScrollView가 화면의 나머지 부분을 차지하게 함
-    marginBottom: 100,           // 버튼과 겹치지 않도록 여백 추가
+    flex: 1,
+    marginBottom: 100,
   },
   scrollViewContent: {
-    paddingBottom: 20,          // 하단 여백 추가
+    paddingBottom: 20,
   },
   recordItem: {
     padding: 15,
@@ -130,35 +131,28 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   recordAnswer: {
-    fontSize: 14,
-    color: "#333",
-  },
-  noRecordsText: {
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 20,
-  },
-  addButton: {
-    backgroundColor: "#F3F3F3",
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    position: "absolute",
-    bottom: 30,
-    left: "50%",
-    transform: [{ translateX: -40 }],
+    fontSize: 16,
+    color: "#ccc",
   },
   loadingText: {
-    color: "#fff",
     textAlign: "center",
-    marginTop: 20,
+    color: "#fff",
   },
   errorText: {
-    color: "red",
     textAlign: "center",
-    marginTop: 20,
+    color: "red",
+  },
+  noRecordsText: {
+    textAlign: "center",
+    color: "#fff",
+  },
+  addButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    backgroundColor: "#fff",
+    borderRadius: 50,
+    padding: 15,
+    elevation: 3,
   },
 });

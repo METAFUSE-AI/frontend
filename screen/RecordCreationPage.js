@@ -9,12 +9,11 @@ import {
   TextInput,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
 
 // 기록 작성 페이지
-
 export default function RecordCreationPage({ route, navigation }) {
   const { question } = route.params;
   const [userInput, setUserInput] = useState("");
@@ -25,16 +24,24 @@ export default function RecordCreationPage({ route, navigation }) {
 
   const handleCompletePress = async () => {
     console.log("기록 완료 버튼 클릭");
-  
+
     try {
+      // AsyncStorage에서 username 가져오기
+      const storedUsername = await AsyncStorage.getItem('username');
+      console.log("저장된 username:", storedUsername);
+      if (!storedUsername) {
+        console.error("username이 세션에 존재하지 않습니다.");
+        return;
+      }
+
       const record = {
         recordQuestion: question,
         recordContents: userInput,
-        member: { memberId: 1 }, // 실제로는 적절한 memberId로 설정
+        member: { username: storedUsername },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
-  
+
       const response = await fetch("http://localhost:8080/records/create", {
         method: "POST",
         headers: {
@@ -42,7 +49,7 @@ export default function RecordCreationPage({ route, navigation }) {
         },
         body: JSON.stringify(record),
       });
-  
+
       if (response.ok) {
         navigation.navigate("RecordPage");
       } else {
@@ -52,6 +59,7 @@ export default function RecordCreationPage({ route, navigation }) {
       console.error("Error:", error);
     }
   };
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -70,10 +78,7 @@ export default function RecordCreationPage({ route, navigation }) {
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { alignItems: "center" },
-        ]}
+        contentContainerStyle={[styles.scrollViewContent, { alignItems: "center" }]}
         style={styles.container}
       >
         <RecordContainer text={question} />
@@ -83,6 +88,8 @@ export default function RecordCreationPage({ route, navigation }) {
           placeholderTextColor="#ccc"
           value={userInput}
           onChangeText={setUserInput}
+          multiline
+          textAlignVertical="top" // 입력란 내에서 텍스트를 상단으로 정렬
         />
         <TouchableOpacity
           style={styles.recordSubmitBtn}
@@ -121,12 +128,13 @@ const styles = StyleSheet.create({
     height: 250,
     backgroundColor: "#344C64",
     color: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 30, // 수정
+    justifyContent: "flex-start", // 입력란에서 텍스트를 위쪽으로 정렬
+    alignItems: "flex-start", // 왼쪽 정렬
+    borderRadius: 30,
     marginTop: 25,
     marginBottom: 25,
     padding: 20,
+    textAlignVertical: "top", // 텍스트를 상단으로 정렬
   },
   recordSubmitBtn: {
     backgroundColor: "#8881EA",

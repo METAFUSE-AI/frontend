@@ -9,30 +9,32 @@ import {
   TextInput,
   Modal,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // Axios 함수 import
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // 경로 확인
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function RecordDetailPage({ route, navigation }) {
-  const { recordId } = route.params; // RecordPage에서 전달받은 recordId
+  const { recordId } = route.params; // recordId만 사용
 
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [recordContents, setRecordContents] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal 상태 추가
 
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const data = await getRecordById(recordId); // ID로 기록 조회
+        const data = await getRecordById(recordId); // recordId만 사용
         setRecord(data);
         setRecordContents(data.recordContents);
       } catch (error) {
-        setError(error.message);
+        setError("기록을 가져오는 데 문제가 발생했습니다: " + error.message);
       } finally {
         setLoading(false);
       }
@@ -51,52 +53,41 @@ export default function RecordDetailPage({ route, navigation }) {
 
   const handleUpdatePress = async () => {
     try {
-      const updatedRecord = await updateRecord(recordId, { ...record, recordContents }); // 대답만 업데이트
-      setRecord(prevRecord => ({ ...prevRecord, recordContents: updatedRecord.recordContents }));
+      const updatedRecord = await updateRecord(recordId, { ...record, recordContents });
+      setRecord({ ...record, recordContents: updatedRecord.recordContents });
       setIsEditing(false);
     } catch (error) {
-      console.error("Error updating record:", error.response ? error.response.data : error.message);
-      setError("Error updating record");
+      setError("기록 업데이트 중 오류 발생: " + (error.response ? error.response.data : error.message));
     }
   };
 
   const handleDeletePress = () => {
-    setIsModalVisible(true); // Show the modal
+    setIsModalVisible(true);
   };
 
   const confirmDelete = async () => {
     try {
-      const success = await deleteRecord(recordId);
-      if (success) {
-        console.log('Record deleted successfully'); // 디버깅 로그
-        // 삭제 후 RecordPage를 새로 고침하며 돌아가기
-        navigation.navigate("RecordPage", { refresh: true });
-      } else {
-        console.log('Failed to delete record'); // 디버깅 로그
-        setError("Failed to delete record");
-      }
+      await deleteRecord(recordId);
+      navigation.navigate("RecordPage", { refresh: true });
     } catch (error) {
-      console.error("Error deleting record:", error.response ? error.response.data : error.message);
-      setError("Error deleting record");
+      setError("기록 삭제 중 오류 발생: " + (error.response ? error.response.data : error.message));
     } finally {
-      setIsModalVisible(false); // Hide the modal
+      setIsModalVisible(false);
     }
   };
 
   const cancelDelete = () => {
-    setIsModalVisible(false); // Hide the modal
+    setIsModalVisible(false);
   };
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
+    navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
@@ -104,7 +95,7 @@ export default function RecordDetailPage({ route, navigation }) {
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+        <Text style={styles.errorText}>오류: {error}</Text>
       </View>
     );
   }
@@ -112,7 +103,7 @@ export default function RecordDetailPage({ route, navigation }) {
   if (!record) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>No record found</Text>
+        <Text style={styles.errorText}>기록을 찾을 수 없습니다</Text>
       </View>
     );
   }
@@ -120,19 +111,13 @@ export default function RecordDetailPage({ route, navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
+        <HeaderBackButton onPress={() => navigation.goBack()} tintColor="#ffffff" />
       </View>
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { alignItems: "center" },
-        ]}
+        contentContainerStyle={[styles.scrollViewContent, { alignItems: "center" }]}
         style={styles.container}
       >
         <View style={styles.recordBox}>
@@ -172,16 +157,15 @@ export default function RecordDetailPage({ route, navigation }) {
         </View>
       </ScrollView>
 
-      {/* Custom Modal for Delete Confirmation */}
       <Modal
         transparent={true}
         visible={isModalVisible}
         animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
+        onRequestClose={cancelDelete}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>기록을 삭제하시겠습니까??</Text>
+            <Text style={styles.modalText}>기록을 삭제하시겠습니까?</Text>
             <View style={styles.modalButtons}>
               <Button title="취소" onPress={cancelDelete} />
               <Button title="확인" onPress={confirmDelete} color="red" />
@@ -300,19 +284,20 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
-    width: '80%',
     backgroundColor: "white",
-    borderRadius: 10,
     padding: 20,
+    borderRadius: 10,
     alignItems: "center",
+    width: "80%",
   },
   modalText: {
     fontSize: 18,
     marginBottom: 20,
+    textAlign: "center",
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: '100%',
+    justifyContent: "space-between",
+    width: "100%",
   },
 });

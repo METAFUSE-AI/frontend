@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
@@ -59,7 +60,6 @@ const recordQuestions = [
   "자기 주도 학습을 위해 어떤 계획을 세우나요?",
   "실패나 좌절을 극복하는 데 필요한 자원은 무엇인가요?",
 ];
-
 export default function AddRecordPage({ navigation }) {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
@@ -72,9 +72,21 @@ export default function AddRecordPage({ navigation }) {
       headerShown: false,
     });
 
-    //랜덤으로 3가지 질문 추출
+    // 랜덤으로 3가지 질문 추출
     const shuffledQuestions = recordQuestions.sort(() => 0.5 - Math.random());
     setSelectedQuestions(shuffledQuestions.slice(0, 3));
+
+    // 세션에서 사용자 이름 가져오기
+    const getUserName = async () => {
+      try {
+        const username = await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
+        console.log(username); // 여기서 username을 사용할 수 있습니다
+      } catch (error) {
+        console.error("Error retrieving username:", error);
+      }
+    };
+
+    getUserName();
   }, [navigation]);
 
   const handleQuestionPress = (question) => {
@@ -93,17 +105,11 @@ export default function AddRecordPage({ navigation }) {
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { alignItems: "center" },
-        ]}
+        contentContainerStyle={[styles.scrollViewContent, { alignItems: "center" }]}
         style={styles.container}
       >
         {selectedQuestions.map((question, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleQuestionPress(question)}
-          >
+          <TouchableOpacity key={index} onPress={() => handleQuestionPress(question)}>
             <RecordContainer text={question} />
           </TouchableOpacity>
         ))}

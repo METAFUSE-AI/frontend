@@ -1,4 +1,4 @@
-import 'react-native-url-polyfill/auto';
+// App.js
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -7,7 +7,7 @@ import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
 import TestResultPage from "./screen/TestResultPage";
-import KakaoLogin from "./screen/KakaoLogin";
+
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import AddRecordPage from "./screen/AddRecordPage";
@@ -15,15 +15,33 @@ import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
+import SignUpPage from "./screen/SignUpPage"; // 회원가입 페이지
+import LoginPage from "./screen/LoginPage"; // 로그인 페이지
+import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage import
+import { useEffect, useState } from 'react'; // useEffect 추가
 import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
-import { useNavigation } from '@react-navigation/native'; // useNavigation 추가
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const username = await AsyncStorage.getItem('username');
+      setIsLoggedIn(!!username);
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (isLoggedIn === null) {
+    return null; // 로딩 상태일 경우 아무것도 렌더링하지 않음
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="MainPage">
+      <Stack.Navigator initialRouteName={isLoggedIn ? "MainPage" : "LoginPage"}>
         <Stack.Screen
           name="MainPage"
           component={MainPage}
@@ -39,7 +57,6 @@ export default function App() {
           component={TestResultPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen
           name="RecordPage"
@@ -76,8 +93,18 @@ export default function App() {
           component={RecordCreationPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="QuizPage" component={QuizPage} options={{ headerShown: false }}/>
+        <Stack.Screen name="QuizPage" component={QuizPage} options={{ headerShown: false }} /> 
         <Stack.Screen name="GamePage" component={GamePage} />
+        <Stack.Screen
+          name="SignUpPage" // 회원가입 페이지
+          component={SignUpPage}
+          options={{ headerShown: false }} // 헤더 숨김
+        />
+        <Stack.Screen
+          name="LoginPage" // 로그인 페이지
+          component={LoginPage}
+          options={{ headerShown: false }} // 헤더 숨김
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
