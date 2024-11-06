@@ -10,6 +10,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
+import KakaoShareLink from "react-native-kakao-share-link";
+import { Linking } from "react-native";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import TestResult01 from "../assets/images/TestResult01.png";
@@ -18,6 +20,9 @@ import TestResult03 from "../assets/images/TestResult03.png";
 
 // 테스트 결과 페이지 => 테스트 점수별 그래프, 허구문항을 통한 사용자의 테스트 결과 신뢰도, 결과 이미지, sns 공유 기능
 // npm install @salmonco/react-native-radar-chart react-native-svg => 삼각 그래프를 그리기 위한 라이브러리
+
+// 테스트 결과 카카오톡 공유 기능을 위한 라이브러리
+// npm install react-native-kakao-share-link
 
 const TestResultPage = ({ route, navigation }) => {
   const { answers = {}, totalScore } = route.params || {};
@@ -119,32 +124,48 @@ const TestResultPage = ({ route, navigation }) => {
 
   const shareResultOnKakao = async () => {
     try {
-      const response = await KakaoShareLink.sendFeed({
-        content: {
-          title: "My Test Result",
-          link: {
-            webUrl: "http://localhost:8081/",
-            mobileWebUrl: "http://localhost:8081/",
-          },
-          description: `I scored ${overallTotalScore} on this test!`,
+      await KakaoShareLink.sendText({
+        text: `테스트 결과 공유! 총점: ${overallTotalScore}점입니다. 나의 메타인지 능력을 확인하세요!`,
+        link: {
+          webUrl: "https://developers.kakao.com/",
+          mobileWebUrl: "https://developers.kakao.com/",
         },
         buttons: [
           {
-            title: "View My Test Results",
+            title: "앱에서 보기",
             link: {
               androidExecutionParams: [
                 { key: "score", value: overallTotalScore },
               ],
               iosExecutionParams: [{ key: "score", value: overallTotalScore }],
+              webUrl: "https://developers.kakao.com/",
+              mobileWebUrl: "https://developers.kakao.com/",
             },
           },
         ],
       });
-      console.log(response);
     } catch (e) {
       console.error(e);
     }
+    console.log(KakaoShareLink); // undefined가 아니여야 합니다.
   };
+
+  // Deep Link 처리 함수
+  const handleDeepLink = (url) => {
+    console.log("Deep Link: ", url);
+    // URL에 따라 적절한 로직을 추가
+  };
+
+  // 딥 링크 리스너 추가
+  useEffect(() => {
+    const linkingListener = Linking.addEventListener("url", (e) => {
+      handleDeepLink(e.url);
+    });
+
+    return () => {
+      linkingListener.remove();
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

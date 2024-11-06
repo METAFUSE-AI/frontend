@@ -20,6 +20,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@salmonco/react-native-radar-chart": "^0.0.26",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "expo": "^51.0.36",
     "expo-auth-session": "^5.5.2",
     "expo-blur": "~13.0.2",
