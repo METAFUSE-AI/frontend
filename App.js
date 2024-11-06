@@ -7,7 +7,6 @@ import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
 import TestResultPage from "./screen/TestResultPage";
-
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import AddRecordPage from "./screen/AddRecordPage";
@@ -15,11 +14,11 @@ import RecordCreationPage from "./screen/RecordCreationPage";
 import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
-import SignUpPage from "./screen/SignUpPage"; // 회원가입 페이지
-import LoginPage from "./screen/LoginPage"; // 로그인 페이지
-import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage import
-import { useEffect, useState } from 'react'; // useEffect 추가
-import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
+import SignUpPage from "./screen/SignUpPage";
+import LoginPage from "./screen/LoginPage";
+import * as SecureStore from 'expo-secure-store'; // SecureStore import
+import { useEffect, useState } from 'react';
+import { HeaderBackButton } from "@react-navigation/elements";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,7 +27,7 @@ export default function App() {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const username = await AsyncStorage.getItem('username');
+      const username = await SecureStore.getItemAsync('username'); // SecureStore로 사용자 이름 가져오기
       setIsLoggedIn(!!username);
     };
 
@@ -70,7 +69,7 @@ export default function App() {
             title: 'Record Detail',
             headerLeft: () => (
               <HeaderBackButton
-                onPress={() => navigation.goBack()} // navigation 사용
+                onPress={() => navigation.goBack()}
                 tintColor="#ffffff"
               />
             ),
@@ -93,17 +92,17 @@ export default function App() {
           component={RecordCreationPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="QuizPage" component={QuizPage} options={{ headerShown: false }} /> 
+        <Stack.Screen name="QuizPage" component={QuizPage} options={{ headerShown: false }} />
         <Stack.Screen name="GamePage" component={GamePage} />
         <Stack.Screen
-          name="SignUpPage" // 회원가입 페이지
+          name="SignUpPage"
           component={SignUpPage}
-          options={{ headerShown: false }} // 헤더 숨김
+          options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="LoginPage" // 로그인 페이지
+          name="LoginPage"
           component={LoginPage}
-          options={{ headerShown: false }} // 헤더 숨김
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

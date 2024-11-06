@@ -8,11 +8,10 @@ import {
   ScrollView,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
-
 // 기록 추가 페이지
 const recordQuestions = [
   //기록 질문 목록
@@ -60,6 +59,7 @@ const recordQuestions = [
   "자기 주도 학습을 위해 어떤 계획을 세우나요?",
   "실패나 좌절을 극복하는 데 필요한 자원은 무엇인가요?",
 ];
+
 export default function AddRecordPage({ navigation }) {
   const [selectedQuestions, setSelectedQuestions] = useState([]);
 
@@ -76,10 +76,10 @@ export default function AddRecordPage({ navigation }) {
     const shuffledQuestions = recordQuestions.sort(() => 0.5 - Math.random());
     setSelectedQuestions(shuffledQuestions.slice(0, 3));
 
-    // 세션에서 사용자 이름 가져오기
+    // SecureStore에서 사용자 이름 가져오기
     const getUserName = async () => {
       try {
-        const username = await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
+        const username = await SecureStore.getItemAsync('username'); // SecureStore에서 username 가져오기
         console.log(username); // 여기서 username을 사용할 수 있습니다
       } catch (error) {
         console.error("Error retrieving username:", error);

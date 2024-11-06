@@ -12,6 +12,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "supportsTablet": true
     },
     "android": {
@@ -29,6 +32,9 @@
       "eas": {
         "projectId": "061ad226-1d11-4c57-b461-f0222a7607fb"
       }
-    }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

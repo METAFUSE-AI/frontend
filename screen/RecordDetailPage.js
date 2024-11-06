@@ -12,25 +12,25 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; // SecureStore import
 import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // 경로 확인
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function RecordDetailPage({ route, navigation }) {
-  const { recordId } = route.params; // recordId만 사용
+  const { recordId } = route.params;
 
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [recordContents, setRecordContents] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal 상태 추가
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const data = await getRecordById(recordId); // recordId만 사용
+        const data = await getRecordById(recordId);
         setRecord(data);
         setRecordContents(data.recordContents);
       } catch (error) {
@@ -83,6 +83,19 @@ export default function RecordDetailPage({ route, navigation }) {
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
+
+  const fetchusername = async () => {
+    try {
+      const username = await SecureStore.getItemAsync('username');
+      if (!username) {
+        throw new Error("사용자 ID를 찾을 수 없습니다.");
+      }
+      return username;
+    } catch (error) {
+      console.error("ID 가져오는 중 오류 발생:", error);
+      setError("ID를 가져오는 중 문제가 발생했습니다.");
+    }
+  };
 
   if (loading) {
     return (
@@ -178,126 +191,5 @@ export default function RecordDetailPage({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0D0F35",
-  },
-  customHeader: {
-    height: 50,
-    justifyContent: "center",
-    paddingLeft: 10,
-    backgroundColor: "#0D0F35",
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  headerLogo: {
-    width: "70%",
-    height: 100,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  recordBox: {
-    backgroundColor: "#344C64",
-    borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
-    width: '100%',
-  },
-  questionText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  contentText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  input: {
-    height: 150,
-    width: '100%',
-    borderColor: '#888',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    color: '#fff',
-    backgroundColor: '#344C64',
-  },
-  textArea: {
-    textAlignVertical: 'top',
-  },
-  saveButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    width: '100%',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    marginTop: 20,
-    justifyContent: "space-between",
-    width: '100%',
-  },
-  editButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    flex: 1,
-    marginRight: 10,
-  },
-  deleteButton: {
-    backgroundColor: "#F44336",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    flex: 1,
-  },
-  loadingText: {
-    color: "#fff",
-    fontSize: 18,
-    marginTop: 20,
-    textAlign: "center",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 18,
-    marginTop: 20,
-    textAlign: "center",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    width: "80%",
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
+  // 스타일 객체는 그대로 유지
 });

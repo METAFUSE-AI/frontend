@@ -10,7 +10,7 @@ import {
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/FontAwesome";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";  // expo-secure-store 임포트
 import { fetchRecords } from '../components/ApiUtilsi';
 
 import HeaderLogo from "../assets/images/headerLogo.png";
@@ -22,9 +22,13 @@ export default function RecordPage({ navigation }) {
 
   const loadRecords = async () => {
     try {
-      const username = await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
-      const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
-      setRecords(data); // records에 데이터를 직접 할당
+      const username = await SecureStore.getItemAsync("username"); // SecureStore에서 username 불러오기
+      if (username) {
+        const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
+        setRecords(data); // records에 데이터를 직접 할당
+      } else {
+        setError("Username not found");
+      }
     } catch (error) {
       console.error("Error fetching records:", error);
       setError("Error fetching records");
