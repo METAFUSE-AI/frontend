@@ -75,7 +75,11 @@ export default function App() {
           component={RecordCreationPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="QuizPage" component={QuizPage} />
+        <Stack.Screen
+          name="QuizPage"
+          component={QuizPage}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="GamePage" component={GamePage} />
         <Stack.Screen
           name="AiChatbot"

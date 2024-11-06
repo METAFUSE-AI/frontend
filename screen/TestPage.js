@@ -9,7 +9,6 @@ import {
   Modal,
   Pressable,
 } from "react-native";
-import { createTest } from "../components/ApiUtilsi/"; // api.js에서 createTest 함수 임포트
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 const questions = [
