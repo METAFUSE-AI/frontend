@@ -12,7 +12,10 @@ import {
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { fetchRecords } from "../components/ApiUtilsi";
+import {
+  fetchRecords,
+  fetchEncouragementMessage,
+} from "../components/ApiUtilsi"; // import 추가
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
@@ -21,18 +24,30 @@ export default function RecordPage({ navigation }) {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showBubble, setShowBubble] = useState(false); // 말풍선 표시 여부
+  const [bubbleText, setBubbleText] = useState(""); // 말풍선에 표시할 응원 메시지
   const [pressedId, setPressedId] = useState(null);
 
   const loadRecords = async () => {
     try {
       const data = await fetchRecords();
       setRecords(data);
+      if (data.length > 0) {
+        setShowBubble(true);
+        loadEncouragementMessage(); // 응원 메시지 불러오기
+      }
     } catch (error) {
       console.error("Error fetching records:", error);
       setError("Error fetching records");
     } finally {
       setLoading(false);
     }
+  };
+
+  // 응원 메시지를 가져오는 함수
+  const loadEncouragementMessage = async () => {
+    const message = await fetchEncouragementMessage();
+    setBubbleText(message || "Keep going! You're doing great!"); // 응원 메시지 설정, 기본 메시지 포함
   };
 
   useFocusEffect(
@@ -79,35 +94,29 @@ export default function RecordPage({ navigation }) {
           <Text style={styles.errorText}>Error: {error}</Text>
         ) : records.length > 0 ? (
           records.map((record) => (
-            <Pressable
+            <TouchableOpacity
               key={record.recordId}
               onPress={() => handleRecordPress(record.recordId)}
-              style={({ pressed }) => [
-                styles.recordItem,
-                pressed && styles.recordItemPressed,
-                pressedId === record.recordId && styles.recordItemPressed,
-              ]}
+              style={styles.recordItem}
             >
-              <View style={styles.recordContent}>
-                <View style={styles.recordGlow} />
-                <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
-                <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
-              </View>
-            </Pressable>
+              <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
+              <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
+            </TouchableOpacity>
           ))
         ) : (
           <Text style={styles.noRecordsText}>No records found</Text>
         )}
       </ScrollView>
-      <Pressable
-        style={({ pressed }) => [
-          styles.addButton,
-          pressed && styles.addButtonPressed,
-        ]}
-        onPress={handleAddPress}
-      >
-        <Icon name="plus" size={24} color="#0D0F35" />
-      </Pressable>
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
+          <Icon name="plus" size={30} color="#000" />
+        </TouchableOpacity>
+        {showBubble && (
+          <View style={styles.bubble}>
+            <Text style={styles.bubbleText}>{bubbleText}</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -199,10 +208,24 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   addButton: {
+    backgroundColor: "#F3F3F3",
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bubble: {
     backgroundColor: "#ffffff",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    maxWidth: 250,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",

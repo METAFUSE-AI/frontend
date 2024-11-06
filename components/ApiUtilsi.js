@@ -104,3 +104,19 @@ export const deleteRecord = async (id) => {
     throw error; // 에러를 호출한 쪽으로 다시 던짐
   }
 };
+
+// 기록응원 관련 API 호출
+// ApiUtilsi.js
+export const fetchEncouragementMessage = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/encouragement"); // Flask 서버 주소
+    if (!response.ok) {
+      throw new Error("Failed to fetch encouragement message");
+    }
+    const data = await response.json();
+    return data.message; // 백엔드에서 반환된 응원 메시지를 반환
+  } catch (error) {
+    console.error("Error fetching encouragement message:", error);
+    return null; // 오류 발생 시 null 반환
+  }
+};

@@ -11,24 +11,28 @@ import {
   Button,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import { getRecordById, updateRecord, deleteRecord } from '../components/ApiUtilsi'; // Axios 함수 import
+import {
+  getRecordById,
+  updateRecord,
+  deleteRecord,
+} from "../components/ApiUtilsi";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function RecordDetailPage({ route, navigation }) {
-  const { recordId } = route.params; // RecordPage에서 전달받은 recordId
+  const { recordId } = route.params;
 
   const [record, setRecord] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [recordContents, setRecordContents] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const data = await getRecordById(recordId); // ID로 기록 조회
+        const data = await getRecordById(recordId);
         setRecord(data);
         setRecordContents(data.recordContents);
       } catch (error) {
@@ -51,40 +55,49 @@ export default function RecordDetailPage({ route, navigation }) {
 
   const handleUpdatePress = async () => {
     try {
-      const updatedRecord = await updateRecord(recordId, { ...record, recordContents }); // 대답만 업데이트
-      setRecord(prevRecord => ({ ...prevRecord, recordContents: updatedRecord.recordContents }));
+      const updatedRecord = await updateRecord(recordId, {
+        ...record,
+        recordContents,
+      });
+      setRecord((prevRecord) => ({
+        ...prevRecord,
+        recordContents: updatedRecord.recordContents,
+      }));
       setIsEditing(false);
     } catch (error) {
-      console.error("Error updating record:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error updating record:",
+        error.response ? error.response.data : error.message
+      );
       setError("Error updating record");
     }
   };
 
   const handleDeletePress = () => {
-    setIsModalVisible(true); // Show the modal
+    setIsModalVisible(true);
   };
 
   const confirmDelete = async () => {
     try {
       const success = await deleteRecord(recordId);
       if (success) {
-        console.log('Record deleted successfully'); // 디버깅 로그
-        // 삭제 후 RecordPage를 새로 고침하며 돌아가기
         navigation.navigate("RecordPage", { refresh: true });
       } else {
-        console.log('Failed to delete record'); // 디버깅 로그
         setError("Failed to delete record");
       }
     } catch (error) {
-      console.error("Error deleting record:", error.response ? error.response.data : error.message);
+      console.error(
+        "Error deleting record:",
+        error.response ? error.response.data : error.message
+      );
       setError("Error deleting record");
     } finally {
-      setIsModalVisible(false); // Hide the modal
+      setIsModalVisible(false);
     }
   };
 
   const cancelDelete = () => {
-    setIsModalVisible(false); // Hide the modal
+    setIsModalVisible(false);
   };
 
   useEffect(() => {
@@ -131,7 +144,7 @@ export default function RecordDetailPage({ route, navigation }) {
       <ScrollView
         contentContainerStyle={[
           styles.scrollViewContent,
-          { alignItems: "center" },
+          { paddingBottom: 100 }, // 말풍선 공간 확보
         ]}
         style={styles.container}
       >
@@ -156,15 +169,24 @@ export default function RecordDetailPage({ route, navigation }) {
 
         <View style={styles.buttonContainer}>
           {isEditing ? (
-            <TouchableOpacity onPress={handleUpdatePress} style={styles.saveButton}>
+            <TouchableOpacity
+              onPress={handleUpdatePress}
+              style={styles.saveButton}
+            >
               <Text style={styles.buttonText}>수정 저장</Text>
             </TouchableOpacity>
           ) : (
             <>
-              <TouchableOpacity onPress={handleEditPress} style={styles.editButton}>
+              <TouchableOpacity
+                onPress={handleEditPress}
+                style={styles.editButton}
+              >
                 <Text style={styles.buttonText}>수정</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleDeletePress} style={styles.deleteButton}>
+              <TouchableOpacity
+                onPress={handleDeletePress}
+                style={styles.deleteButton}
+              >
                 <Text style={styles.buttonText}>삭제</Text>
               </TouchableOpacity>
             </>
@@ -172,7 +194,13 @@ export default function RecordDetailPage({ route, navigation }) {
         </View>
       </ScrollView>
 
-      {/* Custom Modal for Delete Confirmation */}
+      <View style={styles.fixedBubble}>
+        <Text style={styles.bubbleText}>
+          당신의 선택은 소중한 경험으로, 현재의 당신을 만들어냈습니다. 후회 없이
+          앞으로 나아가면서 더 나은 미래를 만들 수 있어요. 응원합니다!
+        </Text>
+      </View>
+
       <Modal
         transparent={true}
         visible={isModalVisible}
@@ -181,7 +209,7 @@ export default function RecordDetailPage({ route, navigation }) {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>기록을 삭제하시겠습니까??</Text>
+            <Text style={styles.modalText}>기록을 삭제하시겠습니까?</Text>
             <View style={styles.modalButtons}>
               <Button title="취소" onPress={cancelDelete} />
               <Button title="확인" onPress={confirmDelete} color="red" />
@@ -222,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    width: '100%',
+    width: "100%",
   },
   questionText: {
     color: "#fff",
@@ -235,36 +263,36 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 150,
-    width: '100%',
-    borderColor: '#888',
+    width: "100%",
+    borderColor: "#888",
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 10,
-    color: '#fff',
-    backgroundColor: '#344C64',
+    color: "#fff",
+    backgroundColor: "#344C64",
   },
   textArea: {
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   saveButton: {
     backgroundColor: "#4CAF50",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    width: '100%',
+    width: "100%",
     marginTop: 10,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   buttonContainer: {
     flexDirection: "row",
     marginTop: 20,
     justifyContent: "space-between",
-    width: '100%',
+    width: "100%",
   },
   editButton: {
     backgroundColor: "#4CAF50",
@@ -293,26 +321,43 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
+  fixedBubble: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "#3A4A64",
+    borderRadius: 15,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  bubbleText: {
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "center",
+  },
   modalOverlay: {
     flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContainer: {
-    width: '80%',
-    backgroundColor: "white",
-    borderRadius: 10,
+    width: 300,
+    backgroundColor: "#fff",
     padding: 20,
-    alignItems: "center",
+    borderRadius: 10,
   },
   modalText: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 20,
+    textAlign: "center",
   },
   modalButtons: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: '100%',
+    justifyContent: "space-between",
   },
 });
