@@ -12,6 +12,7 @@ import {
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   fetchRecords,
   fetchEncouragementMessage,
@@ -30,8 +31,9 @@ export default function RecordPage({ navigation }) {
 
   const loadRecords = async () => {
     try {
-      const data = await fetchRecords();
-      setRecords(data);
+      const username = await AsyncStorage.getItem("username"); // 세션에서 username 가져오기
+      const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
+      setRecords(data); // records에 데이터를 직접 할당
       if (data.length > 0) {
         setShowBubble(true);
         loadEncouragementMessage(); // 응원 메시지 불러오기

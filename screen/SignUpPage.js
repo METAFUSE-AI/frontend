@@ -47,6 +47,7 @@ export default function SignUpPage({ navigation }) {
         }
       } else {
         setModalMessage("서버 오류입니다.");
+        console.log(`${username}`);
         setModalVisible(true);
       }
     } catch (error) {
