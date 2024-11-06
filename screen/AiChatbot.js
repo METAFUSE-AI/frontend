@@ -91,7 +91,8 @@ const AiChatbot = () => {
               message.sender === "user" ? styles.userMessage : styles.botMessage
             }
           >
-            <Text>{message.text}</Text>
+            <Text>{message.text || "No message"}</Text>{" "}
+            {/* message.text가 유효하지 않으면 "No message"를 출력 */}
           </View>
         ))}
       </ScrollView>

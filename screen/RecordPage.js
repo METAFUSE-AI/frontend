@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   fetchRecords,
   fetchEncouragementMessage,
-} from "../components/ApiUtilsi"; // import 추가
+} from "../components/ApiUtils"; // import 추가
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";

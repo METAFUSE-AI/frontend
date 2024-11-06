@@ -24,6 +24,7 @@
     "expo": "^51.0.36",
     "expo-auth-session": "^5.5.2",
     "expo-blur": "~13.0.2",
+    "expo-constants": "~16.0.2",
     "expo-dev-client": "~4.0.28",
     "expo-status-bar": "~1.12.1",
     "expo-web-browser": "~13.0.3",
@@ -44,8 +45,7 @@
     "react-redux": "^9.1.2",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
-    "xml": "^1.0.1",
-    "expo-constants": "~16.0.2"
+    "xml": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

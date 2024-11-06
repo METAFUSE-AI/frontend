@@ -211,7 +211,7 @@ const TestResultPage = ({ route, navigation }) => {
           onPress={shareResultOnKakao}
           style={styles.kakaoShareBtn}
         >
-          카카오톡 공유하기
+          <Text style={styles.kakaoShareBtnText}>카카오톡 공유하기</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
           <Text style={styles.navButtonText}>마이페이지로 이동</Text>

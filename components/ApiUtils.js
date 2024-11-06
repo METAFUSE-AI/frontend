@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080"; // 서버 주소
+BASE_URL = "";
 
 // Test 관련 API 호출
 export const createTest = (testData) => {
@@ -20,7 +20,6 @@ export const createTest = (testData) => {
 };
 
 export const instance = axios.create({
-  baseURL: "http://localhost:8080",
   headers: {
     // 불필요한 헤더가 있으면 여기에서 제거합니다.
     "X-React-Native-Project-Root": undefined,
@@ -106,7 +105,6 @@ export const deleteRecord = async (id) => {
 };
 
 // 기록응원 관련 API 호출
-// ApiUtilsi.js
 export const fetchEncouragementMessage = async () => {
   try {
     const response = await fetch("http://localhost:5000/encouragement"); // Flask 서버 주소
@@ -118,5 +116,43 @@ export const fetchEncouragementMessage = async () => {
   } catch (error) {
     console.error("Error fetching encouragement message:", error);
     return null; // 오류 발생 시 null 반환
+  }
+};
+
+// 회원가입 API 호출
+export const registerUser = async ({ username, name, password }) => {
+  const response = await fetch(`${BASE_URL}/members/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password, name }),
+  });
+
+  if (!response.ok) {
+    throw new Error("회원가입 실패");
+  }
+  return response.json();
+};
+
+// 로그인 API 호출
+export const loginUser = async ({ username, password }) => {
+  try {
+    const response = await fetch(`${BASE_URL}/members/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(errorMessage);
+    }
+
+    return await response.json(); // 로그인 성공 시 응답 데이터 반환
+  } catch (error) {
+    throw new Error(error.message); // 에러 메시지 반환
   }
 };

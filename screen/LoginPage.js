@@ -11,6 +11,8 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
+BASE_URL = "";
+
 export default function LoginPage({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ export default function LoginPage({ navigation }) {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/members/login", {
+      const response = await fetch(`${BASE_URL}/members/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

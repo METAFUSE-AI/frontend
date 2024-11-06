@@ -15,7 +15,7 @@ import {
   getRecordById,
   updateRecord,
   deleteRecord,
-} from "../components/ApiUtilsi";
+} from "../components/ApiUtils";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 

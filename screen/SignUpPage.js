@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
-import { registerUser } from "../components/ApiUtilsi";
+import { registerUser } from "../components/ApiUtils";
 import Modal from "react-native-modal";
 
 export default function SignUpPage({ navigation }) {
@@ -32,7 +32,7 @@ export default function SignUpPage({ navigation }) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/members/check?username=${username}`
+        `http://10.106.3.59:8080/members/check?username=${username}`
       );
       if (response.ok) {
         const exists = await response.json();

@@ -25,6 +25,7 @@
       "favicon": "./assets/images/app_icon.png"
     },
     "extra": {
+      "BASE_URL": "http://10.106.3.59:8080",
       "eas": {
         "projectId": "76a7c3f3-9719-4ca2-88c0-c9dde8937cad"
       },

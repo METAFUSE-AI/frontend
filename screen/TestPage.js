@@ -10,6 +10,7 @@ import {
   Pressable,
 } from "react-native";
 import HeaderLogo from "../assets/images/headerLogo.png";
+import { createTest } from "../components/ApiUtils";
 
 const questions = [
   "스스로에 대한 내 평가는 정확한 편이다.", //메타인식
