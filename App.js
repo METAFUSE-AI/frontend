@@ -2,11 +2,9 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import StartPage from "./screen/StartPage";
 import MainPage from "./screen/MainPage";
 import TestPage from "./screen/TestPage";
 import TestResultPage from "./screen/TestResultPage";
-import KakaoLogin from "./screen/KakaoLogin";
 import MyPage from "./screen/MyPage";
 import RecordPage from "./screen/RecordPage";
 import AddRecordPage from "./screen/AddRecordPage";
@@ -15,14 +13,33 @@ import QuizPage from "./screen/QuizPage";
 import GamePage from "./screen/GamePage";
 import RecordDetailPage from "./screen/RecordDetailPage";
 import AiChatbot from "./screen/AiChatbot";
+import SignUpPage from "./screen/SignUpPage"; // 회원가입 페이지
+import LoginPage from "./screen/LoginPage"; // 로그인 페이지
+import AsyncStorage from "@react-native-async-storage/async-storage"; // AsyncStorage import
+import { useEffect, useState } from "react"; // useEffect 추가
 import { HeaderBackButton } from "@react-navigation/elements"; // 뒤로가기 버튼
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const memberId = await AsyncStorage.getItem("memberId");
+      setIsLoggedIn(!!memberId);
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (isLoggedIn === null) {
+    return null; // 로딩 상태일 경우 아무것도 렌더링하지 않음
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="StartPage">
+      <Stack.Navigator initialRouteName={isLoggedIn ? "MainPage" : "LoginPage"}>
         <Stack.Screen
           name="MainPage"
           component={MainPage}
@@ -38,7 +55,6 @@ export default function App() {
           component={TestResultPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="KakaoLogin" component={KakaoLogin} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen
           name="RecordPage"
@@ -48,11 +64,11 @@ export default function App() {
         <Stack.Screen
           name="RecordDetailPage"
           component={RecordDetailPage}
-          options={{
+          options={({ navigation }) => ({
             title: "Record Detail",
             headerLeft: () => (
               <HeaderBackButton
-                onPress={() => navigation.goBack()}
+                onPress={() => navigation.goBack()} // navigation 사용
                 tintColor="#ffffff"
               />
             ),
@@ -63,7 +79,7 @@ export default function App() {
             headerTitleStyle: {
               fontWeight: "bold",
             },
-          }}
+          })}
         />
         <Stack.Screen
           name="AddRecordPage"
@@ -81,6 +97,16 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="GamePage" component={GamePage} />
+        <Stack.Screen
+          name="SignUpPage" // 회원가입 페이지
+          component={SignUpPage}
+          options={{ headerShown: false }} // 헤더 숨김
+        />
+        <Stack.Screen
+          name="LoginPage" // 로그인 페이지
+          component={LoginPage}
+          options={{ headerShown: false }} // 헤더 숨김
+        />
         <Stack.Screen
           name="AiChatbot"
           component={AiChatbot}
