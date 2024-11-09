@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
-import { registerUser } from "../components/ApiUtils";
+import { registerUser,checkUsername } from "../components/ApiUtils";
 import Modal from "react-native-modal";
 
 export default function SignUpPage({ navigation }) {
@@ -29,30 +29,20 @@ export default function SignUpPage({ navigation }) {
       setModalVisible(true);
       return;
     }
-
-    try {
-      const response = await fetch(
-        `http://10.106.3.59:8080/members/check?username=${username}`
-      );
-      if (response.ok) {
-        const exists = await response.json();
+      try {
+        const exists = await checkUsername(username);
         if (exists) {
           setModalMessage("이미 사용 중인 아이디입니다.");
-          setModalVisible(true);
           setIsDuplicate(true);
         } else {
           setModalMessage("사용 가능한 아이디입니다.");
-          setModalVisible(true);
           setIsDuplicate(false);
         }
-      } else {
-        setModalMessage("서버 오류입니다.");
-        console.log(`${username}`);
         setModalVisible(true);
-      }
-    } catch (error) {
-      setModalMessage("오류 발생: " + error.message);
-      setModalVisible(true);
+      } catch (error) {
+        setModalMessage("오류 발생: " + error.message);
+        setModalVisible(true);
+      
     }
   };
 

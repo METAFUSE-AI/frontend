@@ -2,7 +2,9 @@
 
 import axios from "axios";
 
-BASE_URL = "http://10.106.3.58:8080";
+//BASE_URL = "http://localhost:8080";
+
+BASE_URL = "http:10.106.3.58:8080";
 
 // Test 관련 API 호출
 export const createTest = (testData) => {
@@ -156,3 +158,20 @@ export const loginUser = async ({ username, password }) => {
     throw new Error(error.message); // 에러 메시지 반환
   }
 };
+
+export async function checkUsername(username) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/members/check?username=${username}`
+    );
+
+    if (response.ok) {
+      const exists = await response.json();
+      return exists;
+    } else {
+      throw new Error("서버 오류입니다.");
+    }
+  } catch (error) {
+    throw new Error("오류 발생: " + error.message);
+  }
+}

@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderLogo from "../assets/images/headerLogo.png";
+import { loginUser } from "../components/ApiUtils";
 
-BASE_URL = "http://10.106.3.58:8080";
 
 export default function LoginPage({ navigation }) {
   const [username, setUsername] = useState("");
@@ -21,22 +21,13 @@ export default function LoginPage({ navigation }) {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/members/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (response.ok) {
+      const response = await loginUser({ username, password });
+      if (response) {
         Alert.alert("로그인 성공");
-        await AsyncStorage.setItem("username", username); // 성공 시 username 저장
-        console.log("저장된 username:", username); // 여기서 콘솔에 username을 출력합니다.
+        await AsyncStorage.setItem("username", username);
         navigation.navigate("MainPage");
       } else {
-        const errorMessage = await response.text();
-        Alert.alert("로그인 실패", errorMessage);
+        Alert.alert("로그인 실패", "아이디 또는 비밀번호가 올바르지 않습니다.");
       }
     } catch (error) {
       Alert.alert("오류 발생", error.message);
