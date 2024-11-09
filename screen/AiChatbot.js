@@ -7,8 +7,8 @@ import {
   ScrollView,
   StyleSheet,
   View,
-} from "react-native"; // Button 사용
-import Icon from "react-native-vector-icons/Ionicons"; // react-native-vector-icons 설치 필요
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons"; 
 import axios from "axios";
 
 const AiChatbot = () => {
@@ -24,24 +24,20 @@ const AiChatbot = () => {
     setMessages([initialMessage]);
   }, []);
 
-  // "내 테스트 결과 보기" 버튼을 눌렀을 때 실행될 함수
   const fetchTestResults = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/test-result", {
-        params: { userId: "1" }, // 실제로는 로그인 또는 다른 방식으로 사용자 ID를 받아야 합니다
+      const response = await axios.get("http://10.106.3.58:5000/test-result", {
+        params: { userId: "1" }, 
       });
 
-      // 데이터가 배열로 올 것이므로 각 테스트 결과를 순회하며 메시지를 만듭니다.
       if (response.data && response.data.length > 0) {
         const resultMessages = response.data.map((result) => ({
           sender: "bot",
           text: `테스트 ID: ${result.test_id}, 당신의 테스트 점수는 ${result.score}점 입니다.`,
         }));
 
-        // 기존 메시지에 새로운 결과 메시지를 추가합니다.
         setMessages([...messages, ...resultMessages]);
       } else {
-        // 결과가 없을 때 처리
         const resultMessage = {
           sender: "bot",
           text: "테스트 결과를 찾을 수 없습니다.",
@@ -58,7 +54,6 @@ const AiChatbot = () => {
     }
   };
 
-  // 메시지 전송 함수
   const sendMessage = async () => {
     if (input.trim() === "") return;
 
@@ -67,7 +62,7 @@ const AiChatbot = () => {
     const userId = "1";
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", {
+      const response = await axios.post("http://10.106.3.58:5000/chat", {
         user_id: userId,
         message: input,
       });
@@ -91,13 +86,11 @@ const AiChatbot = () => {
               message.sender === "user" ? styles.userMessage : styles.botMessage
             }
           >
-            <Text>{message.text || "No message"}</Text>{" "}
-            {/* message.text가 유효하지 않으면 "No message"를 출력 */}
+            <Text>{message.text || "No message"}</Text> 
           </View>
         ))}
       </ScrollView>
 
-      {/* 내 테스트 결과 보기 버튼 추가 */}
       <View style={styles.buttonContainer}>
         <Button title="내 테스트 결과 보기" onPress={fetchTestResults} />
       </View>
@@ -108,10 +101,10 @@ const AiChatbot = () => {
           placeholder="Type your message..."
           value={input}
           onChangeText={setInput}
-          onSubmitEditing={sendMessage} // 엔터 키를 누르면 전송
+          onSubmitEditing={sendMessage} 
           placeholderTextColor="#CCC"
         />
-        <Button title="Send" onPress={sendMessage} /> {/* Button 사용 */}
+        <Button title="Send" onPress={sendMessage} /> 
       </View>
     </SafeAreaView>
   );

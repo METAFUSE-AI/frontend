@@ -10,7 +10,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
-import KakaoShareLink from "react-native-kakao-share-link";
+//import KakaoShareLink from "react-native-kakao-share-link";
 import { Linking } from "react-native";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
@@ -23,7 +23,9 @@ import TestResult03 from "../assets/images/TestResult03.png";
 
 // 테스트 결과 카카오톡 공유 기능을 위한 라이브러리
 // npm install react-native-kakao-share-link
-
+function calculatePercentage(score) {
+  return Math.round((score / 60) * 100);
+}
 const TestResultPage = ({ route, navigation }) => {
   const { answers = {}, totalScore } = route.params || {};
   const [resultImage, setResultImage] = useState(TestResult03);
@@ -64,18 +66,18 @@ const TestResultPage = ({ route, navigation }) => {
     ) {
       recommendation = "게임 추천";
     } else if (
-      lowestCategory === "타인 비교" ||
-      lowestCategory === "반성" ||
-      lowestCategory === "결정"
-    ) {
-      recommendation = "일기 쓰기 추천";
-    } else if (
       lowestCategory === "상황 평가" ||
       lowestCategory === "다양성" ||
       lowestCategory === "최적"
     ) {
       recommendation = "퀴즈 추천";
     }
+    else(
+      lowestCategory === "타인 비교" ||
+      lowestCategory === "반성" ||
+      lowestCategory === "결정"
+    ) 
+      recommendation = "일기 쓰기 추천";
 
     console.log("최저 카테고리: ", lowestCategory);
     console.log("추천: ", recommendation);
@@ -180,7 +182,7 @@ const TestResultPage = ({ route, navigation }) => {
       >
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
-          <Text style={styles.resultText}>총점: {overallTotalScore}점</Text>
+          <Text style={styles.resultText}>총점: {calculatePercentage(totalScore)}점</Text>
         </View>
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
@@ -207,12 +209,12 @@ const TestResultPage = ({ route, navigation }) => {
             향상 추천: {improvementRecommendation}
           </Text>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={shareResultOnKakao}
           style={styles.kakaoShareBtn}
         >
           <Text style={styles.kakaoShareBtnText}>카카오톡 공유하기</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
           <Text style={styles.navButtonText}>마이페이지로 이동</Text>
         </TouchableOpacity>

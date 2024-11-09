@@ -17,7 +17,7 @@ export default function MyPage({ navigation }) {
   const fetchTestResults = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/test-results/member/1" // localhost 대신 실제 IP 사용
+        "http://10.106.3.58:8080/test-results/member/1" // localhost 대신 실제 IP 사용
       );
 
       if (!response.ok) {
@@ -44,9 +44,9 @@ export default function MyPage({ navigation }) {
   };
 
   // 테스트 결과를 눌렀을 때 상세 결과 페이지로 이동
-  const handleTestResultPress = (testResult) => {
-    navigation.navigate("TestResultPage", { testResult });
-  };
+  //const handleTestResultPress = (testResult) => {
+    //navigation.navigate("TestResultPage", { testResult });
+  //};
 
   useEffect(() => {
     navigation.setOptions({

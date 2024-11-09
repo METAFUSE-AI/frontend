@@ -106,7 +106,7 @@ export default function RecordPage({ navigation }) {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={styles.noRecordsText}>No records found</Text>
+          <Text style={styles.noRecordsText}>기록이 없습니다 기록을 작성해주세요</Text>
         )}
       </ScrollView>
       <View style={styles.footer}>

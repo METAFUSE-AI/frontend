@@ -11,7 +11,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
-BASE_URL = "";
+BASE_URL = "http://10.106.3.58:8080";
 
 export default function LoginPage({ navigation }) {
   const [username, setUsername] = useState("");
@@ -51,12 +51,14 @@ export default function LoginPage({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="아이디"
+        placeholderTextColor={"#FFFFFF"}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
         placeholder="비밀번호"
+        placeholderTextColor={"#FFFFFF"}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -74,7 +76,7 @@ export default function LoginPage({ navigation }) {
         onPress={() => navigation.navigate("SignUpPage")}
         style={styles.signUpButton}
       >
-        <Text style={styles.signUpButtonText}>회원가입</Text>
+        <Text style={styles.signUpButtonText} >회원가입</Text>
       </TouchableOpacity>
     </View>
   );

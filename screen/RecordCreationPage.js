@@ -30,12 +30,12 @@ export default function RecordCreationPage({ route, navigation }) {
       const record = {
         recordQuestion: question,
         recordContents: userInput,
-        member: { memberId: 1 }, // 실제로는 적절한 memberId로 설정
+        member: { username: "test" }, // 실제로는 적절한 memberId로 설정
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
   
-      const response = await fetch("http://localhost:8080/records/create", {
+      const response = await fetch("http://10.106.3.58:8080/records/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,8 +83,10 @@ export default function RecordCreationPage({ route, navigation }) {
           placeholderTextColor="#ccc"
           value={userInput}
           onChangeText={setUserInput}
+          multiline
+          textAlignVertical="top"
         />
-        <TouchableOpacity
+         <TouchableOpacity
           style={styles.recordSubmitBtn}
           onPress={handleCompletePress}
         >

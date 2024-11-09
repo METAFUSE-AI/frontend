@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-BASE_URL = "";
+BASE_URL = "http://10.106.3.58:8080";
 
 // Test 관련 API 호출
 export const createTest = (testData) => {
@@ -107,7 +107,7 @@ export const deleteRecord = async (id) => {
 // 기록응원 관련 API 호출
 export const fetchEncouragementMessage = async () => {
   try {
-    const response = await fetch("http://localhost:5000/encouragement"); // Flask 서버 주소
+    const response = await fetch("http://10.106.3.58:5000/encouragement"); // Flask 서버 주소
     if (!response.ok) {
       throw new Error("Failed to fetch encouragement message");
     }

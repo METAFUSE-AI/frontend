@@ -118,12 +118,14 @@ export default function SignUpPage({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="이름"
+        placeholderTextColor={"#FFFFFF"}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="아이디"
+        placeholderTextColor={"#FFFFFF"}
         value={username}
         onChangeText={setUsername}
       />
@@ -133,6 +135,7 @@ export default function SignUpPage({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="비밀번호"
+        placeholderTextColor={"#FFFFFF"}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -147,6 +150,7 @@ export default function SignUpPage({ navigation }) {
           password.length < 6 ? styles.errorInput : {}, // 비밀번호 길이가 6자리 미만일 때 빨간 테두리
         ]}
         placeholder="비밀번호 확인"
+        placeholderTextColor={"#FFFFFF"}
         secureTextEntry
         value={confirmPassword}
         onChangeText={handlePasswordConfirm}

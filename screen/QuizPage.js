@@ -7,9 +7,12 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
+
+const screenWidth = Dimensions.get("window").width;
 
 const QuizPage = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
@@ -550,28 +553,30 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   questionContainer: {
-    marginBottom: 30, // 질문과 버튼 사이 간격
+    marginBottom: 30,
   },
   question: {
     fontSize: 24,
-    marginBottom: 15, // 질문 아래 간격
+    marginBottom: 15,
     color: "#FFFFFF",
   },
   optionButton: {
     backgroundColor: "#8881EA",
     paddingVertical: 20,
-    borderRadius: 25, // 둥근 버튼 모양
+    borderRadius: 25,
     alignItems: "center",
-    marginBottom: 25, // 보기 버튼 간 간격
-    width: "100%",
+    marginBottom: 25,
+    width: screenWidth * 0.85, // 화면 너비의 85%를 사용하여 너비 설정
+    marginHorizontal: 10, // 양쪽 여백을 추가하여 간격 조정
   },
   selectedButton: {
-    backgroundColor: "#FFFFFF", // 선택한 버튼 색상 흰색
+    backgroundColor: "#FFFFFF",
     paddingVertical: 20,
     borderRadius: 25,
     alignItems: "center",
     marginBottom: 15,
-    width: "100%",
+    width: screenWidth * 0.85, // 동일하게 설정
+    marginHorizontal: 10,
   },
   checkButtonContainer: {
     position: "absolute",
@@ -592,7 +597,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)", // 반투명 배경
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   modalMessage: {
     fontSize: 24,
