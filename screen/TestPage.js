@@ -96,25 +96,38 @@ const TestPage = ({ navigation }) => {
       if (Object.keys(answers).length < questions.length) {
         setModalVisible(true); // 모달 표시
       } else {
-        const totalScore = Object.values(answers).reduce(
-          (sum, value) => sum + value,
-          0
-        );
+        // 각 항목별 점수 계산
+        const metaCognitionScore = [0, 1, 2, 3, 4, 5, 6, 7, 8].reduce((sum, index) => sum + (answers[index + 1] || 0), 0); // 메타인식
+        const monitoringScore = ([9, 10, 11, 12].reduce((sum, index) => sum + (answers[index + 1] || 0), 0))*2; // 모니터링
+        const metaControlScore = [13, 14, 15, 16, 17, 18].reduce((sum, index) => sum + (answers[index + 1] || 0), 0); // 메타통제
+  
+        // 총점 계산
+        const totalScore = metaCognitionScore + monitoringScore + metaControlScore;
+  
         const now = new Date().toISOString();
         const testData = {
-          //데이터 불러오기
           member: { memberId: 1 },
           testScore: totalScore,
+          metaCognitionScore,
+          monitoringScore,
+          metaControlScore,
           question: JSON.stringify(answers),
           testDate: now,
           createdAt: now,
           updatedAt: now,
         };
-
+  
+        // 테스트 데이터 서버로 전송
         createTest(testData)
           .then((response) => {
             console.log("서버 응답:", response);
-            navigation.navigate("TestResultPage", { answers, totalScore });
+            navigation.navigate("TestResultPage", {
+              answers,
+              totalScore,
+              metaCognitionScore,
+              monitoringScore,
+              metaControlScore,
+            });
           })
           .catch((error) => {
             console.error("테스트 전송 중 오류:", error);
@@ -122,6 +135,7 @@ const TestPage = ({ navigation }) => {
       }
     }
   };
+  
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {

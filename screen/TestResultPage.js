@@ -88,11 +88,11 @@ const TestResultPage = ({ route, navigation }) => {
   const sumCategoryScores = (indices) =>
     indices.reduce((sum, idx) => sum + (answers[idx] || 0), 0);
 
-  const metaCognitionScore = sumCategoryScores([0, 1, 2, 3]) / 2; // 자기인식 및 자기판단
+  const metaCognitionScore = sumCategoryScores([0, 1, 2, 3]) ; // 자기인식 및 자기판단
   const selfRegulationScore = sumCategoryScores([4, 5]); // 자기능력과 자기조절
   const otherComparisonScore = sumCategoryScores([6, 7]); // 타인 비교
-  const behaviorEvalScore = sumCategoryScores([8, 9]); // 행동 평가
-  const situationEvalScore = sumCategoryScores([10, 11]); // 상황 평가
+  const behaviorEvalScore = sumCategoryScores([8, 9])*2; // 행동 평가
+  const situationEvalScore = sumCategoryScores([10, 11])*2; // 상황 평가
   const diversityScore = sumCategoryScores([12, 13]); // 다양성
   const reflectionScore = sumCategoryScores([14, 15]); // 반성
   const optimalityScore = sumCategoryScores([16, 17]); // 최적
@@ -107,6 +107,10 @@ const TestResultPage = ({ route, navigation }) => {
   const overallTotalScore =
     totalMetaCognition + totalMonitoring + totalMetaControl;
 
+    // Radar chart data 로그 찍기
+    console.log("메타인지 점수: ", totalMetaCognition);
+    console.log("모니터링 점수: ", totalMonitoring);
+    console.log("메타통제 점수: ", totalMetaControl);
   // Radar chart data array
   const radarChartData = [
     { label: "메타인식", value: totalMetaCognition },

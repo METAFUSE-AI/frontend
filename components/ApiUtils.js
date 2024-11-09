@@ -2,9 +2,9 @@
 
 import axios from "axios";
 
-//BASE_URL = "http://localhost:8080";
+BASE_URL = "http://localhost:8080";
 
-BASE_URL = "http:10.106.3.58:8080";
+//BASE_URL = "http:10.106.3.58:8080";
 
 // Test 관련 API 호출
 export const createTest = (testData) => {
@@ -28,6 +28,16 @@ export const instance = axios.create({
   },
 });
 
+const submitResults = async () => {
+  try {
+    await axios.post(`${BASE_URL}/saveResults`, {
+      data: radarChartData,
+    });
+    console.log("결과가 서버에 저장되었습니다.");
+  } catch (error) {
+    console.error("서버에 저장하는 중 오류:", error);
+  }
+};
 // Record 관련 API 호출
 
 // 기록 생성
@@ -137,25 +147,37 @@ export const registerUser = async ({ username, name, password }) => {
   return response.json();
 };
 
-// 로그인 API 호출
+// // 로그인 API 호출
+// export const loginUser = async ({ username, password }) => {
+//   try {
+//     const response = await fetch(`${BASE_URL}/members/login`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ username, password }),
+//     });
+
+//     if (!response.ok) {
+//       const errorMessage = await response.text();
+//       throw new Error(errorMessage);
+//     }
+
+//     return await response.json(); // 로그인 성공 시 응답 데이터 반환
+//   } catch (error) {
+//     throw new Error(error.message); // 에러 메시지 반환
+//   }
+// };
 export const loginUser = async ({ username, password }) => {
   try {
-    const response = await fetch(`${BASE_URL}/members/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
+    const response = await axios.post(`${BASE_URL}/members/login`, {
+      username,
+      password,
     });
-
-    if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(errorMessage);
-    }
-
-    return await response.json(); // 로그인 성공 시 응답 데이터 반환
+    return response.data; // 응답 데이터 반환
   } catch (error) {
-    throw new Error(error.message); // 에러 메시지 반환
+    console.error('API 호출 오류:', error);
+    throw new Error('서버 요청 실패');
   }
 };
 

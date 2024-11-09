@@ -19,9 +19,14 @@ export default function LoginPage({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (loading) return; // 이미 로딩 중이면 클릭 안 함.
     setLoading(true);
     try {
+      console.log('로그인 요청 보내는 중...');
       const response = await loginUser({ username, password });
+  
+      console.log('응답 데이터:', response);
+  
       if (response) {
         Alert.alert("로그인 성공");
         await AsyncStorage.setItem("username", username);
@@ -30,6 +35,7 @@ export default function LoginPage({ navigation }) {
         Alert.alert("로그인 실패", "아이디 또는 비밀번호가 올바르지 않습니다.");
       }
     } catch (error) {
+      console.error('로그인 중 오류 발생:', error);  // 오류 로그 추가
       Alert.alert("오류 발생", error.message);
     } finally {
       setLoading(false);
