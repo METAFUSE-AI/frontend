@@ -7,15 +7,25 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  Image,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons"; 
+import Icon from "react-native-vector-icons/Ionicons";
 import axios from "axios";
+import { HeaderBackButton } from "@react-navigation/elements";
+import HeaderLogo from "../assets/images/headerLogo.png";
 
-const AiChatbot = () => {
+const AiChatbot = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  //초기 인사말 메시지
+  // 로고 클릭 시 메인 페이지로 이동
+  const handleLogoPress = () => {
+    navigation.navigate("MainPage");
+  };
+
   useEffect(() => {
     const initialMessage = {
       sender: "bot",
@@ -26,8 +36,8 @@ const AiChatbot = () => {
 
   const fetchTestResults = async () => {
     try {
-      const response = await axios.get("http://10.106.3.58:5000/test-result", {
-        params: { userId: "1" }, 
+      const response = await axios.get("http://localhost:5000/test-result", {
+        params: { userId: "1" },
       });
 
       if (response.data && response.data.length > 0) {
@@ -35,7 +45,6 @@ const AiChatbot = () => {
           sender: "bot",
           text: `테스트 ID: ${result.test_id}, 당신의 테스트 점수는 ${result.score}점 입니다.`,
         }));
-
         setMessages([...messages, ...resultMessages]);
       } else {
         const resultMessage = {
@@ -62,7 +71,7 @@ const AiChatbot = () => {
     const userId = "1";
 
     try {
-      const response = await axios.post("http://10.106.3.58:5000/chat", {
+      const response = await axios.post("http://localhost:5000/chat", {
         user_id: userId,
         message: input,
       });
@@ -78,34 +87,50 @@ const AiChatbot = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.chatContainer}>
-        {messages.map((message, index) => (
-          <View
-            key={index}
-            style={
-              message.sender === "user" ? styles.userMessage : styles.botMessage
-            }
-          >
-            <Text>{message.text || "No message"}</Text> 
-          </View>
-        ))}
-      </ScrollView>
-
-      <View style={styles.buttonContainer}>
-        <Button title="내 테스트 결과 보기" onPress={fetchTestResults} />
-      </View>
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type your message..."
-          value={input}
-          onChangeText={setInput}
-          onSubmitEditing={sendMessage} 
-          placeholderTextColor="#CCC"
+      <View style={styles.customHeader}>
+        <HeaderBackButton
+          onPress={() => navigation.goBack()}
+          tintColor="#ffffff"
         />
-        <Button title="Send" onPress={sendMessage} /> 
       </View>
+      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+        <Image source={HeaderLogo} style={styles.headerLogo} />
+      </TouchableOpacity>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView style={styles.chatContainer}>
+          {messages.map((message, index) => (
+            <View
+              key={index}
+              style={
+                message.sender === "user"
+                  ? styles.userMessage
+                  : styles.botMessage
+              }
+            >
+              <Text>{message.text || "No message"}</Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        <View style={styles.buttonContainer}>
+          <Button title="내 테스트 결과 보기" onPress={fetchTestResults} />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="메타인지 향상을 위한 질문을 진행해보세요!"
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={sendMessage}
+            placeholderTextColor="#CCC"
+          />
+          <Button title="입력" onPress={sendMessage} />
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -114,6 +139,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0D0F35",
+  },
+  customHeader: {
+    height: 50,
+    justifyContent: "center",
+    paddingLeft: 10,
+    backgroundColor: "#0D0F35",
+    zIndex: 10,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  headerLogo: {
+    width: "70%",
+    height: 100,
   },
   chatContainer: {
     flex: 1,

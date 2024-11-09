@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
     padding: 20,
+    paddingBottom: "25%",
   },
   customHeader: {
     height: 50,
