@@ -23,22 +23,6 @@
     },
     "web": {
       "favicon": "./assets/images/app_icon.png"
-    },
-    "extra": {
-      "BASE_URL": "http://10.106.3.59:8080",
-      "eas": {
-        "projectId": "76a7c3f3-9719-4ca2-88c0-c9dde8937cad"
-      },
-      "firebase": {
-        "project_number": "60988562485",
-        "project_id": "metafuse-ecd38",
-        "storage_bucket": "metafuse-ecd38.firebasestorage.app",
-        "mobilesdk_app_id": "1:60988562485:android:30c309fc1ad6a47707657c",
-        "android_client_info": {
-          "package_name": "com.project.metafuse"
-        },
-        "api_key": "AIzaSyDLYFuOhPw3ekoWFcFg1Uhoam-PeFLDpMY"
-      }
     }
   }
 }

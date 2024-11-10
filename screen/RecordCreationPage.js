@@ -12,12 +12,14 @@ import { HeaderBackButton } from "@react-navigation/elements";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
+import { UserContext } from "../components/UserContext";
 
 // 기록 작성 페이지
 
 export default function RecordCreationPage({ route, navigation }) {
   const { question } = route.params;
   const [userInput, setUserInput] = useState("");
+  const { user } = useContext(UserContext);
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -25,16 +27,16 @@ export default function RecordCreationPage({ route, navigation }) {
 
   const handleCompletePress = async () => {
     console.log("기록 완료 버튼 클릭");
-  
+
     try {
       const record = {
         recordQuestion: question,
         recordContents: userInput,
-        member: { username: "test" }, // 실제로는 적절한 memberId로 설정
+        member: { username: user?.username || "test" }, // Context에서 username 사용
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
-  
+
       const response = await fetch("http://10.106.3.58:8080/records/create", {
         method: "POST",
         headers: {
@@ -42,7 +44,7 @@ export default function RecordCreationPage({ route, navigation }) {
         },
         body: JSON.stringify(record),
       });
-  
+
       if (response.ok) {
         navigation.navigate("RecordPage");
       } else {
@@ -52,6 +54,7 @@ export default function RecordCreationPage({ route, navigation }) {
       console.error("Error:", error);
     }
   };
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -86,7 +89,7 @@ export default function RecordCreationPage({ route, navigation }) {
           multiline
           textAlignVertical="top"
         />
-         <TouchableOpacity
+        <TouchableOpacity
           style={styles.recordSubmitBtn}
           onPress={handleCompletePress}
         >

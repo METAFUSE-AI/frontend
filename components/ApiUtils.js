@@ -1,6 +1,5 @@
-// api.js
-
 import axios from "axios";
+import { UserContext } from "./UserContext";
 
 BASE_URL = "http://10.106.3.114:8080";
 
@@ -151,8 +150,14 @@ export const loginUser = async ({ username, password }) => {
       throw new Error(errorMessage);
     }
 
-    return await response.json(); // 로그인 성공 시 응답 데이터 반환
+    const data = await response.json(); // 서버에서 응답 데이터 받음
+
+    // UserContext에 사용자 데이터 저장
+    const { setUser } = useContext(UserContext);
+    setUser({ username: data.username }); // 서버 응답 데이터 중 'username'을 저장
+
+    return data; // 필요시 로그인 응답 데이터 반환
   } catch (error) {
-    throw new Error(error.message); // 에러 메시지 반환
+    throw new Error(error.message); // 에러 메시지 처리
   }
 };
