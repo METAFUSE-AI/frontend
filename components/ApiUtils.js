@@ -35,7 +35,7 @@ export const instance = axios.create({
 // 기록 생성
 export const createRecord = async (recordData) => {
   try {
-    const response = await apiInstance.post("/records", recordData);
+    const response = await apiInstance.post("/records/create", recordData);
     return response.data;
   } catch (error) {
     console.error("Error creating record:", error);

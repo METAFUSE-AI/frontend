@@ -23,7 +23,6 @@ export default function RecordCreationPage({ route, navigation }) {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    // Fetch username from AsyncStorage when the component mounts
     const fetchUsername = async () => {
       const storedUsername = await AsyncStorage.getItem("username");
       if (storedUsername) {
