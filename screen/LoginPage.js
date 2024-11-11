@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// LoginPage.js
+import React, { useState, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -10,8 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderLogo from "../assets/images/headerLogo.png";
-
-BASE_URL = "http://10.106.3.58:8080";
+import { apiInstance } from "../components/ApiUtils";
 
 export default function LoginPage({ navigation }) {
   const [username, setUsername] = useState("");
@@ -21,21 +21,17 @@ export default function LoginPage({ navigation }) {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/members/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await apiInstance.post("/members/login", {
+        username,
+        password,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         Alert.alert("로그인 성공");
-        await AsyncStorage.setItem("username", username); // 성공 시 username 저장
-        console.log("저장된 username:", username); // 여기서 콘솔에 username을 출력합니다.
+        await AsyncStorage.setItem("username", username);
         navigation.navigate("MainPage");
       } else {
-        const errorMessage = await response.text();
+        const errorMessage = response.data; // response.text() 대신 response.data 사용
         Alert.alert("로그인 실패", errorMessage);
       }
     } catch (error) {
@@ -76,7 +72,7 @@ export default function LoginPage({ navigation }) {
         onPress={() => navigation.navigate("SignUpPage")}
         style={styles.signUpButton}
       >
-        <Text style={styles.signUpButtonText} >회원가입</Text>
+        <Text style={styles.signUpButtonText}>회원가입</Text>
       </TouchableOpacity>
     </View>
   );

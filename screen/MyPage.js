@@ -1,3 +1,4 @@
+// MyPage.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import HeaderLogo from "../assets/images/headerLogo.png";
+import { apiInstance } from "../components/ApiUtils";
 
 export default function MyPage({ navigation }) {
   const [testResults, setTestResults] = useState([]);
@@ -16,21 +18,16 @@ export default function MyPage({ navigation }) {
   // 백엔드 API를 호출하여 테스트 결과를 가져옴
   const fetchTestResults = async () => {
     try {
-      const response = await fetch(
-        "http://10.106.3.58:8080/test-results/member/1" // localhost 대신 실제 IP 사용
-      );
-
-      if (!response.ok) {
+      const response = await apiInstance.get("/test-results/member/1");
+      if (response.status === 200) {
+        const data = response.data;
+        setTestResults(Array.isArray(data) ? data : []);
+      } else {
         throw new Error("Failed to fetch test results");
       }
-
-      const data = await response.json();
-
-      // 데이터가 배열인지 확인하고 배열이 아닐 경우 빈 배열로 처리
-      setTestResults(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching test results:", error);
-      setTestResults("저장된 테스트 결과가 없습니다."); // 에러가 발생하면 빈 배열로 처리
+      setTestResults([]); // Reset to an empty array on error
     }
   };
 
@@ -45,7 +42,7 @@ export default function MyPage({ navigation }) {
 
   // 테스트 결과를 눌렀을 때 상세 결과 페이지로 이동
   //const handleTestResultPress = (testResult) => {
-    //navigation.navigate("TestResultPage", { testResult });
+  //navigation.navigate("TestResultPage", { testResult });
   //};
 
   useEffect(() => {

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// RecordCreationPage.js
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,17 +10,32 @@ import {
   TextInput,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
 import { UserContext } from "../components/UserContext";
-
-// 기록 작성 페이지
+import { apiInstance } from "../components/ApiUtils";
 
 export default function RecordCreationPage({ route, navigation }) {
   const { question } = route.params;
   const [userInput, setUserInput] = useState("");
-  const { user } = useContext(UserContext);
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    // Fetch username from AsyncStorage when the component mounts
+    const fetchUsername = async () => {
+      const storedUsername = await AsyncStorage.getItem("username");
+      if (storedUsername) {
+        setUsername(storedUsername);
+      }
+    };
+    fetchUsername();
+
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -32,34 +48,28 @@ export default function RecordCreationPage({ route, navigation }) {
       const record = {
         recordQuestion: question,
         recordContents: userInput,
-        member: { username: user?.username || "test" }, // Context에서 username 사용
+        member: { username: username || "test" }, // Use stored username
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      const response = await fetch("http://10.106.3.58:8080/records/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(record),
-      });
+      console.log("username:", username);
 
-      if (response.ok) {
+      const response = await apiInstance.post("/records/create", record);
+
+      if (response.status === 201) {
+        console.log("Record saved successfully");
         navigation.navigate("RecordPage");
       } else {
-        console.error("Failed to save record");
+        console.error("Failed to save record. Status:", response.status);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error(
+        "Error creating record:",
+        error.response?.data || error.message || error
+      );
     }
   };
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30, // 수정
+    borderRadius: 30,
     marginTop: 25,
     marginBottom: 25,
     padding: 20,

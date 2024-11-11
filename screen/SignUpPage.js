@@ -1,3 +1,4 @@
+// SignUpPage.js
 import React, { useState } from "react";
 import {
   View,
@@ -12,6 +13,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
 import { registerUser } from "../components/ApiUtils";
 import Modal from "react-native-modal";
+import { apiInstance } from "../components/ApiUtils";
 
 export default function SignUpPage({ navigation }) {
   const [username, setUsername] = useState("");
@@ -31,8 +33,8 @@ export default function SignUpPage({ navigation }) {
     }
 
     try {
-      const response = await fetch(
-        `http://10.106.3.59:8080/members/check?username=${username}`
+      const response = await apiInstance.get(
+        `/members/check?username=${username}`
       );
       if (response.ok) {
         const exists = await response.json();
@@ -51,11 +53,12 @@ export default function SignUpPage({ navigation }) {
         setModalVisible(true);
       }
     } catch (error) {
-      setModalMessage("오류 발생: " + error.message);
+      setModalMessage(
+        "오류 발생: " + (error.response?.data || error.message || error)
+      );
       setModalVisible(true);
     }
   };
-
   const handleSignUp = async () => {
     console.log("회원가입 시도: ", {
       username,
