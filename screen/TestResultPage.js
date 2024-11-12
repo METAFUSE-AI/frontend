@@ -154,7 +154,6 @@ const TestResultPage = ({ route, navigation }) => {
           <Text style={styles.navButtonText}>홈으로 가기</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={handleMyPagePress}>
-          {" "}
           {/* 마이페이지로 이동하는 버튼 */}
           <Text style={styles.navButtonText}>마이페이지로 가기</Text>
         </TouchableOpacity>

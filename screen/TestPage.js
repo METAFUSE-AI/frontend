@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import HeaderLogo from "../assets/images/headerLogo.png";
 import { createTest } from "../components/ApiUtils";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const questions = [
   "스스로에 대한 내 평가는 정확한 편이다.", //메타인식
   "나는 내가 알고 있는 것이 무엇인지 안다.",
@@ -45,7 +45,7 @@ const TestPage = ({ navigation }) => {
     useState(null);
 
   const scrollViewRef = useRef();
-  const username = "test";
+const username =  AsyncStorage.getItem("username");
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
@@ -119,6 +119,7 @@ const TestPage = ({ navigation }) => {
       if (answers.includes(null)) {
         setModalVisible(true); // 모달 표시
       } else {
+        
         console.log("username", username);
         const testData = {
           member: { username: username },

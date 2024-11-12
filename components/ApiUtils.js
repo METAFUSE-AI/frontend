@@ -3,7 +3,7 @@ import axios from "axios";
 import { UserContext } from "./UserContext";
 import { useContext } from "react";
 
-const BASE_URL = "http://10.106.1.115:8080"; // base URL 설정
+const BASE_URL = "http://10.106.1.162:8080"; // base URL 설정
 
 // axios 인스턴스 생성
 export const apiInstance = axios.create({
@@ -134,7 +134,7 @@ export const deleteRecord = async (id) => {
 // 기록응원 관련 API 호출
 export const fetchEncouragementMessage = async () => {
   try {
-    const response = await fetch("http://192.168.0.161:5000/encouragement");
+    const response = await fetch("http://10.106.1.162:5000/encouragement");
     if (!response.ok) {
       throw new Error("Failed to fetch encouragement message");
     }

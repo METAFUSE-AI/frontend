@@ -16,11 +16,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import { HeaderBackButton } from "@react-navigation/elements";
 import HeaderLogo from "../assets/images/headerLogo.png";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const AiChatbot = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-
+  const username =  AsyncStorage.getItem("username"); //
   // 로고 클릭 시 메인 페이지로 이동
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -36,8 +36,8 @@ const AiChatbot = ({ navigation }) => {
 
   const fetchTestResults = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/test-result", {
-        params: { userId: "1" },
+      const response = await axios.get("http://10.106.1.162:5000/test-result", {
+        params: { username:username },
       });
 
       if (response.data && response.data.length > 0) {
@@ -71,8 +71,8 @@ const AiChatbot = ({ navigation }) => {
     const userId = "1";
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", {
-        user_id: userId,
+      const response = await axios.post("http://10.106.1.162:5000/chat", {
+        username: username,
         message: input,
       });
 
