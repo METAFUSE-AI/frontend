@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; // expo-secure-store import
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
 
@@ -26,8 +26,8 @@ export default function RecordCreationPage({ route, navigation }) {
     console.log("기록 완료 버튼 클릭");
 
     try {
-      // AsyncStorage에서 username 가져오기
-      const storedUsername = await AsyncStorage.getItem('username');
+      // SecureStore에서 username 가져오기
+      const storedUsername = await SecureStore.getItemAsync('username');
       console.log("저장된 username:", storedUsername);
       if (!storedUsername) {
         console.error("username이 세션에 존재하지 않습니다.");
@@ -89,7 +89,7 @@ export default function RecordCreationPage({ route, navigation }) {
           value={userInput}
           onChangeText={setUserInput}
           multiline
-          textAlignVertical="top" // 입력란 내에서 텍스트를 상단으로 정렬
+          textAlignVertical="top"
         />
         <TouchableOpacity
           style={styles.recordSubmitBtn}
@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     height: 250,
     backgroundColor: "#344C64",
     color: "#fff",
-    justifyContent: "flex-start", // 입력란에서 텍스트를 위쪽으로 정렬
-    alignItems: "flex-start", // 왼쪽 정렬
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     borderRadius: 30,
     marginTop: 25,
     marginBottom: 25,
     padding: 20,
-    textAlignVertical: "top", // 텍스트를 상단으로 정렬
+    textAlignVertical: "top",
   },
   recordSubmitBtn: {
     backgroundColor: "#8881EA",

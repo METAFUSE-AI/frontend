@@ -8,7 +8,7 @@ import {
   Alert,
   Image,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store"; // expo-secure-store로 변경
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function LoginPage({ navigation }) {
@@ -26,10 +26,10 @@ export default function LoginPage({ navigation }) {
         },
         body: JSON.stringify({ username, password }),
       });
-  
+
       if (response.ok) {
         Alert.alert("로그인 성공");
-        await AsyncStorage.setItem("username", username); // 성공 시 username 저장
+        await SecureStore.setItemAsync("username", username); // SecureStore에 username 저장
         console.log("저장된 username:", username); // 여기서 콘솔에 username을 출력합니다.
         navigation.navigate("MainPage");
       } else {
@@ -42,7 +42,6 @@ export default function LoginPage({ navigation }) {
       setLoading(false);
     }
   };
-  
 
   return (
     <View style={styles.container}>
@@ -60,17 +59,24 @@ export default function LoginPage({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity onPress={handleLogin} style={styles.loginButton} disabled={loading}>
-        <Text style={styles.loginButtonText}>{loading ? "로딩 중..." : "로그인"}</Text>
+      <TouchableOpacity
+        onPress={handleLogin}
+        style={styles.loginButton}
+        disabled={loading}
+      >
+        <Text style={styles.loginButtonText}>
+          {loading ? "로딩 중..." : "로그인"}
+        </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("SignUpPage")} style={styles.signUpButton}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("SignUpPage")}
+        style={styles.signUpButton}
+      >
         <Text style={styles.signUpButtonText}>회원가입</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
