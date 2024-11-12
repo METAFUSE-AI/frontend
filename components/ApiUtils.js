@@ -1,8 +1,9 @@
 // ApiUtils.js
 import axios from "axios";
 import { UserContext } from "./UserContext";
+import { useContext } from "react";
 
-const BASE_URL = "http://192.168.0.161:8080"; // base URL 설정
+const BASE_URL = "http://10.106.1.115:8080"; // base URL 설정
 
 // axios 인스턴스 생성
 export const apiInstance = axios.create({
@@ -12,17 +13,6 @@ export const apiInstance = axios.create({
   },
 });
 
-// Test 관련 API 호출
-export const createTest = (testData) => {
-  return apiInstance
-    .post("/tests/create", testData)
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error creating test:", error);
-      throw error;
-    });
-};
-
 export const instance = axios.create({
   headers: {
     // 불필요한 헤더가 있으면 여기에서 제거합니다.
@@ -30,8 +20,51 @@ export const instance = axios.create({
   },
 });
 
-// Record 관련 API 호출
+// Test 관련 API 호출
+export const createTest = async (testData) => {
+  try {
+    const response = await apiInstance.post("/tests/create", testData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating test:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
+// 테스트 결과를 username으로 받아오는 함수
+export const getTestResultsByUsername = async (username) => {
+  const apiUrl = `/tests/${username}`; // memberId 대신 username 사용
+
+  try {
+    const response = await apiInstance.get(apiUrl);
+    return response.data; // 테스트 결과 배열 반환
+  } catch (error) {
+    console.error(
+      "Failed to fetch test results:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+// 테스트 점수 조회
+export const fetchTestScores = async (testId) => {
+  try {
+    const response = await apiInstance.get(`/tests/${testId}/scores`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching score summary:",
+      error.response?.data || error.message
+    );
+    throw error; // 오류 발생 시 다시 던져서 상위에서 처리하도록 함
+  }
+};
+
+// Record 관련 API 호출
 // 기록 생성
 export const createRecord = async (recordData) => {
   try {

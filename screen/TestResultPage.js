@@ -1,3 +1,4 @@
+// TestResultPage.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -5,169 +6,104 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Dimensions,
-  StyleSheet,
   SafeAreaView,
+  StyleSheet,
 } from "react-native";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
-//import KakaoShareLink from "react-native-kakao-share-link";
-import { Linking } from "react-native";
+import axios from "axios";
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import TestResult01 from "../assets/images/TestResult01.png";
 import TestResult02 from "../assets/images/TestResult02.png";
 import TestResult03 from "../assets/images/TestResult03.png";
-
-// 테스트 결과 페이지 => 테스트 점수별 그래프, 허구문항을 통한 사용자의 테스트 결과 신뢰도, 결과 이미지, sns 공유 기능
-// npm install @salmonco/react-native-radar-chart react-native-svg => 삼각 그래프를 그리기 위한 라이브러리
-
-// 테스트 결과 카카오톡 공유 기능을 위한 라이브러리
-// npm install react-native-kakao-share-link
-function calculatePercentage(score) {
-  return Math.round((score / 60) * 100);
-}
+import { fetchTestScores } from "../components/ApiUtils";
 const TestResultPage = ({ route, navigation }) => {
-  const { answers = {}, totalScore } = route.params || {};
+  const { testId } = route.params;
+  const [scoreSummary, setScoreSummary] = useState({});
   const [resultImage, setResultImage] = useState(TestResult03);
   const [improvementRecommendation, setImprovementRecommendation] =
     useState("추천된 향상법을 확인하세요.");
+  const [recommendationPage, setRecommendationPage] = useState("");
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
-  const handleMyPage = () => {
-    navigation.navigate("MyPage");
+  const handleMyPagePress = () => {
+    navigation.navigate("MyPage"); // 마이페이지로 이동하는 함수
   };
 
-  // 점수 분류표를 참고하여 향상법을 추천하는 코드
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
+    axios;
+    fetchTestScores(testId)
+      .then((data) => {
+        setScoreSummary(data);
 
-    // 총점에 따라 결과 이미지 업데이트
-    if (totalScore >= 40) {
-      setResultImage(TestResult01);
-    } else if (totalScore >= 25) {
-      setResultImage(TestResult02);
-    } else {
-      setResultImage(TestResult03);
-    }
+        // 점수에 따라 결과 이미지 설정
+        if (data.totalScoreSum >= 67) {
+          setResultImage(TestResult01);
+        } else if (data.totalScoreSum >= 42) {
+          setResultImage(TestResult02);
+        } else {
+          setResultImage(TestResult03);
+        }
 
-    // 최저 점수 카테고리에 따른 향상법 추천
-    const lowestCategory = getLowestCategory();
-    let recommendation = "";
+        const metaCognitionScore = data.metaCognitionScoreSum;
+        const monitoringScore = data.monitoringScoreSum;
+        const metaControlScore = data.metaControlScoreSum;
 
-    if (
-      lowestCategory === "메타인식" ||
-      lowestCategory === "자기능력과 자기조절" ||
-      lowestCategory === "행동 평가"
-    ) {
-      recommendation = "게임 추천";
-    } else if (
-      lowestCategory === "상황 평가" ||
-      lowestCategory === "다양성" ||
-      lowestCategory === "최적"
-    ) {
-      recommendation = "퀴즈 추천";
-    }
-    else(
-      lowestCategory === "타인 비교" ||
-      lowestCategory === "반성" ||
-      lowestCategory === "결정"
-    ) 
-      recommendation = "일기 쓰기 추천";
+        const lowestScore = Math.min(
+          metaCognitionScore,
+          monitoringScore,
+          metaControlScore
+        );
+        let recommendation = "";
+        let page = "";
 
-    console.log("최저 카테고리: ", lowestCategory);
-    console.log("추천: ", recommendation);
+        if (
+          metaCognitionScore === monitoringScore &&
+          monitoringScore === metaControlScore
+        ) {
+          recommendation = "일기 쓰기 추천";
+          page = "RecordPage";
+        } else if (lowestScore === metaCognitionScore) {
+          recommendation = "게임 추천";
+          page = "GamePage";
+        } else if (lowestScore === monitoringScore) {
+          recommendation = "퀴즈 추천";
+          page = "QuizPage";
+        } else if (lowestScore === metaControlScore) {
+          recommendation = "일기 쓰기 추천";
+          page = "RecordPage";
+        }
 
-    setImprovementRecommendation(recommendation);
-  }, [totalScore, navigation]);
+        setImprovementRecommendation(recommendation);
+        setRecommendationPage(page);
+      })
+      .catch((error) => console.error("Error fetching score summary:", error));
+  }, [testId]);
 
-  const sumCategoryScores = (indices) =>
-    indices.reduce((sum, idx) => sum + (answers[idx] || 0), 0);
-
-  const metaCognitionScore = sumCategoryScores([0, 1, 2, 3]) / 2; // 자기인식 및 자기판단
-  const selfRegulationScore = sumCategoryScores([4, 5]); // 자기능력과 자기조절
-  const otherComparisonScore = sumCategoryScores([6, 7]); // 타인 비교
-  const behaviorEvalScore = sumCategoryScores([8, 9]); // 행동 평가
-  const situationEvalScore = sumCategoryScores([10, 11]); // 상황 평가
-  const diversityScore = sumCategoryScores([12, 13]); // 다양성
-  const reflectionScore = sumCategoryScores([14, 15]); // 반성
-  const optimalityScore = sumCategoryScores([16, 17]); // 최적
-  const decisionScore = sumCategoryScores([18, 19]); // 결정
-
-  // Summing the overall scores based on the defined subcategories
-  const totalMetaCognition =
-    metaCognitionScore + selfRegulationScore + otherComparisonScore;
-  const totalMonitoring = behaviorEvalScore + situationEvalScore;
-  const totalMetaControl =
-    diversityScore + reflectionScore + optimalityScore + decisionScore;
-  const overallTotalScore =
-    totalMetaCognition + totalMonitoring + totalMetaControl;
-
-  // Radar chart data array
   const radarChartData = [
-    { label: "메타인식", value: totalMetaCognition },
-    { label: "모니터링", value: totalMonitoring },
-    { label: "메타통제", value: totalMetaControl },
+    { label: "메타인식", value: scoreSummary?.metaCognitionScoreSum || 0 },
+    { label: "모니터링", value: scoreSummary?.monitoringScoreSum || 0 },
+    { label: "메타통제", value: scoreSummary?.metaControlScoreSum || 0 },
   ];
 
-  const getLowestCategory = () => {
-    const scores = [
-      { category: "메타인식", score: totalMetaCognition },
-      { category: "모니터링", score: totalMonitoring },
-      { category: "메타통제", score: totalMetaControl },
-    ];
-    scores.sort((a, b) => a.score - b.score);
-    return scores[0].category;
-  };
+  // scoreSummary가 비어있지 않으면 차트 표시
+  if (!scoreSummary || Object.keys(scoreSummary).length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.loadingText}>데이터를 불러오는 중입니다...</Text>
+      </SafeAreaView>
+    );
+  }
 
-  const shareResultOnKakao = async () => {
-    try {
-      await KakaoShareLink.sendText({
-        text: `테스트 결과 공유! 총점: ${overallTotalScore}점입니다. 나의 메타인지 능력을 확인하세요!`,
-        link: {
-          webUrl: "https://developers.kakao.com/",
-          mobileWebUrl: "https://developers.kakao.com/",
-        },
-        buttons: [
-          {
-            title: "앱에서 보기",
-            link: {
-              androidExecutionParams: [
-                { key: "score", value: overallTotalScore },
-              ],
-              iosExecutionParams: [{ key: "score", value: overallTotalScore }],
-              webUrl: "https://developers.kakao.com/",
-              mobileWebUrl: "https://developers.kakao.com/",
-            },
-          },
-        ],
-      });
-    } catch (e) {
-      console.error(e);
+  // 추천 향상법에 맞는 페이지로 네비게이션
+  const handleRecommendationPage = () => {
+    if (recommendationPage) {
+      navigation.navigate(recommendationPage);
     }
-    console.log(KakaoShareLink); // undefined가 아니여야 합니다.
   };
-
-  // Deep Link 처리 함수
-  const handleDeepLink = (url) => {
-    console.log("Deep Link: ", url);
-    // URL에 따라 적절한 로직을 추가
-  };
-
-  // 딥 링크 리스너 추가
-  useEffect(() => {
-    const linkingListener = Linking.addEventListener("url", (e) => {
-      handleDeepLink(e.url);
-    });
-
-    return () => {
-      linkingListener.remove();
-    };
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -175,14 +111,12 @@ const TestResultPage = ({ route, navigation }) => {
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      <ScrollView
-        contentContainerStyle={styles.scrollView}
-        keyboardShouldPersistTaps="handled"
-        style={{ paddingBottom: 20 }}
-      >
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
-          <Text style={styles.resultText}>총점: {calculatePercentage(totalScore)}점</Text>
+          <Text style={styles.resultText}>
+            총점: {scoreSummary.totalScoreSum || 0}점
+          </Text>
         </View>
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
@@ -193,15 +127,16 @@ const TestResultPage = ({ route, navigation }) => {
               endColor: "#FFF8F1",
               count: 5,
             }}
-            stroke={["#FFE8D3", "#FFE8D3", "#FFE8D3", "#FFE8D3", "#ff9532"]}
-            strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
-            strokeOpacity={[1, 1, 1, 1, 0.13]}
+            stroke={["#FFE8D3", "#FFE8D3", "#FFE8D3"]}
+            strokeWidth={[0.5, 0.5, 0.5]}
+            strokeOpacity={[1, 1, 1]}
             labelColor="#433D3A"
             dataFillColor="#FF9432"
             dataFillOpacity={0.8}
             dataStroke="salmon"
             dataStrokeWidth={2}
             isCircle
+            maxValue={24} // max 값 설정
           />
         </View>
         <View>
@@ -209,14 +144,19 @@ const TestResultPage = ({ route, navigation }) => {
             향상 추천: {improvementRecommendation}
           </Text>
         </View>
-        {/* <TouchableOpacity
-          onPress={shareResultOnKakao}
-          style={styles.kakaoShareBtn}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={handleRecommendationPage}
         >
-          <Text style={styles.kakaoShareBtnText}>카카오톡 공유하기</Text>
-        </TouchableOpacity> */}
-        <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
-          <Text style={styles.navButtonText}>마이페이지로 이동</Text>
+          <Text style={styles.navButtonText}>추천 향상법 하러가기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleLogoPress}>
+          <Text style={styles.navButtonText}>홈으로 가기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleMyPagePress}>
+          {" "}
+          {/* 마이페이지로 이동하는 버튼 */}
+          <Text style={styles.navButtonText}>마이페이지로 가기</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -252,16 +192,6 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: "70%",
     height: 100,
-  },
-  kakaoShareBtn: {
-    backgroundColor: "#FAE300",
-    color: "#371D1E",
-    padding: 15,
-    borderRadius: 20,
-    alignItems: "center",
-    marginHorizontal: 5,
-    margin: 10,
-    fontSize: 18,
   },
   navButton: {
     backgroundColor: "#8881EA",
@@ -309,6 +239,12 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 18,
     marginTop: 10,
+  },
+  loadingText: {
+    color: "#ffffff",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

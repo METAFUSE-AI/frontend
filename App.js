@@ -59,7 +59,11 @@ export default function App() {
             component={TestResultPage}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="MyPage" component={MyPage} />
+          <Stack.Screen
+            name="MyPage"
+            component={MyPage}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="RecordPage"
             component={RecordPage}
