@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isLoggedIn ? "MainPage" : "LoginPage"}>
+      <Stack.Navigator initialRouteName={"LoginPage"}>
         <Stack.Screen
           name="MainPage"
           component={MainPage}
@@ -57,7 +57,7 @@ export default function App() {
           component={TestResultPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="MyPage" component={MyPage} />
+        <Stack.Screen name="MyPage" component={MyPage} options={{ headerShown: false }} />
         <Stack.Screen
           name="RecordPage"
           component={RecordPage}

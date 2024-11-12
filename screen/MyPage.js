@@ -2,70 +2,68 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
-  Image,
   TouchableOpacity,
   ScrollView,
   Text,
+  Image,
 } from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
+import { getTestResultsByUsername } from "../components/ApiUtilsi";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function MyPage({ navigation }) {
-  const [testListNum, setTestListNum] = useState(1);
+  const [testList, setTestList] = useState([]);
+  const username = "test"; // 고정된 memberId 값
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
-  const handleTestResultPress = () => {
-    // Here, you should retrieve the test results from your data source.
-    // For example purposes, we'll use hardcoded data.
-    const testResults = {
-      answers: [
-        /* Array of answers */
-      ],
-      totalScore: 30, // Example total score
-    };
-
-    navigation.navigate("TestResultPage", testResults);
+  // 테스트 결과 클릭 시 해당 결과 페이지로 이동
+  const handleTestResultPress = (testId) => {
+    console.log(`선택한 testId: ${testId}`);
+    navigation.navigate("TestResultPage", { testId });
   };
 
+  // 테스트 결과 불러오기
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
-  }, [navigation]);
+    const fetchTestResults = async () => {
+      try {
+        const testResults = await getTestResultsByUsername(username);
+        setTestList(testResults);
+      } catch (error) {
+        console.error("테스트 결과를 불러오는 중 오류 발생:", error);
+      }
+    };
+    fetchTestResults();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
-      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
-        <Image source={HeaderLogo} style={styles.headerLogo} />
+      {/* 뒤로가기 버튼 */}
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>{"< 뒤로가기"}</Text>
       </TouchableOpacity>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-          { alignItems: "center" },
-        ]}
-        style={styles.scrollView}
-      >
-        <View>
-          <Text style={{ color: "#ffffff" }}>이전 테스트 기록 열람</Text>
-          <View style={styles.testListBox}>
-            {/*추후 result_id 별로 결과를 마이페이지로 불러올 수 있도록 수정 예정*/}
+
+      {/* 로고 */}
+      <Image source={HeaderLogo} style={styles.logo} />
+
+      {/* 스크롤 가능한 테스트 결과 리스트 */}
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {testList.length > 0 ? (
+          testList.map((test) => (
             <TouchableOpacity
-              style={styles.testListBtn}
-              onPress={handleTestResultPress} // Navigate to TestResultPage on press
+              key={test.seq}
+              style={styles.testButton}
+              onPress={() => handleTestResultPress(test.testId)}
             >
-              <Text style={{ color: "#ffffff" }}>{testListNum}회</Text>
+              <Text style={styles.testButtonText}>
+                {test.seq}번째 테스트 기록
+              </Text>
             </TouchableOpacity>
-          </View>
-        </View>
+          ))
+        ) : (
+          <Text style={{ color: "#FFF", fontSize: 16 }}>불러올 테스트 결과가 없습니다.</Text>
+        )}
       </ScrollView>
     </View>
   );
@@ -75,45 +73,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0D0F35",
+    paddingHorizontal: 16,
+    paddingTop: 50,
   },
-  customHeader: {
-    height: 50,
-    justifyContent: "center",
-    paddingLeft: 10,
-    backgroundColor: "#0D0F35",
-    zIndex: 10,
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 10,
   },
-  logoContainer: {
-    alignItems: "center",
-    marginTop: 20,
+  backButtonText: {
+    fontSize: 18,
+    color: "#FFFFFF",
   },
-  headerLogo: {
-    width: "70%",
-    height: 100,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  testListBox: {
+  logo: {
     width: 250,
-    height: 250,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    height: 100,
+    resizeMode: "contain",
+    alignSelf: "center",
+    marginBottom: 20,
   },
-  testListBtn: {
-    width: 150,
-    height: 40,
+  contentContainer: {
+    alignItems: "center",
+    paddingBottom: 20,
+  },
+  testButton: {
     backgroundColor: "#8881EA",
-    justifyContent: "center",
-    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginBottom: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  testButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

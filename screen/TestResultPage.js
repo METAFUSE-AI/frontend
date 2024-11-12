@@ -1,128 +1,141 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Dimensions,
-} from "react-native";
-import { HeaderBackButton } from "@react-navigation/elements";
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import { RadarChart } from "@salmonco/react-native-radar-chart";
-
+import axios from "axios";
 import HeaderLogo from "../assets/images/headerLogo.png";
 import TestResult01 from "../assets/images/TestResult01.png";
 import TestResult02 from "../assets/images/TestResult02.png";
 import TestResult03 from "../assets/images/TestResult03.png";
-
-// 테스트 결과 페이지 => 테스트 점수별 그래프, 허구문항을 통한 사용자의 테스트 결과 신뢰도, 결과 이미지, sns 공유 기능
-// npm install @salmonco/react-native-radar-chart react-native-svg => 삼각 그래프를 그리기 위한 라이브러리
-
+import{fetchTestScores}from "../components/ApiUtilsi"
 const TestResultPage = ({ route, navigation }) => {
-  const { answers, totalScore } = route.params; // route에서 전달된 매개변수 사용
+  const { testId } = route.params;  
+  const [scoreSummary, setScoreSummary] = useState({});
   const [resultImage, setResultImage] = useState(TestResult03);
+  const [improvementRecommendation, setImprovementRecommendation] = useState("추천된 향상법을 확인하세요.");
+  const [recommendationPage, setRecommendationPage] = useState(""); 
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
 
-  const handleMyPage = () => {
-    navigation.navigate("MyPage");
+  const handleMyPagePress = () => {
+    navigation.navigate("MyPage");  // 마이페이지로 이동하는 함수
   };
 
   useEffect(() => {
-    navigation.setOptions({
-      headerShown: false,
-    });
+    axios
+    fetchTestScores(testId)
+    .then((data) => {
+      setScoreSummary(data);
 
-    //점수 총합별 결과 이미지 출력
-    if (totalScore >= 40) {
-      setResultImage(TestResult01);
-    } else if (totalScore >= 25) {
-      setResultImage(TestResult02);
-    } else {
-      setResultImage(TestResult03);
-    }
-  }, [totalScore, navigation]);
+        // 점수에 따라 결과 이미지 설정
+        if (data.totalScoreSum >= 67) {
+          setResultImage(TestResult01);
+        } else if (data.totalScoreSum >= 42) {
+          setResultImage(TestResult02);
+        } else {
+          setResultImage(TestResult03);
+        }
 
-  // 세 가지 카테고리별로 점수를 합산하는 함수
-  const sumCategoryScores = (start, end) => {
-    return Object.values(answers)
-      .slice(start, end)
-      .reduce((sum, value) => sum + value, 0);
-  };
+        const metaCognitionScore = data.metaCognitionScoreSum;
+        const monitoringScore = data.monitoringScoreSum;
+        const metaControlScore = data.metaControlScoreSum;
 
-  const categories = ["Meta Cognition", "Monitoring", "Meta Control"];
+        const lowestScore = Math.min(metaCognitionScore, monitoringScore, metaControlScore);
+        let recommendation = "";
+        let page = "";
 
-  // 세 가지 카테고리의 점수
-  const metaCognitionScore = sumCategoryScores(0, 8);
-  const monitoringScore = sumCategoryScores(8, 16);
-  const metaControlScore = sumCategoryScores(16, 24);
+        if (metaCognitionScore === monitoringScore && monitoringScore === metaControlScore) {
+          recommendation = "일기 쓰기 추천";
+          page = "RecordPage";
+        } else if (lowestScore === metaCognitionScore) {
+          recommendation = "게임 추천";
+          page = "GamePage";
+        } else if (lowestScore === monitoringScore) {
+          recommendation = "퀴즈 추천";
+          page = "QuizPage";
+        } else if (lowestScore === metaControlScore) {
+          recommendation = "일기 쓰기 추천";
+          page = "RecordPage";
+        }
+
+        setImprovementRecommendation(recommendation);
+        setRecommendationPage(page);
+      })
+      .catch((error) => console.error("Error fetching score summary:", error));
+  }, [testId]);
 
   const radarChartData = [
-    { label: "메타인식", value: metaCognitionScore },
-    { label: "모니터링", value: monitoringScore },
-    { label: "메타통제", value: metaControlScore },
+    { label: "메타인식", value: scoreSummary?.metaCognitionScoreSum || 0 },
+    { label: "모니터링", value: scoreSummary?.monitoringScoreSum || 0 },
+    { label: "메타통제", value: scoreSummary?.metaControlScoreSum || 0 },
   ];
 
-  const chartConfig = {
-    backgroundColor: "#0D0F35",
-    backgroundGradientFrom: "#0D0F35",
-    backgroundGradientTo: "#0D0F35",
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
-    barPercentage: 0.5,
+  // scoreSummary가 비어있지 않으면 차트 표시
+  if (!scoreSummary || Object.keys(scoreSummary).length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.loadingText}>데이터를 불러오는 중입니다...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // 추천 향상법에 맞는 페이지로 네비게이션
+  const handleRecommendationPage = () => {
+    if (recommendationPage) {
+      navigation.navigate(recommendationPage);
+    }
   };
 
-  const screenWidth = Dimensions.get("window").width;
-
   return (
-    <View style={styles.container}>
-      <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
-      </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.customHeader}></View>
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.testResultComponents}>
           <Image source={resultImage} style={styles.testResultImage} />
+          <Text style={styles.resultText}>총점: {scoreSummary.totalScoreSum}점</Text>
         </View>
-        {/* 메타인지 결과 */}
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>나의 메타인지 능력 분석</Text>
           <RadarChart
-            data={radarChartData.map((item) => ({
-              label: item.label,
-              value: item.value,
-            }))}
-            gradientColor={{
-              startColor: "#FF9432",
-              endColor: "#FFF8F1",
-              count: 5,
-            }}
-            stroke={["#FFE8D3", "#FFE8D3", "#FFE8D3", "#FFE8D3", "#ff9532"]}
-            strokeWidth={[0.5, 0.5, 0.5, 0.5, 1]}
-            strokeOpacity={[1, 1, 1, 1, 0.13]}
-            labelColor="#433D3A"
-            dataFillColor="#FF9432"
-            dataFillOpacity={0.8}
-            dataStroke="salmon"
-            dataStrokeWidth={2}
-            isCircle
-          />
+  data={radarChartData}
+  gradientColor={{
+    startColor: "#FF9432",
+    endColor: "#FFF8F1",
+    count: 5,
+  }}
+  stroke={["#FFE8D3", "#FFE8D3", "#FFE8D3"]}
+  strokeWidth={[0.5, 0.5, 0.5]}
+  strokeOpacity={[1, 1, 1]}
+  labelColor="#433D3A"
+  dataFillColor="#FF9432"
+  dataFillOpacity={0.8}
+  dataStroke="salmon"
+  dataStrokeWidth={2}
+  isCircle
+  maxValue={24}  // max 값 설정
+/>
+
         </View>
         <View>
-          <TouchableOpacity style={styles.navButton} onPress={handleMyPage}>
-            <Text style={styles.navButtonText}>마이페이지로 이동</Text>
-          </TouchableOpacity>
+          <Text style={styles.recommendationText}>
+            향상 추천: {improvementRecommendation}
+          </Text>
         </View>
+        <TouchableOpacity style={styles.navButton} onPress={handleRecommendationPage}>
+          <Text style={styles.navButtonText}>추천 향상법 하러가기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleLogoPress}>
+          <Text style={styles.navButtonText}>홈으로 가기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton} onPress={handleMyPagePress}>  {/* 마이페이지로 이동하는 버튼 */}
+          <Text style={styles.navButtonText}>마이페이지로 가기</Text>
+        </TouchableOpacity>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -138,7 +151,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D0F35",
   },
   scrollView: {
-    flex: 1,
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -162,8 +174,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 20,
     alignItems: "center",
-    flex: 1,
     marginHorizontal: 5,
+    margin: 10,
   },
   navButtonText: {
     color: "#ffffff",
@@ -175,19 +187,20 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   chartContainer: {
-    marginTop: 20,
+    marginTop: 30,
     padding: 10,
     alignItems: "center",
     justifyContent: "center",
     width: "90%",
-    aspectRatio: 1, // 정사각형 비율을 유지
+    aspectRatio: 1,
     backgroundColor: "#fff",
     borderRadius: 40,
-    elevation: 5, // 그림자 추가 (Android용)
-    shadowColor: "#000", // 그림자 추가 (iOS용)
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    height: 300,
   },
   chartTitle: {
     color: "#433D3A",
@@ -197,6 +210,17 @@ const styles = StyleSheet.create({
   radarChart: {
     marginVertical: 8,
     borderRadius: 16,
+  },
+  recommendationText: {
+    color: "#ffffff",
+    fontSize: 18,
+    marginTop: 10,
+  },
+  loadingText: {
+    color: "#ffffff",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

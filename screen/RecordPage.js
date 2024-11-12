@@ -22,7 +22,7 @@ export default function RecordPage({ navigation }) {
 
   const loadRecords = async () => {
     try {
-      const username = await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
+      const username = "test"//await AsyncStorage.getItem('username'); // 세션에서 username 가져오기
       const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
       setRecords(data); // records에 데이터를 직접 할당
     } catch (error) {
