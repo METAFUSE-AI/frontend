@@ -1,17 +1,21 @@
-// api.js
-
+// ApiUtils.js
 import axios from "axios";
+import { UserContext } from "./UserContext";
 
-BASE_URL = "http://10.106.3.58:8080"; //
+const BASE_URL = "http://10.106.1.115:8080"; // base URL 설정
+
+// axios 인스턴스 생성
+export const apiInstance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // Test 관련 API 호출
 export const createTest = (testData) => {
-  return axios
-    .post(`${BASE_URL}/tests/create`, testData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+  return apiInstance
+    .post("/tests/create", testData)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error creating test:", error);
@@ -29,25 +33,20 @@ export const instance = axios.create({
 // Record 관련 API 호출
 
 // 기록 생성
-export const createRecord = (recordData) => {
-  return axios
-    .post(`${BASE_URL}/records`, recordData, {
-      // /create 제거
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error creating record:", error);
-      throw error;
-    });
+export const createRecord = async (recordData) => {
+  try {
+    const response = await apiInstance.post("/records/create", recordData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating record:", error);
+    throw error;
+  }
 };
 
 // 기록 목록 조회
 export const fetchRecords = () => {
-  return axios
-    .get(`${BASE_URL}/records`) // /records URL로 GET 요청
+  return apiInstance
+    .get("/records")
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching records:", error);
@@ -57,8 +56,8 @@ export const fetchRecords = () => {
 
 // 기록 조회
 export const getRecordById = (id) => {
-  return axios
-    .get(`${BASE_URL}/records/${id}`)
+  return apiInstance
+    .get(`/records/${id}`)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching record:", error);
@@ -67,92 +66,93 @@ export const getRecordById = (id) => {
 };
 
 // 기록 업데이트
-export const updateRecord = (id, recordData) => {
-  return axios
-    .put(`${BASE_URL}/records/${id}`, recordData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error("Error updating record:", error);
-      throw error;
-    });
+export const updateRecord = async (id, recordData) => {
+  try {
+    const response = await apiInstance.put(`/records/${id}`, recordData);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error updating record:",
+      error.response?.data || error.message || error
+    );
+    throw error;
+  }
 };
 
 // 기록 삭제
 export const deleteRecord = async (id) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/records/${id}`);
-
-    // 상태 코드가 204인 경우 삭제 성공으로 처리
+    const response = await apiInstance.delete(`/records/${id}`);
     if (response.status === 204) {
       return true;
     } else {
-      // 상태 코드가 204가 아닌 경우 에러 발생
       console.error("Unexpected response status:", response.status);
       throw new Error("Failed to delete record");
     }
   } catch (error) {
-    // 에러 발생 시 상세 에러 메시지 로그
     console.error(
       "Error deleting record:",
       error.response ? error.response.data : error.message
     );
-    throw error; // 에러를 호출한 쪽으로 다시 던짐
+    throw error;
   }
 };
 
 // 기록응원 관련 API 호출
 export const fetchEncouragementMessage = async () => {
   try {
-    const response = await fetch("http://10.106.3.58:5000/encouragement"); // Flask 서버 주소
+    const response = await fetch("http://192.168.0.161:5000/encouragement");
     if (!response.ok) {
       throw new Error("Failed to fetch encouragement message");
     }
     const data = await response.json();
-    return data.message; // 백엔드에서 반환된 응원 메시지를 반환
+    return data.message;
   } catch (error) {
     console.error("Error fetching encouragement message:", error);
-    return null; // 오류 발생 시 null 반환
+    return null;
   }
 };
 
 // 회원가입 API 호출
 export const registerUser = async ({ username, name, password }) => {
-  const response = await fetch(`${BASE_URL}/members/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, password, name }),
-  });
-
-  if (!response.ok) {
-    throw new Error("회원가입 실패");
+  try {
+    const response = await apiInstance.post("/members/register", {
+      username,
+      name,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "회원가입 실패:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
   }
-  return response.json();
 };
 
 // 로그인 API 호출
 export const loginUser = async ({ username, password }) => {
   try {
-    const response = await fetch(`${BASE_URL}/members/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
+    const response = await apiInstance.post("/members/login", {
+      username,
+      password,
     });
 
-    if (!response.ok) {
+    if (response.status === 200) {
+      const data = response.data;
+      const { setUser } = useContext(UserContext);
+      setUser({ username: data.username });
+      return data;
+    } else {
       const errorMessage = await response.text();
       throw new Error(errorMessage);
     }
-
-    return await response.json(); // 로그인 성공 시 응답 데이터 반환
   } catch (error) {
-    throw new Error(error.message); // 에러 메시지 반환
+    console.error(
+      "로그인 실패:",
+      error.response ? error.response.data : error.message
+    );
+    throw new Error(error.message);
   }
 };

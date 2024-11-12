@@ -1,3 +1,4 @@
+// RecordDetailPage.js
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -30,13 +31,23 @@ export default function RecordDetailPage({ route, navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
+    if (!recordId) {
+      setError("기록 ID가 존재하지 않습니다.");
+      return;
+    }
+
     const fetchRecord = async () => {
       try {
         const data = await getRecordById(recordId);
-        setRecord(data);
-        setRecordContents(data.recordContents);
+        if (data && data.data) {
+          // data.data로 수정하여 응답 데이터 접근
+          setRecord(data.data);
+          setRecordContents(data.data.recordContents); // 불러온 내용 설정
+        } else {
+          setError("기록을 찾을 수 없습니다.");
+        }
       } catch (error) {
-        setError(error.message);
+        setError("기록을 불러오는데 실패했습니다.");
       } finally {
         setLoading(false);
       }
@@ -65,11 +76,8 @@ export default function RecordDetailPage({ route, navigation }) {
       }));
       setIsEditing(false);
     } catch (error) {
-      console.error(
-        "Error updating record:",
-        error.response ? error.response.data : error.message
-      );
-      setError("Error updating record");
+      console.error("기록 업데이트 오류:", error.message);
+      setError("기록 업데이트에 실패했습니다.");
     }
   };
 
@@ -83,14 +91,11 @@ export default function RecordDetailPage({ route, navigation }) {
       if (success) {
         navigation.navigate("RecordPage", { refresh: true });
       } else {
-        setError("Failed to delete record");
+        setError("기록 삭제에 실패했습니다.");
       }
     } catch (error) {
-      console.error(
-        "Error deleting record:",
-        error.response ? error.response.data : error.message
-      );
-      setError("Error deleting record");
+      console.error("기록 삭제 오류:", error.message);
+      setError("기록 삭제에 실패했습니다.");
     } finally {
       setIsModalVisible(false);
     }
@@ -109,7 +114,7 @@ export default function RecordDetailPage({ route, navigation }) {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.loadingText}>로딩 중...</Text>
       </View>
     );
   }
@@ -117,7 +122,7 @@ export default function RecordDetailPage({ route, navigation }) {
   if (error) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+        <Text style={styles.errorText}>오류: {error}</Text>
       </View>
     );
   }
@@ -125,7 +130,7 @@ export default function RecordDetailPage({ route, navigation }) {
   if (!record) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>No record found</Text>
+        <Text style={styles.errorText}>기록을 찾을 수 없습니다.</Text>
       </View>
     );
   }
@@ -144,7 +149,7 @@ export default function RecordDetailPage({ route, navigation }) {
       <ScrollView
         contentContainerStyle={[
           styles.scrollViewContent,
-          { paddingBottom: 100 }, // 말풍선 공간 확보
+          { paddingBottom: 100 },
         ]}
         style={styles.container}
       >
