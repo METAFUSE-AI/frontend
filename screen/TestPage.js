@@ -43,9 +43,8 @@ const TestPage = ({ navigation }) => {
   const [resultImage, setResultImage] = useState(null);
   const [improvementRecommendation, setImprovementRecommendation] =
     useState(null);
-
   const scrollViewRef = useRef();
-const username =  AsyncStorage.getItem("username");
+  const[username,setUsername] = useState(null);
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
@@ -54,6 +53,20 @@ const username =  AsyncStorage.getItem("username");
     navigation.setOptions({
       headerShown: false,
     });
+
+    // AsyncStorage에서 username을 가져와서 상태로 설정
+    const getUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
+      } catch (error) {
+        console.error("Error loading username from AsyncStorage:", error);
+      }
+    };
+
+    getUsername(); // username 불러오기
   }, [navigation]);
 
   const renderQuestion = (questionIndex) => {

@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const AiChatbot = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const username =  AsyncStorage.getItem("username"); //
+  const[username,setUsername] = useState(null);
   // 로고 클릭 시 메인 페이지로 이동
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
@@ -32,6 +32,19 @@ const AiChatbot = ({ navigation }) => {
       text: "안녕하세요 메타인지에 관해 무엇이든 물어보세요",
     };
     setMessages([initialMessage]);
+    // AsyncStorage에서 username을 가져와서 상태로 설정
+    const getUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername);
+        }
+      } catch (error) {
+        console.error("Error loading username from AsyncStorage:", error);
+      }
+    };
+
+    getUsername(); // username 불러오기
   }, []);
 
   const fetchTestResults = async () => {
@@ -43,7 +56,7 @@ const AiChatbot = ({ navigation }) => {
       if (response.data && response.data.length > 0) {
         const resultMessages = response.data.map((result) => ({
           sender: "bot",
-          text: `테스트 ID: ${result.test_id}, 당신의 테스트 점수는 ${result.score}점 입니다.`,
+          text: `마지막 테스트번호: ${result.seq}, 당신의 테스트 점수는 ${result.total_score}점 입니다.`,
         }));
         setMessages([...messages, ...resultMessages]);
       } else {
@@ -68,7 +81,7 @@ const AiChatbot = ({ navigation }) => {
 
     const userMessage = { sender: "user", text: input };
     setMessages([...messages, userMessage]);
-    const userId = "1";
+    const username = username;
 
     try {
       const response = await axios.post("http://10.106.1.162:5000/chat", {

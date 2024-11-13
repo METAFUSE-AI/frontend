@@ -27,8 +27,8 @@ export default function App() {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const memberId = await AsyncStorage.getItem("memberId");
-      setIsLoggedIn(!!memberId);
+      const username = await AsyncStorage.getItem("username");
+      setIsLoggedIn(username ? true : false); // username이 있으면 로그인 상태로 설정
     };
 
     checkLoginStatus();
@@ -42,7 +42,7 @@ export default function App() {
     <UserProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName={isLoggedIn ? "MainPage" : "LoginPage"}
+          initialRouteName={isLoggedIn ? "MainPage" : "LoginPage"} // 로그인 여부에 따라 초기 화면 설정
         >
           <Stack.Screen
             name="MainPage"

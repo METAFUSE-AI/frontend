@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,10 +7,13 @@ import {
   ScrollView,
   Text,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import HeaderLogo from "../assets/images/headerLogo.png";
 
 export default function MainPage({ navigation }) {
+  const [username, setUsername] = useState(""); // username을 저장할 상태 추가
+  
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
   };
@@ -39,10 +42,22 @@ export default function MainPage({ navigation }) {
     navigation.navigate("TestPage");
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
+    const getUsername = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername); // username 상태에 저장
+        }
+      } catch (error) {
+        console.error("Error loading username from AsyncStorage:", error);
+      }
+    };
+
+    getUsername();
   }, [navigation]);
 
   return (
@@ -136,7 +151,7 @@ const styles = StyleSheet.create({
   testContainer: {
     backgroundColor: "#FFFFFF",
     padding: 30,
-    borderRadius: 20, // 더 부드러운 둥근 모서리
+    borderRadius: 20,
     width: "85%",
     justifyContent: "center",
     shadowColor: "#000",
@@ -144,33 +159,33 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3,
     },
-    shadowOpacity: 0.2, // 그림자 강도 증가
+    shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 5,
     alignItems: "center",
     marginBottom: 40,
-    alignSelf: "center", // 중앙 정렬
-    marginTop: 20, // 상단 마진 추가
+    alignSelf: "center",
+    marginTop: 20,
   },
   testTitle: {
-    fontSize: 22, // 제목 크기 증가
-    fontWeight: "700", // 볼드체
+    fontSize: 22,
+    fontWeight: "700",
     color: "#333",
     marginBottom: 10,
-    textAlign: "center", // 텍스트 중앙 정렬
+    textAlign: "center",
   },
   testDescription: {
     fontSize: 16,
     color: "#666",
     textAlign: "center",
     marginBottom: 20,
-    lineHeight: 24, // 줄 높이 조정
+    lineHeight: 24,
   },
   testButton: {
-    backgroundColor: "#8881EA", // 버튼 배경 색상
+    backgroundColor: "#8881EA",
     paddingVertical: 12,
     paddingHorizontal: 40,
-    borderRadius: 25, // 둥근 버튼
+    borderRadius: 25,
     alignItems: "center",
     marginTop: 10,
     shadowColor: "#000",
@@ -190,12 +205,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around", // 공간 균형 조정
+    justifyContent: "space-around",
     alignItems: "center",
     marginTop: 20,
   },
   iconButton: {
-    width: "40%", // 아이콘 버튼 크기 조정
+    width: "40%",
     alignItems: "center",
     marginVertical: 15,
   },

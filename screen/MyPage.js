@@ -1,4 +1,3 @@
-// MyPage.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -10,13 +9,31 @@ import {
 } from "react-native";
 import { getTestResultsByUsername } from "../components/ApiUtils";
 import HeaderLogo from "../assets/images/headerLogo.png";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MyPage({ navigation }) {
   const [testList, setTestList] = useState([]);
-  const username = "test"; // 고정된 memberId 값
+  const [username, setUsername] = useState(null);
 
   const handleLogoPress = () => {
     navigation.navigate("MainPage");
+  };
+
+  // 로그아웃 버튼 클릭 시 처리
+  const handleLogout = async () => {
+    try {
+      // AsyncStorage에서 username 삭제
+      await AsyncStorage.removeItem("username");
+      setUsername(false); // username 상태 초기화
+      
+      // 네비게이션 스택 리셋하고 로그인 페이지로 이동
+      navigation.reset({
+        index: 0, // 스택의 첫 번째 화면으로 설정
+        routes: [{ name: "LoginPage" }], // LoginPage로 리셋
+      });
+    } catch (error) {
+      console.error("로그아웃 중 오류 발생:", error);
+    }
   };
 
   // 테스트 결과 클릭 시 해당 결과 페이지로 이동
@@ -25,17 +42,30 @@ export default function MyPage({ navigation }) {
     navigation.navigate("TestResultPage", { testId });
   };
 
-  // 테스트 결과 불러오기
+  // AsyncStorage에서 username 불러와 테스트 결과 요청
   useEffect(() => {
-    const fetchTestResults = async () => {
+    const getUsername = async () => {
       try {
-        const testResults = await getTestResultsByUsername(username);
+        const storedUsername = await AsyncStorage.getItem("username");
+        if (storedUsername) {
+          setUsername(storedUsername);
+          fetchTestResults(storedUsername); // username 기반으로 테스트 결과 불러오기
+        }
+      } catch (error) {
+        console.error("Error loading username from AsyncStorage:", error);
+      }
+    };
+
+    const fetchTestResults = async (user) => {
+      try {
+        const testResults = await getTestResultsByUsername(user);
         setTestList(testResults);
       } catch (error) {
         console.error("테스트 결과를 불러오는 중 오류 발생:", error);
       }
     };
-    fetchTestResults();
+
+    getUsername();
   }, []);
 
   return (
@@ -45,11 +75,18 @@ export default function MyPage({ navigation }) {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.backButtonText}>{"< 뒤로가기"}</Text>
+        <Text style={styles.backButtonText}>{"<Back"}</Text>
       </TouchableOpacity>
 
-      {/* 로고 */}
-      <Image source={HeaderLogo} style={styles.logo} />
+      {/* 로고와 로그아웃 버튼 */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
+          <Image source={HeaderLogo} style={styles.logo} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* 스크롤 가능한 테스트 결과 리스트 */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -84,19 +121,37 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 10,
+    top: 40, // 조금 아래로 내림
     left: 10,
   },
   backButtonText: {
     fontSize: 18,
     color: "#FFFFFF",
   },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  logoContainer: {
+    alignSelf: "center",
+  },
   logo: {
     width: 250,
     height: 100,
     resizeMode: "contain",
-    alignSelf: "center",
-    marginBottom: 20,
+  },
+  logoutButton: {
+    backgroundColor: "#FF4C4C",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+  logoutButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   contentContainer: {
     alignItems: "center",

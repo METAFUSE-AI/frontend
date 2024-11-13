@@ -76,16 +76,17 @@ export const createRecord = async (recordData) => {
   }
 };
 
-// 기록 목록 조회
-export const fetchRecords = () => {
+export const fetchRecords = (username) => {
+  console.log("Fetching records for username:", username);  // username 값 확인
   return apiInstance
-    .get("/records")
+    .get(`/records/member/${username}`)
     .then((response) => response.data)
     .catch((error) => {
       console.error("Error fetching records:", error);
       throw error;
     });
 };
+
 
 // 기록 조회
 export const getRecordById = (id) => {
@@ -132,19 +133,23 @@ export const deleteRecord = async (id) => {
 };
 
 // 기록응원 관련 API 호출
-export const fetchEncouragementMessage = async () => {
+export const fetchEncouragementMessage = async (username) => {
   try {
-    const response = await fetch("http://10.106.1.162:5000/encouragement");
-    if (!response.ok) {
-      throw new Error("Failed to fetch encouragement message");
+    const response = await axios.get("http://10.106.1.162:5000/encouragement", {
+      params: { username: username },
+    });
+
+    if (response.data && response.data.message) {
+      return response.data.message;
+    } else {
+      throw new Error("No encouragement message found.");
     }
-    const data = await response.json();
-    return data.message;
   } catch (error) {
     console.error("Error fetching encouragement message:", error);
     return null;
   }
 };
+
 
 // 회원가입 API 호출
 export const registerUser = async ({ username, name, password }) => {

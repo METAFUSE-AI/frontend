@@ -199,13 +199,6 @@ export default function RecordDetailPage({ route, navigation }) {
         </View>
       </ScrollView>
 
-      <View style={styles.fixedBubble}>
-        <Text style={styles.bubbleText}>
-          당신의 선택은 소중한 경험으로, 현재의 당신을 만들어냈습니다. 후회 없이
-          앞으로 나아가면서 더 나은 미래를 만들 수 있어요. 응원합니다!
-        </Text>
-      </View>
-
       <Modal
         transparent={true}
         visible={isModalVisible}

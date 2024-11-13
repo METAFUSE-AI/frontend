@@ -18,7 +18,7 @@ import gameStates02 from "../assets/images/gameStates02.png";
 import gameStates03 from "../assets/images/gameStates03.png";
 import gameStates04 from "../assets/images/gameStates04.png";
 
-const FLASK_API_URL = "http://10.106.1.162:5000/game-result";
+const FLASK_API_URL = "http://10.106.1.162:5001/game-result";
 
 export default function GamePage({ navigation }) {
   const [age, setAge] = useState(8);
@@ -331,15 +331,23 @@ export default function GamePage({ navigation }) {
           </View>
         ) : (
           gameStarted && (
-            <View>
-              <SubmitButton
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.choiceButton}
                 onPress={() => handleChoice(1)}
-                text={`선택 1: ${choiceList[questionIndex].choices[0]}`}
-              />
-              <SubmitButton
+              >
+                <Text
+                  style={styles.buttonText}
+                >{`선택 1: ${choiceList[questionIndex].choices[0]}`}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.choiceButton}
                 onPress={() => handleChoice(2)}
-                text={`선택 2: ${choiceList[questionIndex].choices[1]}`}
-              />
+              >
+                <Text
+                  style={styles.buttonText}
+                >{`선택 2: ${choiceList[questionIndex].choices[1]}`}</Text>
+              </TouchableOpacity>
             </View>
           )
         )}
@@ -441,5 +449,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 10,
+  },
+  buttonContainer: {
+    alignItems: "center",
+    marginTop: 20,
+  },
+  choiceButton: {
+    backgroundColor: "#8881EA",
+    width: "90%", // Wider button width
+    height: 50, // Fixed height
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    marginVertical: 10, // Vertical spacing between buttons
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

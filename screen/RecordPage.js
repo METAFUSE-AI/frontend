@@ -1,25 +1,24 @@
-import React, { useState, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Pressable,
-} from "react-native";
+import React, { useState, useCallback, useEffect } from "react";
+import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView, Platform } from "react-native";
 import { HeaderBackButton } from "@react-navigation/elements";
 import { useFocusEffect } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  fetchRecords,
-  fetchEncouragementMessage,
-} from "../components/ApiUtils"; // import 추가
+import Icon from "react-native-vector-icons/FontAwesome";
+import { fetchRecords, fetchEncouragementMessage } from "../components/ApiUtils"; // import 추가
 
 import HeaderLogo from "../assets/images/headerLogo.png";
 import RecordContainer from "../components/RecordContainer";
+
+// AsyncStorage에서 username을 가져오는 함수
+const getUsernameFromSession = async () => {
+  try {
+    const username = await AsyncStorage.getItem("username");
+    return username || null;
+  } catch (error) {
+    console.error("Error loading username from AsyncStorage:", error);
+    return null;
+  }
+};
 
 export default function RecordPage({ navigation }) {
   const [records, setRecords] = useState([]);
@@ -27,16 +26,31 @@ export default function RecordPage({ navigation }) {
   const [error, setError] = useState(null);
   const [showBubble, setShowBubble] = useState(false); // 말풍선 표시 여부
   const [bubbleText, setBubbleText] = useState(""); // 말풍선에 표시할 응원 메시지
+  const [username, setUsername] = useState(null); // username을 state로 관리
   const [pressedId, setPressedId] = useState(null);
 
+  // AsyncStorage에서 username을 로드하는 useEffect
+  useEffect(() => {
+    const loadUsername = async () => {
+      const usernameFromSession = await getUsernameFromSession();
+      setUsername(usernameFromSession);
+    };
+
+    loadUsername();
+  }, []);
+
   const loadRecords = async () => {
+    if (!username) return; // username이 없으면 기록을 불러오지 않음
+
     try {
-      const username = await AsyncStorage.getItem("username"); // 세션에서 username 가져오기
+      console.log("Fetched username:", username);
       const data = await fetchRecords(username); // 특정 username으로 기록 데이터 가져오기
       setRecords(data); // records에 데이터를 직접 할당
+      console.log("Fetched records:", data);
       if (data.length > 0) {
         setShowBubble(true);
-        loadEncouragementMessage(); // 응원 메시지 불러오기
+        loadEncouragementMessage(username); // 응원 메시지 불러오기
+        console.log("loadEncouragementMessage:", loadEncouragementMessage);
       }
     } catch (error) {
       console.error("Error fetching records:", error);
@@ -47,15 +61,23 @@ export default function RecordPage({ navigation }) {
   };
 
   // 응원 메시지를 가져오는 함수
-  const loadEncouragementMessage = async () => {
-    const message = await fetchEncouragementMessage();
-    setBubbleText(message || "Keep going! You're doing great!"); // 응원 메시지 설정, 기본 메시지 포함
+  const loadEncouragementMessage = async (username) => {
+    try {
+      console.log("Fetching encouragement message for:", username); // username 확인
+      const message = await fetchEncouragementMessage(username);
+      console.log("Fetched encouragement message:", message); // fetchEncouragementMessage 응답 확인
+      setBubbleText(message || "Keep going! You're doing great!");
+    } catch (error) {
+      console.error("Error fetching encouragement message:", error);
+    }
   };
 
   useFocusEffect(
     useCallback(() => {
-      loadRecords();
-    }, [])
+      if (username) {
+        loadRecords();
+      }
+    }, [username])
   );
 
   const handleLogoPress = () => {
@@ -77,30 +99,19 @@ export default function RecordPage({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.customHeader}>
-        <HeaderBackButton
-          onPress={() => navigation.goBack()}
-          tintColor="#ffffff"
-        />
+        <HeaderBackButton onPress={() => navigation.goBack()} tintColor="#ffffff" />
       </View>
       <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
         <Image source={HeaderLogo} style={styles.headerLogo} />
       </TouchableOpacity>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollViewContent} style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : error ? (
           <Text style={styles.errorText}>Error: {error}</Text>
         ) : records.length > 0 ? (
           records.map((record) => (
-            <TouchableOpacity
-              key={record.recordId}
-              onPress={() => handleRecordPress(record.recordId)}
-              style={styles.recordItem}
-            >
+            <TouchableOpacity key={record.recordId} onPress={() => handleRecordPress(record.recordId)} style={styles.recordItem}>
               <Text style={styles.recordTitle}>{record.recordQuestion}</Text>
               <Text style={styles.recordAnswer}>{record.recordAnswer}</Text>
             </TouchableOpacity>
@@ -123,6 +134,7 @@ export default function RecordPage({ navigation }) {
   );
 }
 
+// 스타일은 그대로 유지합니다
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -246,19 +258,22 @@ const styles = StyleSheet.create({
     }),
   },
   addButtonPressed: {
-    transform: [{ scale: 0.96 }],
-    backgroundColor: "rgba(255,255,255,0.9)",
+    transform: [{ scale: 0.9 }],
+  },
+  bubbleText: {
+    color: "#000",
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
   },
   loadingText: {
-    color: "rgba(255,255,255,0.6)",
+    color: "#fff",
     textAlign: "center",
-    marginTop: 20,
-    fontSize: 17,
+    fontSize: 18,
   },
   errorText: {
-    color: "#FF453A",
+    color: "#ff0000",
     textAlign: "center",
-    marginTop: 20,
-    fontSize: 17,
+    fontSize: 18,
   },
 });
