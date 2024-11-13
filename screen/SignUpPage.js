@@ -31,31 +31,34 @@ export default function SignUpPage({ navigation }) {
       setModalVisible(true);
       return;
     }
-
+  
     try {
-      const response = await axios.get(`http://10.105.1.73:8080/members/check?username=${username}`
-      );
-      if (response.ok) {
-        const exists = await response.json();
+      const response = await axios.get(`http://10.105.1.73:8080/members/check?username=${username}`);
+      
+      // 서버 응답이 성공일 때 처리
+      if (response.status === 200) {
+        const exists = response.data.data; // `data` 객체에서 `exists` 값 가져오기
+        
         if (exists) {
           setModalMessage("이미 사용 중인 아이디입니다.");
-          setModalVisible(true);
           setIsDuplicate(true);
         } else {
           setModalMessage("사용 가능한 아이디입니다.");
-          setModalVisible(true);
           setIsDuplicate(false);
         }
+        
+        setModalVisible(true); // Modal 표시
       } else {
+        // 서버 오류 처리
         setModalMessage("서버 오류입니다.");
-        console.log(`${username}`);
         setModalVisible(true);
+        console.log(`Error with username: ${username}`);
       }
     } catch (error) {
-      setModalMessage(
-        "오류 발생: " + (error.response?.data || error.message || error)
-      );
+      // 네트워크 오류 또는 기타 예외 처리
+      setModalMessage("오류 발생: " + (error.response?.data || error.message || error));
       setModalVisible(true);
+      console.log("Error:", error);
     }
   };
   const handleSignUp = async () => {
