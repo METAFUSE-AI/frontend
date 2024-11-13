@@ -33,7 +33,7 @@ export default function SignUpPage({ navigation }) {
     }
   
     try {
-      const response = await axios.get(`http://10.105.1.73:8080/members/check?username=${username}`);
+      const response = await axios.get(`http:/172.20.10.2:8080/members/check?username=${username}`);
       
       // 서버 응답이 성공일 때 처리
       if (response.status === 200) {

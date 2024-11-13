@@ -18,7 +18,7 @@ import gameStates02 from "../assets/images/gameStates02.png";
 import gameStates03 from "../assets/images/gameStates03.png";
 import gameStates04 from "../assets/images/gameStates04.png";
 
-const FLASK_API_URL = "http://10.106.1.162:5001/game-result";
+const FLASK_API_URL = "http://172.20.10.2:5001/game-result";
 
 export default function GamePage({ navigation }) {
   const [age, setAge] = useState(8);

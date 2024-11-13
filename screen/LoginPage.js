@@ -27,7 +27,7 @@ export default function LoginPage({ navigation }) {
       });
 
       if (response.status === 200) {
-        Alert.alert("로그인 성공");
+        
         await AsyncStorage.setItem("username", username);
         navigation.navigate("MainPage");
       } else {
@@ -35,7 +35,7 @@ export default function LoginPage({ navigation }) {
         Alert.alert("로그인 실패", errorMessage);
       }
     } catch (error) {
-      Alert.alert("오류 발생", error.message);
+      Alert.alert("아이디 또는 비밀번호가 틀립니다");
     } finally {
       setLoading(false);
     }

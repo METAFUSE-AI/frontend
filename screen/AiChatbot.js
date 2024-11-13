@@ -49,7 +49,7 @@ const AiChatbot = ({ navigation }) => {
 
   const fetchTestResults = async () => {
     try {
-      const response = await axios.get("http://10.106.1.162:5000/test-result", {
+      const response = await axios.get("http://172.20.10.2:5000/test-result", {
         params: { username:username },
       });
 
@@ -84,7 +84,7 @@ const AiChatbot = ({ navigation }) => {
     const username = username;
 
     try {
-      const response = await axios.post("http://10.106.1.162:5000/chat", {
+      const response = await axios.post("http://172.20.10.2:5000/chat", {
         username: username,
         message: input,
       });
