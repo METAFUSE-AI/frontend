@@ -14,7 +14,7 @@ import HeaderLogo from "../assets/images/headerLogo.png";
 import { registerUser } from "../components/ApiUtils";
 import Modal from "react-native-modal";
 import { apiInstance } from "../components/ApiUtils";
-
+import axios from "axios";
 export default function SignUpPage({ navigation }) {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -33,8 +33,7 @@ export default function SignUpPage({ navigation }) {
     }
 
     try {
-      const response = await apiInstance.get(
-        `/members/check?username=${username}`
+      const response = await axios.get(`http://10.105.1.73:8080/members/check?username=${username}`
       );
       if (response.ok) {
         const exists = await response.json();

@@ -1,18 +1,7 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  Button,
-  Modal,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import HeaderLogo from "../assets/images/headerLogo.png";
-
-const screenWidth = Dimensions.get("window").width;
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, Modal, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import HeaderLogo from '../assets/images/headerLogo.png';
 
 const QuizPage = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
@@ -20,12 +9,8 @@ const QuizPage = ({ navigation }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+  const [modalMessage, setModalMessage] = useState('');
   const [isCorrect, setIsCorrect] = useState(null); // 정답 여부 저장
-
-  const handleLogoPress = () => {
-    navigation.navigate("MainPage");
-  };
 
   const quizData = [
     {
@@ -118,7 +103,7 @@ const QuizPage = ({ navigation }) => {
       ],
       answer: 0, // 정답: A
     },
-
+    
     // 1번 인덱스 정답 질문 (10개)
     {
       question: "메타인지의 주요 기술은 무엇인가요?",
@@ -192,7 +177,12 @@ const QuizPage = ({ navigation }) => {
     },
     {
       question: "메타인지의 요소 중 하나는 무엇인가요?",
-      options: ["A. 목표 설정", "B. 계획 수립", "C. 문제 인식", "D. 모두 해당"],
+      options: [
+        "A. 목표 설정",
+        "B. 계획 수립",
+        "C. 문제 인식",
+        "D. 모두 해당",
+      ],
       answer: 1, // 정답: B
     },
     {
@@ -205,7 +195,7 @@ const QuizPage = ({ navigation }) => {
       ],
       answer: 1, // 정답: B
     },
-
+  
     // 2번 인덱스 정답 질문 (10개)
     {
       question: "메타인지의 또 다른 이점은 무엇인가요?",
@@ -219,7 +209,12 @@ const QuizPage = ({ navigation }) => {
     },
     {
       question: "메타인지가 적용될 수 있는 분야는 무엇인가요?",
-      options: ["A. 교육", "B. 비즈니스", "C. 일상생활", "D. 모두 해당"],
+      options: [
+        "A. 교육",
+        "B. 비즈니스",
+        "C. 일상생활",
+        "D. 모두 해당",
+      ],
       answer: 2, // 정답: C
     },
     {
@@ -292,7 +287,7 @@ const QuizPage = ({ navigation }) => {
       ],
       answer: 2, // 정답: C
     },
-
+  
     // 3번 인덱스 정답 질문 (10개)
     {
       question: "메타인지적 학습의 목표는 무엇인가요?",
@@ -398,34 +393,26 @@ const QuizPage = ({ navigation }) => {
 
   useEffect(() => {
     // quizData에서 5개의 질문을 랜덤으로 선택
-    const shuffledQuestions = quizData
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 5);
+    const shuffledQuestions = quizData.sort(() => 0.5 - Math.random()).slice(0, 5);
     setQuestions(shuffledQuestions);
   }, []);
 
   const handleAnswerSelection = (index) => {
     setSelectedAnswer(index);
   };
+  
 
   const handleSubmit = () => {
     if (selectedAnswer === null) return; // 답변이 선택되지 않은 경우
 
-    const isAnswerCorrect =
-      selectedAnswer === questions[currentQuestionIndex].answer;
+    const isAnswerCorrect = selectedAnswer === questions[currentQuestionIndex].answer;
     setIsCorrect(isAnswerCorrect);
-
+    
     if (isAnswerCorrect) {
       setScore((prevScore) => prevScore + 1);
-      setModalMessage("정답입니다!");
+      setModalMessage('정답입니다!');
     } else {
-      setModalMessage(
-        `틀렸습니다! 정답은: ${
-          questions[currentQuestionIndex].options[
-            questions[currentQuestionIndex].answer
-          ]
-        }`
-      );
+      setModalMessage(`틀렸습니다! 정답은: ${questions[currentQuestionIndex].options[questions[currentQuestionIndex].answer]}`);
     }
 
     setModalVisible(true);
@@ -441,17 +428,13 @@ const QuizPage = ({ navigation }) => {
       setIsCorrect(null); // 다음 질문으로 넘어갈 때 정답 여부 초기화
     } else {
       // 모든 질문이 끝났을 경우
-      setModalMessage(
-        `퀴즈가 끝났습니다! ${questions.length}개 중 ${score}개 맞추셨습니다!`
-      );
+      setModalMessage(`퀴즈가 끝났습니다! ${questions.length}개 중 ${score}개 맞추셨습니다!`);
       setModalVisible(true);
     }
   };
 
   const handleRetry = () => {
-    const shuffledQuestions = quizData
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 5);
+    const shuffledQuestions = quizData.sort(() => 0.5 - Math.random()).slice(0, 5);
     setQuestions(shuffledQuestions);
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -462,35 +445,32 @@ const QuizPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleLogoPress} style={styles.logoContainer}>
-        <Image source={HeaderLogo} style={styles.headerLogo} />
-      </TouchableOpacity>
+      <Image source={HeaderLogo} style={styles.logo} />
       {questions.length > 0 && currentQuestionIndex < questions.length ? (
         <View style={styles.questionContainer}>
           <Text style={styles.question}>
-            퀴즈 {currentQuestionIndex + 1}:{" "}
-            {questions[currentQuestionIndex].question}
+            퀴즈 {currentQuestionIndex + 1}: {questions[currentQuestionIndex].question}
           </Text>
-          {questions[currentQuestionIndex].options.map((option, index) => {
-            let buttonStyle = styles.optionButton;
+         {questions[currentQuestionIndex].options.map((option, index) => {
+  let buttonStyle = styles.optionButton;
 
-            // 버튼 색상 결정
-            if (selectedAnswer === index) {
-              // 선택한 버튼은 흰색으로 표시
-              buttonStyle = styles.selectedButton;
-            }
+  // 선택된 버튼의 스타일을 업데이트
+  if (selectedAnswer === index) {
+    buttonStyle = styles.selectedButton; // 선택된 버튼은 흰색으로 표시
+  }
 
-            return (
-              <TouchableOpacity
-                key={index}
-                style={buttonStyle}
-                onPress={() => handleAnswerSelection(index)}
-                disabled={selectedAnswer !== null} // 이미 선택된 경우 버튼 비활성화
-              >
-                <Text style={styles.optionButtonText}>{option}</Text>
-              </TouchableOpacity>
-            );
-          })}
+  return (
+    <TouchableOpacity
+      key={index}
+      style={buttonStyle}
+      onPress={() => handleAnswerSelection(index)} // 선택한 답변을 업데이트
+    >
+      <Text style={styles.optionButtonText}>{option}</Text>
+    </TouchableOpacity>
+  );
+})}
+
+
         </View>
       ) : (
         <Text>문제가 없습니다.</Text>
@@ -510,26 +490,17 @@ const QuizPage = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <Text style={styles.modalMessage}>{modalMessage}</Text>
-          {modalMessage.includes("퀴즈가 끝났습니다") ? (
+          {modalMessage.includes('퀴즈가 끝났습니다') ? (
             <>
-              <TouchableOpacity
-                onPress={handleRetry}
-                style={styles.modalButton}
-              >
+              <TouchableOpacity onPress={handleRetry} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>다시 풀기</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("MainPage")}
-                style={styles.modalButton}
-              >
+              <TouchableOpacity onPress={() => navigation.navigate('MainPage')} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>메인으로</Text>
               </TouchableOpacity>
             </>
           ) : (
-            <TouchableOpacity
-              onPress={handleCloseModal}
-              style={styles.modalButton}
-            >
+            <TouchableOpacity onPress={handleCloseModal} style={styles.modalButton}>
               <Text style={styles.modalButtonText}>확인</Text>
             </TouchableOpacity>
           )}
@@ -553,35 +524,34 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   questionContainer: {
-    marginBottom: 30,
+    marginBottom: 30, // 질문과 버튼 사이 간격
   },
   question: {
     fontSize: 24,
-    marginBottom: 15,
-    color: "#FFFFFF",
+    marginBottom: 15, // 질문 아래 간격
+    color: '#FFFFFF',
   },
   optionButton: {
     backgroundColor: "#8881EA",
     paddingVertical: 20,
-    borderRadius: 25,
+    borderRadius: 25, // 둥근 버튼 모양
     alignItems: "center",
-    marginBottom: 25,
-    width: screenWidth * 0.85, // 화면 너비의 85%를 사용하여 너비 설정
-    marginHorizontal: 10, // 양쪽 여백을 추가하여 간격 조정
+    marginBottom: 25, // 보기 버튼 간 간격
+    width: "120px",
   },
   selectedButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFFFFF", // 선택한 버튼 색상 흰색
     paddingVertical: 20,
     borderRadius: 25,
     alignItems: "center",
-    marginBottom: 15,
-    width: screenWidth * 0.85, // 동일하게 설정
-    marginHorizontal: 10,
+    marginBottom: 25,
+    width: "120px",
   },
   checkButtonContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 50,
     width: "70%",
+
   },
   checkButton: {
     backgroundColor: "#8881EA",
@@ -597,7 +567,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 반투명 배경
   },
   modalMessage: {
     fontSize: 24,
